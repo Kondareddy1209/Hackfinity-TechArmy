@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - TechArMy Catalog</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="#" id="showUserLogin">User Login</a>
+    <a href="#" id="showAdminLogin">Admin Login</a>
+  </nav>
+
+  <section class="admin-section">
+    <h2>Admin Dashboard</h2>
+    <p>Manage submitted products below.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Product Name</th>
+          <th>Description</th>
+          <th>Price (Rs.)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Organic Rice</td>
+          <td>High quality organic rice.</td>
+          <td>500</td>
+          <td>
+            <button>Edit</button>
+            <button>Delete</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Fresh Wheat</td>
+          <td>Farm-grown premium wheat.</td>
+          <td>750</td>
+          <td>
+            <button>Edit</button>
+            <button>Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>© 2025 TechArMy</p>
+  </footer>
+
+  <!-- User Login Modal -->
+  <div class="modal" id="userLoginModal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="userLoginModal">&times;</span>
+      <h2>User Login</h2>
+      <form>
+        <label>Username</label>
+        <input type="text" placeholder="Enter Username">
+        <label>Password</label>
+        <input type="password" placeholder="Enter Password">
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div class="modal" id="adminLoginModal">
+    <div class="modal-content">
+      <span class="close-btn" data-modal="adminLoginModal">&times;</span>
+      <h2>Admin Login</h2>
+      <form>
+        <label>Admin ID</label>
+        <input type="text" placeholder="Enter Admin ID">
+        <label>Password</label>
+        <input type="password" placeholder="Enter Password">
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const showUserLogin = document.getElementById('showUserLogin');
+    const showAdminLogin = document.getElementById('showAdminLogin');
+    const userModal = document.getElementById('userLoginModal');
+    const adminModal = document.getElementById('adminLoginModal');
+    const closeBtns = document.querySelectorAll('.close-btn');
+
+    showUserLogin.onclick = () => userModal.style.display = 'block';
+    showAdminLogin.onclick = () => adminModal.style.display = 'block';
+
+    closeBtns.forEach(btn => {
+      btn.onclick = () => {
+        const modalId = btn.getAttribute('data-modal');
+        document.getElementById(modalId).style.display = 'none';
+      };
+    });
+
+    window.onclick = (e) => {
+      if (e.target === userModal) userModal.style.display = 'none';
+      if (e.target === adminModal) adminModal.style.display = 'none';
+    };
+  </script>
+
+</body>
+</html>
