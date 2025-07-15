@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Catalog Agent: Verify OTP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/styles/main.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div id="auth-page" class="w-full h-full absolute top-0 left-0 flex flex-col items-center justify-center bg-green-100 p-5 box-border">
+        <div class="auth-box bg-white rounded-3xl shadow-xl p-10 w-full max-w-md text-center">
+            <h1 id="auth-title" class="text-3xl font-bold text-green-800 mb-6">Verify Your Email</h1>
+            <p class="text-gray-600 mb-6">An OTP has been sent to your email address. Please enter it below to verify your account.</p>
+
+            <div id="otp-form">
+                <input type="text" id="otp-input" placeholder="Enter OTP" maxlength="6" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-center text-lg tracking-widest">
+                <button id="verify-otp-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out w-full mb-3">Verify OTP</button>
+                <button id="resend-otp-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out w-full">Resend OTP</button>
+                <p id="otp-timer" class="text-sm text-gray-500 mt-3"></p>
+                <p class="switch-auth-mode text-green-700 cursor-pointer underline mt-4 text-sm" onclick="window.location.href='/'">Go back to Login</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-container"></div> <!-- Container for messages -->
+
+    <script src="/scripts/main.js"></script> <!-- Link to external JavaScript -->
+</body>
+</html>
