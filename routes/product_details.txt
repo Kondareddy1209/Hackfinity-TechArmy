@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Item Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-white to-gray-100 min-h-screen flex items-center justify-center font-sans text-gray-800">
+
+  <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full">
+    <h2 class="text-2xl font-bold mb-4 text-center text-blue-700" id="item-name">Item</h2>
+
+    <div class="space-y-4 text-base" id="item-details">
+      <!-- Dynamic content will be inserted here -->
+    </div>
+
+    <div class="mt-6 text-center">
+      <a href="cosmetics.html" class="text-blue-600 hover:underline">← Back to Cosmetics</a>
+    </div>
+  </div>
+
+  <script>
+    const data = {
+      'Foundation': {
+        price: '₹499', mfg: 'Mar 2024', exp: 'Mar 2026', size: '10cm × 4cm', desc: 'Matte finish foundation ideal for daily wear.'
+      },
+      'Concealer': {
+        price: '₹399', mfg: 'Feb 2024', exp: 'Feb 2026', size: '8cm × 3cm', desc: 'Covers blemishes and under-eye circles effectively.'
+      },
+      'Powder': {
+        price: '₹299', mfg: 'Jan 2024', exp: 'Jan 2026', size: '9cm × 3.5cm', desc: 'Setting powder for long-lasting makeup hold.'
+      },
+      'Lipstick': {
+        price: '₹249', mfg: 'Apr 2024', exp: 'Apr 2026', size: '7cm × 2cm', desc: 'Creamy lipstick with intense color and moisture.'
+      },
+      'Face Wash': {
+        price: '₹199', mfg: 'May 2024', exp: 'May 2026', size: '15cm × 5cm', desc: 'Foaming cleanser suitable for all skin types.'
+      },
+      'Blush': {
+        price: '₹350', mfg: 'Jan 2024', exp: 'Jan 2026', size: '6cm × 3cm', desc: 'Rosy blush for a healthy-looking glow.'
+      },
+      'Highlighter': {
+        price: '₹425', mfg: 'Feb 2024', exp: 'Feb 2026', size: '6cm × 3cm', desc: 'Glowing highlighter to accentuate your features.'
+      },
+      'Kajal': {
+        price: '₹150', mfg: 'Mar 2024', exp: 'Mar 2026', size: '5cm × 1cm', desc: 'Smudge-proof kajal for defined eyes.'
+      },
+      'Nail Polish': {
+        price: '₹120', mfg: 'Apr 2024', exp: 'Apr 2026', size: '4cm × 2cm', desc: 'Bright, long-lasting nail polish with smooth finish.'
+      },
+      'Makeup Remover': {
+        price: '₹299', mfg: 'Mar 2024', exp: 'Mar 2026', size: '12cm × 4cm', desc: 'Gentle remover that takes off even waterproof makeup.'
+      },
+      'Lip Balm': {
+        price: '₹99', mfg: 'Jan 2024', exp: 'Jan 2026', size: '5cm × 2cm', desc: 'Hydrating lip balm with SPF 15.'
+      },
+      'Eyeliner': {
+        price: '₹220', mfg: 'Feb 2024', exp: 'Feb 2026', size: '6cm × 1.5cm', desc: 'Liquid eyeliner for precision application.'
+      },
+      'Eyeshadow': {
+        price: '₹310', mfg: 'Mar 2024', exp: 'Mar 2026', size: '8cm × 5cm', desc: 'Palette with multiple vibrant eyeshadow shades.'
+      },
+      'Eyebrow Pencil': {
+        price: '₹185', mfg: 'Jan 2024', exp: 'Jan 2026', size: '5cm × 1.5cm', desc: 'Defines and shapes your eyebrows naturally.'
+      },
+      'Lip Gloss': {
+        price: '₹199', mfg: 'Apr 2024', exp: 'Apr 2026', size: '7cm × 2cm', desc: 'Shiny gloss for plump and glossy lips.'
+      },
+      'Lip Liner': {
+        price: '₹129', mfg: 'Feb 2024', exp: 'Feb 2026', size: '5cm × 1cm', desc: 'Outlines lips to prevent feathering and smudging.'
+      },
+      'Nail Polish Remover': {
+        price: '₹89', mfg: 'Mar 2024', exp: 'Mar 2026', size: '6cm × 3cm', desc: 'Quickly removes nail color without dryness.'
+      },
+      'Contour': {
+        price: '₹380', mfg: 'Feb 2024', exp: 'Feb 2026', size: '7cm × 3cm', desc: 'Contour stick to sculpt and define facial features.'
+      },
+      'Body Lotions': {
+        price: '₹299', mfg: 'Jan 2024', exp: 'Jan 2026', size: '18cm × 6cm', desc: 'Moisturizing lotion for soft and smooth skin.'
+      },
+      'Face Creams': {
+        price: '₹350', mfg: 'Jan 2024', exp: 'Jan 2026', size: '10cm × 5cm', desc: 'Nourishing face cream with vitamin E and SPF.'
+      },
+      'Hair Gels': {
+        price: '₹180', mfg: 'Feb 2024', exp: 'Feb 2026', size: '10cm × 5cm', desc: 'Strong hold gel for long-lasting hairstyles.'
+      },
+      'Hair Sprays': {
+        price: '₹230', mfg: 'Mar 2024', exp: 'Mar 2026', size: '20cm × 5cm', desc: 'Finishing spray for all-day style hold.'
+      },
+      'Mousse': {
+        price: '₹260', mfg: 'Feb 2024', exp: 'Feb 2026', size: '15cm × 5cm', desc: 'Lightweight mousse for volume and bounce.'
+      },
+      'Hair Wax': {
+        price: '₹190', mfg: 'Mar 2024', exp: 'Mar 2026', size: '8cm × 4cm', desc: 'Texturizing wax for styling and control.'
+      },
+      'Hair Dyes': {
+        price: '₹299', mfg: 'Jan 2024', exp: 'Jan 2026', size: '12cm × 6cm', desc: 'Permanent hair color with vibrant shine.'
+      },
+      'Hair Tints': {
+        price: '₹275', mfg: 'Apr 2024', exp: 'Apr 2026', size: '12cm × 5cm', desc: 'Semi-permanent tints for fun temporary color.'
+      },
+      'Color Shampoos': {
+        price: '₹320', mfg: 'Mar 2024', exp: 'Mar 2026', size: '18cm × 6cm', desc: 'Shampoo with color boost and gentle cleansing.'
+      }
+    };
+
+    const selectedItem = localStorage.getItem('selectedItem') || 'Item';
+    document.getElementById('item-name').textContent = selectedItem;
+
+    const details = data[selectedItem];
+
+    const detailHtml = `
+      <p><strong>Price:</strong> ${details.price}</p>
+      <p><strong>Manufacture Date:</strong> ${details.mfg}</p>
+      <p><strong>Expiry Date:</strong> ${details.exp}</p>
+      <p><strong>Length × Width:</strong> ${details.size}</p>
+      <p><strong>Details:</strong> ${details.desc}</p>
+    `;
+
+    document.getElementById('item-details').innerHTML = detailHtml;
+  </script>
+
+</body>
+</html>
