@@ -1,49 +1,98 @@
-// routes/admin.js - Handles admin-specific functionalities
-
 const express = require('express');
 const router = express.Router();
-const { authenticateToken, authorizeAdmin } = require('../utils/authMiddleware'); // Import auth middleware
-const { getProductsCollection } = require('../models/product'); // Import product collection access
-const { getUsersCollection } = require('../models/user'); // Import user collection access
+const User = require('../models/User'); // Import the User model
+const { requireAuth } = require('../middleware/authMiddleware'); // Assuming requireAuth is needed for admin routes
+const admin = require('firebase-admin'); // Needed for server-side Firestore operations if you expand user management
 
-// Admin route to view all catalog entries (requires admin role)
-router.get('/admin/all_products', authenticateToken, authorizeAdmin, async (req, res) => {
-    try {
-        const productsCollection = getProductsCollection();
-        const products = await productsCollection.find({}).toArray(); // Get all products
-        const formattedProducts = products.map(product => ({
-            id: product._id.toString(),
-            userId: product.userId.toString(), // Also return userId for admin view
-            name: product.name,
-            category: product.category,
-            quantity: product.quantity,
-            description: product.description,
-            createdAt: product.createdAt
-        }));
-        res.json(formattedProducts);
-    } catch (error) {
-        console.error("Error fetching all products for admin:", error);
-        res.status(500).json({ success: false, message: 'Failed to retrieve all products.' });
-    }
+// GET /admin/login - render the admin login page
+router.get('/login', (req, res) => {
+  res.render('admin_login', { error: null, message: null });
 });
 
-// Admin route to view all registered users (requires admin role)
-router.get('/admin/users', authenticateToken, authorizeAdmin, async (req, res) => {
-    try {
-        const usersCollection = getUsersCollection();
-        // Exclude password hash from results for security
-        const users = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
-        const formattedUsers = users.map(user => ({
-            id: user._id.toString(),
-            username: user.username,
-            role: user.role,
-            createdAt: user.createdAt
-        }));
-        res.json(formattedUsers);
-    } catch (error) {
-        console.error("Error fetching users for admin:", error);
-        res.status(500).json({ success: false, message: 'Failed to retrieve users.' });
+// GET /admin/users - render the manage users page for admin
+// Apply requireAuth to protect this route
+router.get('/users', requireAuth, async (req, res) => {
+  try {
+    const loggedInUser = res.locals.user; // Get the logged-in user from res.locals
+
+    // Ensure only admins can access this page
+    if (!loggedInUser || loggedInUser.role !== 'admin') {
+      return res.status(403).render('403', { title: 'Access Denied', user: loggedInUser, message: 'You do not have permission to view this page.' });
     }
+
+    const allUsers = await User.find({}); // Fetch all users from MongoDB
+    res.render('admin_user', {
+      user: loggedInUser, // Pass the logged-in admin user
+      allUsers: allUsers, // Pass all users to the template
+      error: null,
+      message: null
+    });
+  } catch (error) {
+    console.error('Error fetching users for admin_user page:', error);
+    res.status(500).render('500', { title: 'Server Error', user: res.locals.user, error: 'Failed to load users.' });
+  }
 });
+
+// POST /admin/users/update-role/:id - Handle updating user roles
+router.post('/users/update-role/:id', requireAuth, async (req, res) => {
+  try {
+    const loggedInUser = res.locals.user;
+    if (!loggedInUser || loggedInUser.role !== 'admin') {
+      return res.status(403).send('Access Denied');
+    }
+
+    const userIdToUpdate = req.params.id;
+    const { newRole } = req.body;
+
+    // Prevent admin from changing their own role (optional, but good practice)
+    if (loggedInUser._id.toString() === userIdToUpdate && newRole !== 'admin') {
+      return res.redirect('/admin/users?error=' + encodeURIComponent('Cannot demote your own account.'));
+    }
+
+    const userToUpdate = await User.findById(userIdToUpdate);
+    if (!userToUpdate) {
+      return res.redirect('/admin/users?error=' + encodeURIComponent('User not found.'));
+    }
+
+    userToUpdate.role = newRole;
+    await userToUpdate.save();
+
+    res.redirect('/admin/users?message=' + encodeURIComponent('User role updated successfully!'));
+
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    res.redirect('/admin/users?error=' + encodeURIComponent('Failed to update user role.'));
+  }
+});
+
+// POST /admin/users/delete/:id - Handle deleting a user
+router.post('/users/delete/:id', requireAuth, async (req, res) => {
+  try {
+    const loggedInUser = res.locals.user;
+    if (!loggedInUser || loggedInUser.role !== 'admin') {
+      return res.status(403).send('Access Denied');
+    }
+
+    const userIdToDelete = req.params.id;
+
+    // Prevent admin from deleting their own account
+    if (loggedInUser._id.toString() === userIdToDelete) {
+      return res.redirect('/admin/users?error=' + encodeURIComponent('Cannot delete your own account.'));
+    }
+
+    const result = await User.deleteOne({ _id: userIdToDelete });
+
+    if (result.deletedCount === 0) {
+      return res.redirect('/admin/users?error=' + encodeURIComponent('User not found or already deleted.'));
+    }
+
+    res.redirect('/admin/users?message=' + encodeURIComponent('User deleted successfully!'));
+
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.redirect('/admin/users?error=' + encodeURIComponent('Failed to delete user.'));
+  }
+});
+
 
 module.exports = router;

@@ -1,180 +1,107 @@
-// server.js
-require('dotenv').config(); // Load environment variables from .env file
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken'); // For authentication after login
+// C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity\app.js
 
-// Import models and utils
-const User = require('./models/User');
-const sendVerificationEmail = require('./utils/emailSender');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
+require('dotenv').config(); // Load environment variables from .env file
+
+// --- Firebase Admin SDK Initialization ---
+const admin = require('firebase-admin');
+
+try {
+    // IMPORTANT: Ensure this path EXACTLY matches your service account key file's location and name.
+    // Example: './config/your-firebase-adminsdk-key.json'
+    const serviceAccount = require('./config/kondareddy-452915-firebase-adminsdk-fbsvc-35bea9d588.json'); // <--- VERIFY THIS PATH CAREFULLY
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        console.log('Firebase Admin SDK initialized successfully.');
+    }
+} catch (error) {
+    console.error('ERROR: Failed to initialize Firebase Admin SDK. Check serviceAccountKey.json path and content:', error.message);
+    // If Firebase Admin is critical for app startup, uncomment the next line to stop the process:
+    // process.exit(1);
+}
+// --- End Firebase Admin SDK Initialization ---
+
 
 const app = express();
-app.use(express.json()); // Middleware to parse JSON request bodies
-app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded bodies for form submissions
+
+// Set up view engine to EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Middleware
+app.use(express.json()); // To parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
+app.use(cookieParser()); // To parse cookies
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Import authentication middleware
+const { checkUser } = require('./middleware/authMiddleware');
+
+// Apply checkUser middleware globally to all routes
+app.use(checkUser);
+
+// Make app-specific ID and Firebase client-side config available to EJS templates
+app.set('appId', process.env.APP_ID || 'mygreenhome-default-app-id');
+app.use((req, res, next) => {
+    res.locals.__app_id = app.get('appId');
+    res.locals.__firebase_config = JSON.stringify({ // THIS LINE
+        apiKey: process.env.FIREBASE_API_KEY,
+        authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.FIREBASE_APP_ID,
+        measurementId: process.env.FIREBASE_MEASUREMENT_ID
+    });
+    next();
+});
+
+// Import route modules
+const authRoutes = require('./routes/auth');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const adminRoutes = require('./routes/admin');
+
+// Mount routes - ORDER IS IMPORTANT
+// Authentication routes should often be mounted early.
+app.use('/auth', authRoutes);       // Handles /auth/login, /auth/logout, /auth/signup etc.
+app.use('/admin', adminRoutes);     // Handles /admin/login, /admin/users etc.
+app.use(dashboardRoutes);           // Handles /dashboard, /user_dashboard, /user/product-generator, /ai-chat etc.
+
+
+// Define a basic home route that redirects to the main authentication page
+app.get('/', (req, res) => {
+    res.redirect('/auth');
+});
 
 // --- MongoDB Connection ---
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB Connected!'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => console.error('MongoDB connection error:', err));
+// --- End MongoDB Connection ---
 
-// --- JWT Secret (for user login sessions) ---
-// In a real app, generate a strong, random secret:
-// require('crypto').randomBytes(64).toString('hex')
-const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_jwt_key';
-
-// --- Routes ---
-
-// @route   POST /api/register
-// @desc    Register new user
-// @access  Public
-app.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
-
-    // Basic validation
-    if (!email || !password) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
-    }
-
-    try {
-        // Check for existing user
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ msg: 'User already exists' });
-        }
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Generate verification token and expiry
-        const verificationToken = crypto.randomBytes(32).toString('hex');
-        const verificationTokenExpires = new Date(Date.now() + 24 * 3600 * 1000); // 24 hours
-
-        // Create new user instance
-        user = new User({
-            email,
-            password: hashedPassword,
-            verificationToken,
-            verificationTokenExpires
-        });
-
-        // Save user to DB
-        await user.save();
-
-        // Send verification email
-        await sendVerificationEmail(user.email, verificationToken);
-
-        res.status(201).json({ msg: 'User registered! Please check your email to verify your account.' });
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error during registration');
-    }
+// --- Error Handling Middleware ---
+// 404 Not Found handler - MUST BE LAST ROUTE/MIDDLEWARE BEFORE GLOBAL ERROR HANDLER
+app.use((req, res, next) => {
+    res.status(404).render('404', { title: 'Page Not Found', user: res.locals.user });
 });
 
-// @route   GET /api/verify-email
-// @desc    Verify user email with token
-// @access  Public
-app.get('/api/verify-email', async (req, res) => {
-    const { token } = req.query;
-
-    if (!token) {
-        return res.status(400).json({ msg: 'Verification token missing.' });
-    }
-
-    try {
-        const user = await User.findOne({ verificationToken: token });
-
-        if (!user) {
-            // Can be invalid token OR already used/cleared token
-            return res.status(400).json({ msg: 'Invalid or already used verification link.' });
-        }
-
-        if (user.verificationTokenExpires < Date.now()) {
-            // Consider option to resend verification email here
-            return res.status(400).json({ msg: 'Verification link has expired. Please re-register or request a new one.' });
-        }
-
-        // Mark user as verified and clear verification fields
-        user.isVerified = true;
-        user.verificationToken = undefined;
-        user.verificationTokenExpires = undefined;
-        await user.save();
-
-        res.status(200).send('Email successfully verified! You can now log in.'); // For hackathon, a simple text response is fine
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error during email verification');
-    }
+// Global error handler - CATCH-ALL FOR UNHANDLED ERRORS
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log the stack trace for debugging
+    res.status(500).render('500', { title: 'Server Error', user: res.locals.user, error: err.message });
 });
+// --- End Error Handling Middleware ---
 
-// @route   POST /api/login
-// @desc    Authenticate user & get token
-// @access  Public
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
-    }
-
-    try {
-        // Check for user
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
-        }
-
-        // Check if email is verified
-        if (!user.isVerified) {
-            return res.status(401).json({ msg: 'Please verify your email to log in.' });
-        }
-
-        // Check password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ msg: 'Invalid Credentials' });
-        }
-
-        // Create and sign JWT token
-        const payload = {
-            user: {
-                id: user.id,
-                email: user.email,
-                isAdmin: user.isAdmin // Add admin status to token if applicable
-            }
-        };
-
-        jwt.sign(
-            payload,
-            JWT_SECRET,
-            { expiresIn: '1h' }, // Token expires in 1 hour
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token, msg: 'Logged in successfully!' }); // Send token back to client
-            }
-        );
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error during login');
-    }
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Access the application at: http://localhost:${PORT}`);
 });
-
-
-// Basic protected route example (requires authentication middleware, not included here for brevity)
-app.get('/api/protected', (req, res) => {
-    // You would add an authentication middleware here to verify the JWT
-    // For MVP, just demonstrate the route exists.
-    res.json({ msg: 'You accessed a protected route!' });
-});
-
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

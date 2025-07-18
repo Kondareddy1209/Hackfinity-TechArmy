@@ -1,11 +1,26 @@
-// models/otp.js - Provides access to the OTP verifications collection
+const mongoose = require('mongoose');
 
-const { getDb } = require('../utils/db');
+const otpSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        lowercase: true,
+        trim: true
+    },
+    otp: {
+        type: String,
+        required: true
+    },
+    type: { // To differentiate between signup OTPs and password reset OTPs
+        type: String,
+        enum: ['signup', 'password_reset'],
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 300 // OTP expires in 5 minutes (300 seconds)
+    }
+});
 
-function getOtpCollection() {
-    const db = getDb();
-    // Ensure the collection name is correctly retrieved from .env
-    return db.collection(process.env.OTP_COLLECTION_NAME || "otp_verifications");
-}
-
-module.exports = { getOtpCollection };
+module.exports = mongoose.model('Otp', otpSchema);

@@ -1,311 +1,399 @@
-// routes/auth.js - Handles user authentication (signup, login, OTP)
-
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const { ObjectId } = require('mongodb'); // Import ObjectId for user ID reference
-const { getUsersCollection } = require('../models/user'); // Import user collection access
-const { getOtpCollection } = require('../models/otp');   // Import OTP collection access (NEW)
+const User = require('../models/User'); // Assuming this path is correct
+const Otp = require('../models/Otp');   // Assuming this path is correct
+const { requireAuth } = require('../middleware/authMiddleware'); // Corrected import
 
-const JWT_SECRET = process.env.JWT_SECRET;
+// Define the JWT secret here, with a fallback for development
+const jwtSecret = process.env.JWT_SECRET || 'your_super_secret_jwt_key_fallback'; // IMPORTANT: Use a strong, unique, random key in .env for production!
 
-// --- Nodemailer Transporter Setup for Gmail ---
-// Ensure GMAIL_USER and GMAIL_PASS are set in your .env file.
-// If you have 2-Factor Authentication enabled, use an App Password.
+// Helper function to generate JWT
+const generateToken = (id) => {
+    // Use the defined jwtSecret here
+    return jwt.sign({ id }, jwtSecret, {
+        expiresIn: '1h',
+    });
+};
+
+// Nodemailer transporter setup (ensure EMAIL_USER and EMAIL_PASS are in .env)
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // true for 465, false for 587
     auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
+
+// @route   GET /
+// @desc    Render the user login page (accessible at /auth)
+// @access  Public
+router.get('/', (req, res) => {
+    res.render('login', { error: null, message: null });
+});
+
+// @route   GET /login
+// @desc    Render the user login page (accessible at /auth/login)
+// @access  Public
+router.get('/login', (req, res) => {
+    res.render('login', { error: null, message: null });
+});
+
+
+// @route   GET /signup
+// @desc    Render the signup page (accessible at /auth/signup)
+// @access  Public
+router.get('/signup', (req, res) => {
+    res.render('signup', { error: null });
+});
+
+// @route   POST /signup
+// @desc    Register a new user and send OTP for verification (posts to /auth/signup)
+// @access  Public
+router.post('/signup', async (req, res) => {
+    const { firstName, lastName, email, mobile, password, gender } = req.body;
+
+    try {
+        let user = await User.findOne({ email });
+
+        if (user) {
+            if (user.isVerified) {
+                return res.render('signup', { error: 'User with this email already exists and is verified. Please log in.', message: null });
+            } else {
+                // If user exists but not verified, update their info and resend OTP
+                user.firstName = firstName;
+                user.lastName = lastName;
+                user.mobile = mobile;
+                user.gender = gender;
+                user.password = password; // Password will be hashed by pre-save hook
+                await user.save();
+            }
+        } else {
+            // Create a new user
+            user = new User({ firstName, lastName, email, mobile, password, gender });
+            await user.save();
+        }
+
+        // Always delete previous signup OTPs for this email before sending a new one
+        await Otp.deleteMany({ email, type: 'signup' });
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const newOtp = new Otp({ email: user.email, otp: otpCode, type: 'signup' });
+        await newOtp.save();
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Verify Your MyGreenHome Account - OTP',
+            html: `<p>Dear ${user.firstName},</p>
+                   <p>Your One-Time Password (OTP) for MyGreenHome account verification is: <strong>${otpCode}</strong></p>
+                   <p>This OTP is valid for 5 minutes. Please do not share it with anyone.</p>
+                   <p>If you did not request this, please ignore this email.</p>`,
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`OTP ${otpCode} sent to ${user.email}`);
+        } catch (emailError) {
+            console.error('Email send failed:', emailError);
+            // Optionally, you might want to log this error but still proceed to OTP page
+            // if email sending is not critical for local development.
+        }
+        res.redirect(`/auth/verify-otp?email=${encodeURIComponent(user.email)}`);
+
+    } catch (error) {
+        console.error('Error during signup or sending OTP:', error);
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            const value = error.keyValue[field];
+            return res.render('signup', { error: `${field} "${value}" is already registered.`, message: null });
+        }
+        res.render('signup', { error: 'Registration failed. Please try again.', message: null });
     }
 });
 
-// Helper function to generate a 6-digit OTP
-function generateOtp() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
+// @route   GET /verify-otp
+// @desc    Render OTP verification page (accessible at /auth/verify-otp)
+// @access  Public
+router.get('/verify-otp', (req, res) => {
+    const email = req.query.email || '';
+    // This page is now exclusively for signup OTPs
+    res.render('verify_otp', { username: email, error: null, message: null, isPasswordReset: false });
+});
 
-// Helper function to send OTP email
-async function sendOtpEmail(toEmail, otp) {
-    const mailOptions = {
-        from: process.env.GMAIL_USER,
-        to: toEmail,
-        subject: 'Your Digital Catalog Agent OTP',
-        html: `
-            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-                <h2 style="color: #4CAF50;">Hello!</h2>
-                <p>Thank you for signing up for the Digital Catalog Agent. To complete your registration, please use the following One-Time Password (OTP):</p>
-                <h3 style="color: #007bff; font-size: 24px; text-align: center; background-color: #f0f0f0; padding: 15px; border-radius: 8px; letter-spacing: 5px;">${otp}</h3>
-                <p>This OTP is valid for 5 minutes. Please do not share it with anyone.</p>
-                <p>If you did not request this, please ignore this email.</p>
-                <p>Best regards,<br>The Digital Catalog Agent Team</p>
-            </div>
-        `
-    };
+// @route   POST /verify-otp
+// @desc    Handle OTP verification for signup (posts to /auth/verify-otp)
+// @access  Public
+router.post('/verify-otp', async (req, res) => {
+    const { username, otp } = req.body; // Removed isPasswordReset
+    const email = username;
 
     try {
-        await transporter.sendMail(mailOptions);
-        console.log(`OTP sent to ${toEmail}: ${otp}`);
-        return true;
-    } catch (error) {
-        console.error(`Error sending OTP email to ${toEmail}:`, error);
-        return false;
-    }
-}
+        // Only verify signup OTPs
+        const storedOtp = await Otp.findOne({ email, otp, type: 'signup' });
 
-
-// Signup Route
-router.post('/signup', async (req, res) => {
-    const { username, email, password, gender, mobile, role } = req.body;
-
-    if (!username || !email || !password || !gender || !mobile || !role) {
-        return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
-    }
-    if (role !== 'user' && role !== 'admin') {
-        return res.status(400).json({ success: false, message: 'Invalid role. Must be "user" or "admin".' });
-    }
-    if (!/^[0-9]{10}$/.test(mobile)) {
-        return res.status(400).json({ success: false, message: 'Invalid mobile number. Must be 10 digits.' });
-    }
-
-    try {
-        const usersCollection = getUsersCollection();
-        const otpCollection = getOtpCollection(); // Get OTP collection
-
-        const existingUserByEmail = await usersCollection.findOne({ email });
-        if (existingUserByEmail) {
-            return res.status(409).json({ success: false, message: 'Email already exists.' });
-        }
-        const existingUserByUsername = await usersCollection.findOne({ username });
-        if (existingUserByUsername) {
-            return res.status(409).json({ success: false, message: 'Username already exists.' });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const otp = generateOtp();
-        const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // OTP valid for 5 minutes
-
-        const newUser = {
-            username,
-            email,
-            password: hashedPassword,
-            gender,
-            mobile,
-            role,
-            isVerified: false, // User is not verified initially
-            createdAt: new Date()
-        };
-
-        const userInsertResult = await usersCollection.insertOne(newUser);
-        const userId = userInsertResult.insertedId; // Get the new user's ID
-
-        // Store OTP details in the separate otp_verifications collection
-        const otpRecord = {
-            userId: userId, // Reference to the user
-            email: email,
-            otp: otp,
-            otpExpiry: otpExpiry,
-            createdAt: new Date()
-        };
-        await otpCollection.insertOne(otpRecord);
-
-        // Send OTP email
-        const emailSent = await sendOtpEmail(email, otp);
-        if (!emailSent) {
-            console.warn(`Failed to send OTP email to ${email} during signup. User registered but not verified.`);
-            return res.status(202).json({ // 202 Accepted, but not fully processed (email failed)
-                success: true,
-                message: 'User registered, but failed to send OTP email. Please try resending OTP from the verification page.',
-                email: email,
-                redirectTo: '/verify-otp'
+        if (!storedOtp) {
+            return res.render('verify_otp', {
+                username: email,
+                error: 'Invalid or expired OTP. Please try again or resend.',
+                message: null,
+                isPasswordReset: false // Always false now
             });
         }
 
-        res.status(201).json({
-            success: true,
-            message: 'User registered successfully! Please check your email for OTP verification.',
-            email: email,
-            redirectTo: '/verify-otp'
-        });
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.render('verify_otp', {
+                username: email,
+                error: 'User not found for this email.',
+                message: null,
+                isPasswordReset: false
+            });
+        }
+
+        await Otp.deleteOne({ _id: storedOtp._id }); // Delete the used OTP
+
+        user.isVerified = true; // Mark user as verified
+        await user.save();
+        res.render('login', { message: 'Email verified successfully! You can now log in.', error: null });
 
     } catch (error) {
-        console.error("Error during signup:", error);
-        res.status(500).json({ success: false, message: 'Server error during registration.' });
+        console.error('Error during OTP verification:', error);
+        res.render('verify_otp', {
+            username: email,
+            error: 'Verification failed. Please try again.',
+            message: null,
+            isPasswordReset: false
+        });
     }
 });
 
-// Login Route
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ success: false, message: 'Please provide email and password.' });
-    }
+// @route   POST /resend-otp
+// @desc    Resend OTP for signup verification (posts to /auth/resend-otp)
+// @access  Public
+router.post('/resend-otp', async (req, res) => {
+    const { email } = req.body; // Removed type, as it's always 'signup' now
 
     try {
-        const usersCollection = getUsersCollection();
-        const otpCollection = getOtpCollection(); // Get OTP collection
-
-        const user = await usersCollection.findOne({ email });
-
+        const user = await User.findOne({ email });
         if (!user) {
-            return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+            return res.status(400).json({ success: false, message: 'User not found.' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordValid) {
-            return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+        if (user.isVerified) {
+            return res.status(400).json({ success: false, message: 'Account already verified. Please login.' });
         }
 
-        // Check if the user's email is verified
-        if (!user.isVerified) {
-            // If not verified, generate and send a new OTP, and update the OTP collection
-            const otp = generateOtp();
-            const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
+        await Otp.deleteMany({ email, type: 'signup' }); // Only delete signup OTPs
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const newOtp = new Otp({ email: user.email, otp: otpCode, type: 'signup' }); // Only create signup OTPs
+        await newOtp.save();
 
-            // Update or insert OTP record for the user
-            await otpCollection.updateOne(
-                { userId: user._id }, // Find by userId
-                { $set: { email: user.email, otp: otp, otpExpiry: otpExpiry, createdAt: new Date() } },
-                { upsert: true } // Create if not exists, update if exists
-            );
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Resend OTP for MyGreenHome Account Verification', // Subject specific to signup
+            html: `<p>Dear ${user.firstName || 'User'},</p>
+                   <p>Your new One-Time Password (OTP) for account verification is: <strong>${otpCode}</strong></p>
+                   <p>This OTP is valid for 5 minutes. Please do not share it with anyone.</p>
+                   <p>If you did not request this, please ignore this email.</p>`,
+        };
 
-            const emailSent = await sendOtpEmail(email, otp);
-            if (!emailSent) {
-                console.warn(`Failed to resend OTP email to ${email} for unverified user.`);
-                return res.status(403).json({
-                    success: false,
-                    message: 'Your email is not verified. Failed to resend OTP. Please try again or contact support.',
-                    redirectTo: '/verify-otp',
-                    email: email
-                });
-            }
-
-            return res.status(403).json({ success: false, message: 'Please verify your email with the OTP sent to your inbox.', redirectTo: '/verify-otp', email: email });
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`OTP ${otpCode} sent to ${user.email}`);
+        } catch (emailError) {
+            console.error('Email send failed:', emailError);
+            // Optionally, you might want to log this error but still proceed to OTP page
+            // if email sending is not critical for local development.
         }
-
-        const token = jwt.sign(
-            { id: user._id.toString(), email: user.email, username: user.username, role: user.role },
-            JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        res.json({ success: true, message: 'Login successful!', token, role: user.role });
+        res.redirect(`/auth/verify-otp?email=${encodeURIComponent(user.email)}`);
 
     } catch (error) {
-        console.error("Error during login:", error);
-        res.status(500).json({ success: false, message: 'Server error during login.' });
+        console.error('Error resending OTP:', error);
+        res.status(500).json({ success: false, message: 'Failed to resend OTP. Please try again later.' });
     }
 });
 
-// Resend OTP Route
-router.post('/send-otp', async (req, res) => {
+// @route   GET /admin-login
+// @desc    Render the admin login page (accessible at /auth/admin-login)
+// @access  Public
+router.get('/admin-login', (req, res) => {
+    res.render('admin_login', { error: null, message: null });
+});
+
+// @route   POST /admin-login
+// @desc    Authenticate admin user & get token (posts to /auth/admin-login)
+// @access  Public
+router.post('/admin-login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email: username });
+
+        if (!user) {
+            return res.render('admin_login', { error: 'Invalid credentials', message: null });
+        }
+
+        if (user.role !== 'admin') {
+            return res.render('admin_login', { error: 'Access denied: Not an administrator.', message: null });
+        }
+
+        if (!user.isVerified) {
+            return res.render('admin_login', { error: 'Admin account not verified. Please contact support.', message: null });
+        }
+
+        if (user && (await user.matchPassword(password))) {
+            const token = generateToken(user._id);
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 3600000 // 1 hour
+            });
+            res.redirect('/dashboard'); // Admin users still go to /dashboard (which handles admin_dashboard.ejs)
+        } else {
+            res.render('admin_login', { error: 'Invalid credentials', message: null });
+        }
+    } catch (error) {
+        console.error('Admin login error:', error);
+        res.render('admin_login', { error: 'Server error during admin login, please try again.', message: null });
+    }
+});
+
+// @route   POST /login
+// @desc    Authenticate regular user & get token (posts to /auth/login)
+// @access  Public
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email: username });
+
+        if (!user) {
+            return res.render('login', { error: 'Invalid credentials', message: null });
+        }
+
+        // MODIFIED: If user is not verified, prevent login and inform them.
+        // No redirection to OTP verification for existing unverified users.
+        if (!user.isVerified) {
+            return res.render('login', { error: 'Please verify your email first. If you haven\'t received an OTP, please sign up again.', message: null });
+        }
+
+        // IMPORTANT CHANGE: Redirect based on user role after successful login
+        if (user && (await user.matchPassword(password))) {
+            const token = generateToken(user._id);
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 3600000 // 1 hour
+            });
+
+            // Explicitly ensure redirection based on role
+            if (user.role === 'admin') {
+                return res.redirect('/dashboard'); // Admins go to /dashboard (which renders admin_dashboard)
+            } else {
+                return res.redirect('/user_dashboard'); // Normal users go directly to /user_dashboard
+            }
+        } else {
+            res.render('login', { error: 'Invalid credentials', message: null });
+        }
+    } catch (error) {
+        console.error(error);
+        res.render('login', { error: 'Server error, please try again.', message: null });
+    }
+});
+
+// @route   GET /logout
+// @desc    Logout user by clearing cookie (accessible at /auth/logout)
+// @access  Public (though usually accessed by logged-in users)
+router.get('/logout', requireAuth, (req, res) => {
+    // Clear the authentication token cookie
+    res.clearCookie('token');
+    // Redirect to the main authentication/login page
+    res.redirect('/auth');
+});
+
+// @route   GET /forgot-password
+// @desc    Render the forgot password page (accessible at /auth/forgot-password)
+// @access  Public
+router.get('/forgot-password', (req, res) => {
+    res.render('forgot_password', { error: null, message: null });
+});
+
+// @route   POST /request-password-reset
+// @desc    Handle request to send password reset (NO OTP - direct reset or link)
+// @access  Public
+router.post('/request-password-reset', async (req, res) => {
     const { email } = req.body;
 
-    if (!email) {
-        return res.status(400).json({ success: false, message: 'Email is required to resend OTP.' });
-    }
-
     try {
-        const usersCollection = getUsersCollection();
-        const otpCollection = getOtpCollection(); // Get OTP collection
-
-        const user = await usersCollection.findOne({ email });
-
+        const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User with this email not found.' });
+            // For security, don't reveal if email exists. Send a generic message.
+            return res.render('forgot_password', { message: 'If an account with that email exists, you will receive a password reset link.', error: null });
         }
 
-        // Check if user is already verified
-        if (user.isVerified) {
-            return res.status(400).json({ success: false, message: 'Email is already verified. Please log in.' });
-        }
+        // --- NEW PASSWORD RESET LOGIC (NO OTP) ---
+        // Instead of OTP, a common and more secure approach is to send a password reset LINK.
+        // For simplicity in removing OTP, we'll assume a direct reset or admin intervention.
+        // If you need a secure password reset link flow, that's a separate implementation.
+        // For now, we'll just acknowledge the request without sending an OTP.
+        // A real implementation would generate a unique token, save it to the user record with an expiry,
+        // and email a link like /auth/reset-password?token=XYZ
 
-        const otp = generateOtp();
-        const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiry
-
-        // Update or insert OTP record for the user
-        await otpCollection.updateOne(
-            { userId: user._id },
-            { $set: { email: user.email, otp: otp, otpExpiry: otpExpiry, createdAt: new Date() } },
-            { upsert: true }
-        );
-
-        const emailSent = await sendOtpEmail(email, otp);
-        if (!emailSent) {
-            console.warn(`Failed to send OTP email to ${email} during resend.`);
-            return res.status(500).json({ success: false, message: 'Failed to send new OTP. Please try again.' });
-        }
-
-        res.json({ success: true, message: 'New OTP sent successfully to your email!' });
+        // For now, just a message. User will need to follow up or admin can reset.
+        res.render('forgot_password', { message: 'Password reset request received. Please check your email for instructions.', error: null });
 
     } catch (error) {
-        console.error("Error resending OTP:", error);
-        res.status(500).json({ success: false, message: 'Server error during OTP resend.' });
+        console.error('Error during password reset request:', error);
+        res.render('forgot_password', { error: 'Failed to process reset request. Try again later.', message: null });
     }
 });
 
-// Verify OTP Route
-router.post('/verify-otp', async (req, res) => {
-    const { email, otp } = req.body;
+// @route   GET /reset-password
+// @desc    Render the reset password form (now without OTP pre-verification)
+// @access  Public
+router.get('/reset-password', async (req, res) => {
+    // This route would now typically expect a token from a password reset email link
+    // For simplicity, we are removing OTP, so it will just render the form.
+    // A real implementation would validate a 'token' query parameter here.
+    const email = req.query.email || ''; // Still get email if passed, but it's less secure without a token
+    res.render('reset_password', { email, error: null, message: null });
+});
 
-    if (!email || !otp) {
-        return res.status(400).json({ success: false, message: 'Email and OTP are required for verification.' });
+// @route   POST /reset-password
+// @desc    Handle new password submission (posts to /auth/reset-password)
+// @access  Public
+router.post('/reset-password', async (req, res) => {
+    const { email, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+        return res.render('reset_password', { email, error: 'Passwords do not match.', message: null });
+    }
+    if (newPassword.length < 6) {
+        return res.render('reset_password', { email, error: 'Password must be at least 6 characters.', message: null });
     }
 
     try {
-        const usersCollection = getUsersCollection();
-        const otpCollection = getOtpCollection(); // Get OTP collection
-
-        const user = await usersCollection.findOne({ email });
-
+        const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found.' });
+            // For security, don't confirm user existence.
+            return res.render('reset_password', { email, error: 'Invalid request or user not found.', message: null });
         }
 
-        if (user.isVerified) {
-            return res.status(400).json({ success: false, message: 'Email already verified.' });
-        }
+        user.password = newPassword; // Will be hashed by pre-save hook
+        user.isVerified = true; // Ensure account is verified after password reset
+        await user.save();
 
-        // Find the OTP record for this user
-        const otpRecord = await otpCollection.findOne({ userId: user._id, email: email });
-
-        if (!otpRecord) {
-            return res.status(400).json({ success: false, message: 'No OTP found for this email. Please request a new one.' });
-        }
-
-        // Check if OTP matches and is not expired
-        if (otpRecord.otp === otp && otpRecord.otpExpiry > new Date()) {
-            // Mark user as verified in the users collection
-            await usersCollection.updateOne(
-                { _id: user._id },
-                { $set: { isVerified: true } }
-            );
-            // Delete the OTP record from the otp_verifications collection
-            await otpCollection.deleteOne({ _id: otpRecord._id });
-
-            // Generate a JWT token for the now verified user
-            const token = jwt.sign(
-                { id: user._id.toString(), email: user.email, username: user.username, role: user.role },
-                JWT_SECRET,
-                { expiresIn: '1h' }
-            );
-
-            // Send back success, token, and role for direct dashboard redirection
-            res.json({ success: true, message: 'Email verified successfully! Redirecting to dashboard.', token, role: user.role });
-        } else if (otpRecord.otpExpiry <= new Date()) {
-            res.status(400).json({ success: false, message: 'OTP expired. Please request a new one.' });
-        } else {
-            res.status(400).json({ success: false, message: 'Invalid OTP.' });
-        }
+        res.render('login', { message: 'Password has been reset successfully! You can now log in.', error: null });
 
     } catch (error) {
-        console.error("Error verifying OTP:", error);
-        res.status(500).json({ success: false, message: 'Server error during OTP verification.' });
+        console.error('Error resetting password:', error);
+        res.render('reset_password', { email, error: 'Failed to reset password. Try again.', message: null });
     }
 });
+
 
 module.exports = router;

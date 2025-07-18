@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard • Digital Catalog Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom styles for Streamlined User Dashboard */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .feature-button {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .feature-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .bottom-nav-button {
+            transition: background-color 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Include the navbar partial -->
+    <%- include('partials/navbar') %>
+
+    <!-- Main Content Area -->
+    <div class="flex-grow p-6 max-w-6xl mx-auto w-full">
+        <% if (typeof user !== 'undefined' && user) { %>
+            <h2 class="text-3xl font-bold text-center text-green-700 mb-8 mt-4">Welcome, <%= user.firstName || user.email %>!</h2>
+            <p class="text-center text-lg text-gray-600 mb-10">Manage your digital product catalogs with ease.</p>
+        <% } else { %>
+            <h2 class="text-3xl font-bold text-center text-green-700 mb-8 mt-4">Welcome to Digital Catalog Agent!</h2>
+            <p class="text-center text-lg text-gray-600 mb-10">Log in or sign up to create and manage your product listings.</p>
+        <% } %>
+
+        <!-- Core Features Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+
+            <a href="/user/product-generator" class="feature-button bg-white shadow-lg rounded-xl p-6 text-center text-lg font-semibold hover:bg-green-50 flex flex-col items-center space-y-3">
+                <i data-lucide="sparkles" class="w-10 h-10 text-indigo-500"></i>
+                <span>AI Product Desc. Generator</span>
+                <p class="text-sm text-gray-500 mt-2">Generate descriptions using text or voice.</p>
+            </a>
+
+            <a href="/user/my-catalog" class="feature-button bg-white shadow-lg rounded-xl p-6 text-center text-lg font-semibold hover:bg-green-50 flex flex-col items-center space-y-3">
+                <i data-lucide="clipboard-list" class="w-10 h-10 text-teal-500"></i>
+                <span>My Private Catalog</span>
+                <p class="text-sm text-gray-500 mt-2">View and manage your personal product descriptions.</p>
+            </a>
+
+            <a href="/user/all-products" class="feature-button bg-white shadow-lg rounded-xl p-6 text-center text-lg font-semibold hover:bg-green-50 flex flex-col items-center space-y-3">
+                <i data-lucide="boxes" class="w-10 h-10 text-orange-500"></i>
+                <span>Browse All Products</span>
+                <p class="text-sm text-gray-500 mt-2">See all products listed by users and admins.</p>
+            </a>
+
+            <a href="/ai-chat" class="feature-button bg-white shadow-lg rounded-xl p-6 text-center text-lg font-semibold hover:bg-green-50 flex flex-col items-center space-y-3">
+                <i data-lucide="bot" class="w-10 h-10 text-gray-700"></i>
+                <span>AI Assistant Chat</span>
+                <p class="text-sm text-gray-500 mt-2">Get help and recommendations from AI.</p>
+            </a>
+
+            <a href="/dashboard/profile" class="feature-button bg-white shadow-lg rounded-xl p-6 text-center text-lg font-semibold hover:bg-green-50 flex flex-col items-center space-y-3">
+                <i data-lucide="user-circle" class="w-10 h-10 text-purple-500"></i>
+                <span>Edit Profile</span>
+                <p class="text-sm text-gray-500 mt-2">Update your personal information.</p>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Bottom Navigation (keeping it simple as per new focus) -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg flex justify-around text-center p-2 sm:p-4">
+        <span class="w-1/2 py-2 sm:py-3 text-green-700 font-medium rounded-lg flex items-center justify-center gap-2">
+            <i data-lucide="store" class="w-6 h-6"></i> Your Digital Store
+        </span>
+    </div>
+
+    <!-- Include the footer partial -->
+    <%- include('partials/footer') %>
+
+    <script>
+        // Initialize Lucide icons after the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

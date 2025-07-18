@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant Chat • MyGreenHome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chat-container {
+            max-width: 900px;
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: calc(100vh - 120px); /* Adjusted for typical navbar/footer height */
+            min-height: 500px;
+        }
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 20px auto;
+                height: calc(100vh - 80px); /* More aggressive height for mobile */
+                border-radius: 0; /* Full width on mobile */
+                box-shadow: none;
+            }
+        }
+        .chat-history {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .chat-message {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+        .chat-message.ai {
+            justify-content: flex-start;
+        }
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .message-bubble.user {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        .message-bubble.ai {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+        .message-bubble img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        .chat-input-area input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+        .chat-input-area button {
+            background-color: #22c55e; /* green-500 */
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .chat-input-area button:hover:not(:disabled) {
+            background-color: #16a34a; /* green-600 */
+            transform: translateY(-2px);
+        }
+        .chat-input-area button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .mic-button.recording {
+            background-color: #ef4444; /* red-500 */
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Debugging indicator */
+        #js-load-indicator {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            z-index: 9999;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('partials/navbar') %>
+
+    <div class="flex-grow p-6 w-full">
+        <div class="chat-container">
+            <h2 class="text-2xl font-bold text-center text-blue-800 p-4 border-b">AI Assistant Chat</h2>
+            <div class="chat-history" id="chatHistory">
+                <div class="chat-message ai">
+                    <div class="message-bubble ai">Hello! How can I assist you today?</div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                <button type="button" id="uploadImageBtn" title="Upload Image">
+                    <i data-lucide="image" class="w-5 h-5"></i>
+                </button>
+                <button type="button" id="micBtn" title="Record Audio">
+                    <i data-lucide="mic" class="w-5 h-5"></i>
+                </button>
+                <button type="submit" id="sendBtn" disabled>
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <div id="js-load-indicator">JS not loaded</div>
+
+    <script type="module">
+        // Set indicator for JS load status
+        const jsIndicator = document.getElementById('js-load-indicator');
+        if (jsIndicator) {
+            jsIndicator.style.display = 'block';
+            jsIndicator.style.backgroundColor = 'orange';
+            jsIndicator.textContent = 'JS loading...';
+        }
+
+        // REMOVE FIREBASE IMPORTS AND INITIALIZATION FOR SIMPLIFIED DEBUGGING
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        console.log("[ai_chat.ejs] Script started.");
+        if (jsIndicator) {
+            jsIndicator.style.backgroundColor = 'blue';
+            jsIndicator.textContent = 'JS parsing...';
+        }
+
+        // Chat elements must be referenced BEFORE they are potentially used in the catch block
+        const chatHistory = document.getElementById('chatHistory');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const micBtn = document.getElementById('micBtn');
+        const uploadImageBtn = document.getElementById('uploadImageBtn');
+        const imageUpload = document.getElementById('imageUpload');
+
+        console.log("[ai_chat.ejs] DOM elements referenced.");
+        if (!chatHistory || !chatInput || !sendBtn || !micBtn || !uploadImageBtn || !imageUpload) {
+            console.error("[ai_chat.ejs] ERROR: One or more chat DOM elements not found! Check HTML IDs.");
+            if (jsIndicator) {
+                jsIndicator.style.backgroundColor = 'darkred';
+                jsIndicator.textContent = 'JS DOM Error!';
+            }
+        } else {
+            // Initial state for buttons
+            // Send button will be enabled by typing in input field
+            // Mic and Image buttons will be enabled if their features are supported
+            if (micBtn) micBtn.disabled = !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); // Enable mic if supported
+            if (uploadImageBtn) uploadImageBtn.disabled = false; // Always enable image upload for this test
+            
+            if (jsIndicator) {
+                jsIndicator.style.backgroundColor = 'green';
+                jsIndicator.textContent = 'JS Ready.'; // Confirmed DOM elements found
+            }
+        }
+
+        // Global lucide.createIcons for initial render (outside module if possible, or here)
+        lucide.createIcons(); 
+        console.log("[ai_chat.ejs] Lucide icons initialized.");
+
+
+        // REMOVED FIREBASE CONFIG AND AUTHENTICATION FOR DEBUGGING PURPOSES
+        // const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        // const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Simplified user state for debugging AI features
+        let userId = "debug-user-id"; // Placeholder user ID for testing
+        let isAuthReady = true;       // Assume authenticated for this test
+
+        console.log("[ai_chat.ejs] User state set for debugging: userId=" + userId + ", isAuthReady=" + isAuthReady);
+
+
+        // Function to append messages to chat history
+        function appendMessage(sender, content, type = 'text', mediaUrl = null) {
+            console.log(`[ai_chat.ejs] Appending message: Sender=${sender}, Type=${type}, Content=${content.substring(0, Math.min(content.length, 50))}...`);
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', sender);
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.classList.add('message-bubble', sender);
+            
+            if (type === 'processing') {
+                 bubbleDiv.innerHTML = `<i data-lucide="loader-circle" class="spinner w-5 h-5 inline-block align-middle mr-2"></i> ${content}`;
+            } else {
+                bubbleDiv.textContent = content;
+            }
+
+            if (type === 'image' && mediaUrl) {
+                const img = document.createElement('img');
+                img.src = mediaUrl;
+                img.alt = 'Uploaded Image';
+                bubbleDiv.prepend(img); 
+                console.log("[ai_chat.ejs] Image appended to message bubble.");
+            }
+            // Add other media types here if needed (e.g., audio player)
+
+            if (chatHistory) { // Defensive check
+                messageDiv.appendChild(bubbleDiv); // Append bubble to messageDiv
+                chatHistory.appendChild(messageDiv); // Append messageDiv to chatHistory
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            } else {
+                console.error("[ai_chat.ejs] chatHistory element not found when trying to append message.");
+            }
+            lucide.createIcons(); 
+            return messageDiv;
+        }
+
+        // Send message function (for text)
+        async function sendTextMessage(text) {
+            console.log("[ai_chat.ejs] sendTextMessage called.");
+            if (!text.trim()) {
+                console.warn("[ai_chat.ejs] Text message is empty.");
+                return;
+            }
+            // userId check is simplified for debugging
+            if (!isAuthReady || !userId) { 
+                alert("Debug mode: User state not ready. Please check console.");
+                console.warn("[ai_chat.ejs] Debug mode: User state not ready for sending message (userId is null/isAuthReady is false).");
+                return;
+            }
+
+            appendMessage('user', text);
+            chatInput.value = '';
+            sendBtn.disabled = true;
+
+            const processingMessage = appendMessage('ai', 'Thinking...', 'processing');
+
+            try {
+                console.log("[ai_chat.ejs] Sending text message to /api/grok-chat...");
+                const response = await fetch('/api/grok-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, message: text })
+                });
+                const data = await response.json();
+                console.log("[ai_chat.ejs] Response from /api/grok-chat:", data);
+
+                if (processingMessage && processingMessage.parentNode) {
+                    processingMessage.parentNode.removeChild(processingMessage); 
+                } else {
+                    console.warn("[ai_chat.ejs] Could not remove processing message, parent not found.");
+                }
+
+                if (response.ok) {
+                    appendMessage('ai', data.reply);
+                } else {
+                    appendMessage('ai', `Error: ${data.error || 'Failed to get response'}`, 'error');
+                }
+            } catch (error) {
+                console.error('[ai_chat.ejs] Error sending message to /api/grok-chat:', error);
+                if (processingMessage && processingMessage.parentNode) {
+                    processingMessage.parentNode.removeChild(processingMessage);
+                }
+                appendMessage('ai', 'Network Error: Could not connect to the AI service.', 'error');
+            } finally {
+                sendBtn.disabled = chatInput.value.trim().length === 0;
+                chatInput.focus();
+            }
+        }
+
+        // Event listeners for text input
+        if (chatInput && sendBtn) {
+            chatInput.addEventListener('keypress', (e) => {
+                console.log("[ai_chat.ejs] chatInput keypress event. Key:", e.key);
+                if (e.key === 'Enter' && !sendBtn.disabled) {
+                    sendTextMessage(chatInput.value);
+                }
+            });
+            chatInput.addEventListener('input', () => {
+                console.log("[ai_chat.ejs] chatInput input event. Value:", chatInput.value.trim());
+                sendBtn.disabled = chatInput.value.trim().length === 0;
+            });
+            sendBtn.addEventListener('click', () => {
+                console.log("[ai_chat.ejs] sendBtn click event.");
+                sendTextMessage(chatInput.value);
+            });
+        } else {
+            console.error("[ai_chat.ejs] ERROR: chatInput or sendBtn not found for event listeners.");
+        }
+
+
+        // --- Voice Input (MediaRecorder) ---
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // Check if MediaDevices API is supported
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            console.log("[ai_chat.ejs] MediaDevices API supported. Mic button should be active.");
+            if (micBtn) {
+                micBtn.addEventListener('click', async () => {
+                    console.log("[ai_chat.ejs] micBtn click event.");
+                    // userId check is simplified for debugging
+                    if (!isAuthReady || !userId) {
+                        alert("Debug mode: User state not ready. Please check console.");
+                        console.warn("[ai_chat.ejs] Debug mode: User state not ready for voice input (userId is null/isAuthReady is false).");
+                        return;
+                    }
+
+                    if (isRecording) {
+                        console.log("[ai_chat.ejs] Stopping audio recording.");
+                        mediaRecorder.stop();
+                        micBtn.classList.remove('recording');
+                        micBtn.innerHTML = '<i data-lucide="mic" class="w-5 h-5"></i>'; // Change icon back to mic
+                        lucide.createIcons();
+                        isRecording = false;
+                    } else {
+                        console.log("[ai_chat.ejs] Starting audio recording.");
+                        try {
+                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            mediaRecorder = new MediaRecorder(stream);
+                            audioChunks = [];
+
+                            mediaRecorder.ondataavailable = (event) => {
+                                console.log("[ai_chat.ejs] MediaRecorder: dataavailable event. Data size:", event.data.size);
+                                audioChunks.push(event.data);
+                            };
+
+                            mediaRecorder.onstop = async () => {
+                                console.log("[ai_chat.ejs] MediaRecorder: stop event. Processing audio.");
+                                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                                const audioUrl = URL.createObjectURL(audioBlob);
+                                appendMessage('user', 'Audio message:', 'audio', audioUrl); 
+                                
+                                const processingMessage = appendMessage('ai', 'Transcribing audio...', 'processing');
+
+                                try {
+                                    console.log("[ai_chat.ejs] Sending audio to /api/grok-chat-audio...");
+                                    const formData = new FormData();
+                                    formData.append('audio', audioBlob, 'audio.webm');
+                                    formData.append('userId', userId);
+
+                                    const response = await fetch('/api/grok-chat-audio', {
+                                        method: 'POST',
+                                        body: formData
+                                    });
+                                    const data = await response.json();
+                                    console.log("[ai_chat.ejs] Response from /api/grok-chat-audio:", data);
+
+                                    if (processingMessage && processingMessage.parentNode) {
+                                        processingMessage.parentNode.removeChild(processingMessage);
+                                    }
+
+                                    if (response.ok) {
+                                        appendMessage('ai', data.reply);
+                                    } else {
+                                        appendMessage('ai', `Error: ${data.error || 'Failed to transcribe/get response'}`, 'error');
+                                    }
+                                } catch (error) {
+                                    console.error('[ai_chat.ejs] Error sending audio to /api/grok-chat-audio:', error);
+                                    if (processingMessage && processingMessage.parentNode) {
+                                        processingMessage.parentNode.removeChild(processingMessage);
+                                    }
+                                    appendMessage('ai', 'Network Error: Could not send audio for transcription.', 'error');
+                                } finally {
+                                    stream.getTracks().forEach(track => track.stop());
+                                }
+                            };
+
+                            mediaRecorder.start();
+                            micBtn.classList.add('recording');
+                            micBtn.innerHTML = '<i data-lucide="square" class="w-5 h-5"></i>'; 
+                            lucide.createIcons();
+                            isRecording = true;
+                        } catch (err) {
+                            console.error('[ai_chat.ejs] Error accessing microphone:', err);
+                            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                                alert('Microphone access denied. Please allow microphone access in your browser settings to use voice input.');
+                            } else {
+                                alert('Could not access microphone. Please ensure your device has a microphone and try again.');
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("[ai_chat.ejs] ERROR: micBtn element not found.");
+            }
+        } else {
+            console.warn("[ai_chat.ejs] MediaDevices API NOT supported by browser. Mic button disabled.");
+            if (micBtn) {
+                micBtn.disabled = true;
+                micBtn.title = 'Microphone not supported in this browser.';
+            }
+        }
+
+        // --- Image Input ---
+        if (uploadImageBtn && imageUpload) {
+            uploadImageBtn.addEventListener('click', () => {
+                console.log("[ai_chat.ejs] uploadImageBtn click event.");
+                // userId check is simplified for debugging
+                if (!isAuthReady || !userId) {
+                    alert("Debug mode: User state not ready. Please check console.");
+                    console.warn("[ai_chat.ejs] Debug mode: User state not ready for image upload (userId is null/isAuthReady is false).");
+                    return;
+                }
+                imageUpload.click(); // Trigger hidden file input
+                console.log("[ai_chat.ejs] Hidden imageUpload input clicked.");
+            });
+
+            imageUpload.addEventListener('change', async (event) => {
+                console.log("[ai_chat.ejs] imageUpload change event detected.");
+                const file = event.target.files[0];
+                if (!file) {
+                    console.log("[ai_chat.ejs] No file selected in image upload.");
+                    return;
+                }
+
+                console.log(`[ai_chat.ejs] Image file selected: ${file.name}, Type: ${file.type}, Size: ${file.size} bytes.`);
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    console.log("[ai_chat.ejs] FileReader onload complete. Base64 generated.");
+                    const base64Image = e.target.result;
+                    appendMessage('user', 'Image uploaded:', 'image', base64Image); 
+
+                    const processingMessage = appendMessage('ai', 'Analyzing image...', 'processing');
+
+                    try {
+                        console.log("[ai_chat.ejs] Sending image to /api/grok-chat-photo...");
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        formData.append('userId', userId);
+                        
+                        if (chatInput.value.trim()) {
+                            formData.append('query', chatInput.value.trim());
+                            console.log("[ai_chat.ejs] Also sending text query with image.");
+                            chatInput.value = '';
+                        }
+
+                        const response = await fetch('/api/grok-chat-photo', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                        console.log("[ai_chat.ejs] Response from /api/grok-chat-photo:", data);
+
+                        if (processingMessage && processingMessage.parentNode) {
+                            processingMessage.parentNode.removeChild(processingMessage);
+                        }
+
+                        if (response.ok) {
+                            appendMessage('ai', data.reply);
+                        } else {
+                            appendMessage('ai', `Error: ${data.error || 'Failed to analyze image/get response'}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error('[ai_chat.ejs] Error sending image to /api/grok-chat-photo:', error);
+                        if (processingMessage && processingMessage.parentNode) {
+                            processingMessage.parentNode.removeChild(processingMessage);
+                        }
+                        appendMessage('ai', 'Network Error: Could not send image for analysis.', 'error');
+                    } finally {
+                        imageUpload.value = '';
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        } else {
+            console.error("[ai_chat.ejs] ERROR: uploadImageBtn or imageUpload not found for event listeners.");
+        }
+        
+        console.log("[ai_chat.ejs] Script finished parsing and event listeners set up.");
+        if (jsIndicator) {
+            jsIndicator.style.backgroundColor = 'limeGreen'; // Green indicates script fully parsed and listeners attached
+            jsIndicator.textContent = 'JS Active.';
+        }
+    </script>
+</body>
+</html>

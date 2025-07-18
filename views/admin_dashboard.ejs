@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard • MyGreenHome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom styles for Admin Dashboard */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .stat-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .action-btn {
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        .user-list-item {
+            transition: background-color 0.1s ease-in-out;
+        }
+        .user-list-item:hover {
+            background-color: #f0fdf4; /* Light green hover */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Include the navbar partial -->
+    <%- include('partials/navbar') %>
+
+    <!-- Main Content Area -->
+    <div class="flex-grow p-6 max-w-6xl mx-auto w-full">
+        <h2 class="text-3xl font-bold text-center text-blue-800 mb-8 mt-4">👑 Admin Dashboard</h2>
+        <p class="text-center text-lg text-gray-600 mb-10">Overview and management tools for MyGreenHome.</p>
+
+        <!-- Admin Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+            <div class="stat-card bg-white shadow-lg rounded-xl p-6 text-center">
+                <i data-lucide="users" class="w-12 h-12 text-blue-600 mx-auto mb-3"></i>
+                <h4 class="text-xl font-semibold text-gray-700 mb-2">Total Users</h4>
+                <p class="text-4xl font-bold text-blue-800"><%= totalUsers %></p>
+            </div>
+            <div class="stat-card bg-white shadow-lg rounded-xl p-6 text-center">
+                <i data-lucide="shield" class="w-12 h-12 text-purple-600 mx-auto mb-3"></i>
+                <h4 class="text-xl font-semibold text-gray-700 mb-2">Admin Accounts</h4>
+                <p class="text-4xl font-bold text-purple-800"><%= adminUsers %></p>
+            </div>
+            <div class="stat-card bg-white shadow-lg rounded-xl p-6 text-center">
+                <i data-lucide="bar-chart-2" class="w-12 h-12 text-green-600 mx-auto mb-3"></i>
+                <h4 class="text-xl font-semibold text-gray-700 mb-2">Total Bills Analyzed</h4>
+                <p class="text-4xl font-bold text-green-800">N/A</p>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <a href="/admin/users" class="action-btn bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-700">
+                <i data-lucide="user-cog" class="w-5 h-5"></i>
+                <span>Manage Users</span>
+            </a>
+            <a href="/admin/products/add" class="action-btn bg-green-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-green-700">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                <span>Add Admin Product</span>
+            </a>
+            <a href="/user/listings/add" class="action-btn bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-purple-700">
+                <i data-lucide="package-plus" class="w-5 h-5"></i>
+                <span>Add Public Listing</span>
+            </a>
+            <a href="/user_dashboard" class="action-btn bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-gray-700">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span>Back to User Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Recent Signups Section -->
+        <h3 class="text-2xl font-bold text-center text-gray-700 mb-6">Recent Signups</h3>
+        <div class="bg-white shadow-lg rounded-xl p-6">
+            <% if (recentSignups && recentSignups.length > 0) { %>
+                <ul class="divide-y divide-gray-200">
+                    <% recentSignups.forEach(signup => { %>
+                        <li class="user-list-item flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 px-2">
+                            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                                <img src="<%= signup.profilePicture || '/images/default_image.png' %>" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-gray-300">
+                                <div>
+                                    <span class="block text-lg font-medium text-gray-800"><%= signup.firstName || '' %> <%= signup.lastName || '' %>)</span>
+                                    <span class="block text-sm text-gray-500"><%= signup.email %></span>
+                                </div>
+                            </div>
+                            <small class="text-gray-500 text-sm">Joined: <%= new Date(signup.createdAt).toLocaleDateString() %></small>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <div class="text-center text-gray-500 py-8 italic">No recent signups.</div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Include the footer partial -->
+    <%- include('partials/footer') %>
+
+    <script>
+        // Initialize Lucide icons after the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product • MyGreenHome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+        }
+        .btn-primary {
+            background-color: #22c55e; /* green-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #16a34a; /* green-600 */
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6b7280; /* gray-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* gray-600 */
+            transform: translateY(-2px);
+        }
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
+
+    <%- include('partials/navbar') %>
+
+    <div class="flex-grow p-6 w-full">
+        <div class="form-container">
+            <h2 class="text-3xl font-bold text-center text-blue-800 mb-8">Edit Product</h2>
+
+            <% if (message) { %>
+                <div class="message-success"><%= message %></div>
+            <% } %>
+            <% if (error) { %>
+                <div class="message-error"><%= error %></div>
+            <% } %>
+
+            <form action="/user/my-catalog/edit/<%= product.id %>" method="POST" class="space-y-6">
+                <input type="hidden" name="productId" value="<%= product.id %>">
+                
+                <div class="form-group">
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" name="name" value="<%= product.name %>" required class="rounded-lg">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="5" required class="rounded-lg"><%= product.description %></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="keywords">Keywords (comma-separated)</label>
+                    <input type="text" id="keywords" name="keywords" value="<%= product.keywords ? product.keywords.join(', ') : '' %>" placeholder="e.g., natural, local, sweet, healthy, sustainable" class="rounded-lg">
+                </div>
+
+                <div class="flex justify-end gap-4 mt-8">
+                    <button type="submit" class="btn-primary flex items-center space-x-2">
+                        <i data-lucide="save" class="w-5 h-5"></i>
+                        <span>Save Changes</span>
+                    </button>
+                    <a href="/user/my-catalog" class="btn-secondary flex items-center space-x-2">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span>Back to Catalog</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // Initialize Lucide icons after the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

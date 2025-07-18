@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product Listing • MyGreenHome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+        }
+        .btn-primary {
+            background-color: #22c55e; /* green-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #16a34a; /* green-600 */
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #6b7280; /* gray-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* gray-600 */
+            transform: translateY(-2px);
+        }
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .input-with-mic {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mic-button {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .mic-button:hover:not(:disabled) {
+            background-color: #2563eb; /* blue-600 */
+        }
+        .mic-button:disabled {
+            background-color: #9ca3af; /* gray-400 */
+            cursor: not-allowed;
+        }
+        .mic-button.recording {
+            background-color: #ef4444; /* red-500 */
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Include the navbar partial -->
+    <%- include('partials/navbar') %>
+
+    <!-- Main Content Area -->
+    <div class="flex-grow p-6 w-full">
+        <div class="form-container">
+            <h2 class="text-3xl font-bold text-center text-green-700 mb-8">Add New Product Listing</h2>
+            <p class="text-center text-lg text-gray-600 mb-8">
+                List your products for others to discover!
+            </p>
+
+            <% if (message) { %>
+                <div class="message-success"><%= message %></div>
+            <% } %>
+            <% if (error) { %>
+                <div class="message-error"><%= error %></div>
+            <% } %>
+
+            <form id="addListingForm" action="/user/listings" method="POST" class="space-y-6">
+                <div class="form-group">
+                    <label for="name">Product Name</label>
+                    <div class="input-with-mic">
+                        <input type="text" id="name" name="name" required placeholder="e.g., Hand-woven Basket">
+                        <button type="button" id="micName" class="mic-button" title="Speak product name">
+                            <i data-lucide="mic" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <p id="nameStatus" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <div class="input-with-mic">
+                        <textarea id="description" name="description" rows="5" required placeholder="Describe your product, its features, and benefits."></textarea>
+                        <button type="button" id="micDescription" class="mic-button" title="Speak description">
+                            <i data-lucide="mic" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <p id="descriptionStatus" class="text-sm text-gray-500 mt-1"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label for="price">Price ($)</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="e.g., 25.99">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" name="category" required>
+                            <option value="">Select a Category</option>
+                            <option value="Agriculture">Agriculture</option>
+                            <option value="Handicrafts">Handicrafts</option>
+                            <option value="Food & Groceries">Food & Groceries</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageUrl">Image URL (Optional)</label>
+                    <input type="text" id="imageUrl" name="imageUrl" placeholder="e.g., https://example.com/my-product.jpg">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactInfo">Contact Information (e.g., Phone, Email, Address)</label>
+                    <input type="text" id="contactInfo" name="contactInfo" placeholder="e.g., +1234567890, myemail@example.com">
+                </div>
+
+                <div class="flex justify-end gap-4 mt-8">
+                    <button type="submit" class="btn-primary flex items-center space-x-2">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                        <span>Add Listing</span>
+                    </button>
+                    <a href="/user_dashboard" class="btn-secondary flex items-center space-x-2">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include the footer partial -->
+    <%- include('partials/footer') %>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Firebase configuration (provided by the environment)
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let userId = null;
+        let isAuthReady = false;
+
+        // Elements
+        const addListingForm = document.getElementById('addListingForm');
+        const nameInput = document.getElementById('name');
+        const descriptionInput = document.getElementById('description');
+        const priceInput = document.getElementById('price');
+        const categorySelect = document.getElementById('category');
+        const imageUrlInput = document.getElementById('imageUrl');
+        const contactInfoInput = document.getElementById('contactInfo');
+
+        // Voice input elements
+        const micNameBtn = document.getElementById('micName');
+        const micDescriptionBtn = document.getElementById('micDescription');
+        const nameStatus = document.getElementById('nameStatus');
+        const descriptionStatus = document.getElementById('descriptionStatus');
+
+        // Check for Web Speech API support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognitionAvailable = SpeechRecognition !== undefined;
+
+        if (!recognitionAvailable) {
+            micNameBtn.disabled = true;
+            micDescriptionBtn.disabled = true;
+            nameStatus.textContent = "Speech input not supported in this browser.";
+            descriptionStatus.textContent = "Speech input not supported in this browser.";
+        } else {
+            const setupRecognition = (inputElement, statusElement, micButton) => {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                let isRecording = false;
+
+                recognition.onstart = () => {
+                    isRecording = true;
+                    micButton.classList.add('recording');
+                    statusElement.textContent = "Listening... Speak now.";
+                    micButton.innerHTML = '<i data-lucide="pause-circle" class="w-5 h-5"></i>';
+                    lucide.createIcons();
+                };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    inputElement.value = transcript;
+                    statusElement.textContent = `Transcribed: "${transcript}"`;
+                };
+
+                recognition.onerror = (event) => {
+                    console.error("Speech recognition error:", event.error);
+                    statusElement.textContent = `Error: ${event.error}. Please try again.`;
+                    isRecording = false;
+                    micButton.classList.remove('recording');
+                    micButton.innerHTML = '<i data-lucide="mic" class="w-5 h-5"></i>';
+                    lucide.createIcons();
+                };
+
+                recognition.onend = () => {
+                    isRecording = false;
+                    micButton.classList.remove('recording');
+                    micButton.innerHTML = '<i data-lucide="mic" class="w-5 h-5"></i>';
+                    lucide.createIcons();
+                    if (statusElement.textContent.includes("Listening")) {
+                        statusElement.textContent = "Ready for voice input.";
+                    }
+                };
+
+                micButton.addEventListener('click', () => {
+                    if (isRecording) {
+                        recognition.stop();
+                    } else {
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.error("Error starting recognition:", e);
+                            statusElement.textContent = "Error starting voice input. Please ensure microphone access is granted.";
+                        }
+                    }
+                });
+            };
+
+            setupRecognition(nameInput, nameStatus, micNameBtn);
+            setupRecognition(descriptionInput, descriptionStatus, micDescriptionBtn);
+        }
+
+        // Authenticate with Firebase
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                console.log("Firebase authenticated. User ID:", userId);
+                isAuthReady = true;
+            } else {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Firebase authentication failed:", error);
+                    alert("Authentication failed. Please refresh the page or log in.");
+                    window.location.href = '/auth/login'; // Redirect to login
+                }
+            }
+        });
+
+        // Handle form submission for adding a new listing
+        addListingForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!isAuthReady || !userId) {
+                alert("User not authenticated. Please try again.");
+                return;
+            }
+
+            const name = nameInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const price = parseFloat(priceInput.value);
+            const category = categorySelect.value;
+            const imageUrl = imageUrlInput.value.trim();
+            const contactInfo = contactInfoInput.value.trim();
+
+            if (!name || !description || isNaN(price) || price < 0 || !category) {
+                alert("Please fill in all required fields: Product Name, Description, Price, and Category.");
+                return;
+            }
+
+            try {
+                // Add product to a PUBLIC Firestore collection
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/public/listings`), {
+                    name,
+                    description,
+                    price,
+                    category,
+                    imageUrl: imageUrl || 'https://placehold.co/400x300/e5e7eb/4b5563?text=No+Image', // Placeholder if no image URL
+                    contactInfo,
+                    listedBy: userId, // Store the ID of the user who listed this product
+                    listedAt: serverTimestamp() // Firestore server timestamp
+                });
+
+                alert('Product listing added successfully!');
+                console.log("Document written with ID: ", docRef.id);
+
+                // Clear form
+                addListingForm.reset();
+                nameStatus.textContent = '';
+                descriptionStatus.textContent = '';
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("Failed to add product listing: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

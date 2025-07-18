@@ -1,43 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Catalog Agent: Sign Up</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/styles/main.css"> <!-- Link to external CSS -->
+    <title>Sign Up • MyGreenHome</title>
+    <style>
+        /* --- Styles for the entire signup page --- */
+
+        /* Full background for body */
+        body {
+            background: url("/images/green.jpg") no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #eef2f7; /* Consistent background for all auth pages */
+            display: flex; /* Use flexbox to center content vertically */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+        }
+
+        /* Auth Container */
+        .auth-container {
+            position: relative;
+            max-width: 320px; /* Keeping it compact */
+            margin: 0 auto;
+            padding: 18px 18px; /* Compact padding */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            /* Important: use a fixed background here if you want it distinct from body */
+            background: url("/images/download.jpeg") no-repeat center center;
+            background-size: cover;
+        }
+
+        /* Overlay for readability */
+        .auth-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.75); /* Slightly more opaque overlay for better contrast */
+            backdrop-filter: blur(3px);
+            z-index: 0;
+            border-radius: 12px;
+        }
+
+        /* Ensure content is above overlay */
+        .auth-container * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Green Heading */
+        h2 {
+            margin-top: 5px; /* Reduced top margin for heading */
+            margin-bottom: 10px; /* Reduced margin */
+            text-align: center;
+            color: green;
+            font-size: 19px; /* Slightly smaller font for compactness */
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 6px; /* Significantly reduced margin between form groups */
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 1px; /* Minimal margin below label */
+            font-weight: bold;
+            font-size: 12px; /* Smallest font for labels */
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 7px 34px 7px 9px; /* Minimized padding */
+            font-size: 13px; /* Slightly smaller font */
+            border: 1.5px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            height: 36px; /* Fixed height for inputs/selects for even more consistency */
+        }
+
+        input:invalid:focus,
+        input:invalid:not(:placeholder-shown) {
+            border-color: #e74c3c;
+        }
+
+        input:valid {
+            border-color: #2ecc71;
+        }
+
+        .password-group .toggle-pass {
+            position: absolute;
+            right: 8px; /* Adjusted right position */
+            top: 26px; /* Adjusted top to match new input padding/height */
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #4A90E2;
+            font-size: 12px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px; /* Reduced margin */
+            margin-bottom: 5px; /* Added a small margin to bottom of actions */
+        }
+
+        button[type="submit"]:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Login button (blue) */
+        button {
+            padding: 8px 15px; /* Minimized padding */
+            border: none;
+            font-size: 12px; /* Minimized font size */
+            color: white;
+            background-color: #4A90E2;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover:not(:disabled) {
+            background: #357ab8;
+        }
+
+        /* Sign up link styled as green button */
+        .link {
+            padding: 8px 15px;
+            border: none;
+            font-size: 12px;
+            color: white;
+            background-color: #2ecc71;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .link:hover {
+            background: #27ae60;
+        }
+
+        .error-msg,
+        #errorMsg {
+            color: #e74c3c;
+            font-size: 10px;
+            height: 1em;
+            margin-top: -3px;
+            margin-bottom: 3px;
+            text-align: left;
+        }
+
+        input.shake {
+            animation: shake 0.3s;
+            border-color: #e74c3c !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        /* Small text below password field */
+        .password-group small {
+            font-size: 9px;
+            color: #666;
+            display: block;
+            margin-top: 2px; /* Small positive margin from input */
+            margin-bottom: 3px;
+        }
+    </style>
 </head>
+
 <body>
-    <div id="auth-page" class="w-full h-full absolute top-0 left-0 flex flex-col items-center justify-center bg-green-100 p-5 box-border">
-        <div class="auth-box bg-white rounded-3xl shadow-xl p-10 w-full max-w-md text-center">
-            <h1 id="auth-title" class="text-3xl font-bold text-green-800 mb-6">Sign Up for Digital Catalog Agent</h1>
-
-            <div id="signup-form">
-                <input type="text" id="signup-username" placeholder="Choose a Username" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                <input type="text" id="signup-email" placeholder="Enter your email address" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                <input type="password" id="signup-password" placeholder="Choose a Password" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                
-                <select id="signup-gender" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    <option value="">-- Select Gender --</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-                
-                <input type="tel" id="signup-mobile" placeholder="Mobile Number (10 digits)" pattern="[0-9]{10}" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-
-                <select id="signup-role" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <button id="signup-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-200 ease-in-out w-full">Sign Up</button>
-                <p class="switch-auth-mode text-green-700 cursor-pointer underline mt-4 text-sm" onclick="window.location.href='/'">Already have an account? Login</p>
+    <div class="auth-container">
+        <h2>Create Account</h2>
+        <% if (error) { %>
+        <p class="error-msg" style="text-align: center;">
+            <%= error %>
+        </p>
+        <% } %>
+        <form id="signupForm" action="/auth/signup" method="POST">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input id="firstName" name="firstName" type="text" required>
             </div>
-        </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input id="lastName" name="lastName" type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input id="mobile" name="mobile" type="tel" pattern="[0-9]{10}"
+                    title="Please enter a 10-digit mobile number" required>
+            </div>
+
+            <div class="form-group password-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" required minlength="6">
+                <button type="button" id="togglePass" class="toggle-pass">Show</button>
+                <small>(min 6 characters)</small>
+                <div id="capsAlert" hidden style="color:red; font-size: 12px; margin-top: 5px;">Caps Lock is ON</div>
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit">Send OTP</button>
+                <a href="/auth" class="link">Already have an account? Login</a>
+            </div>
+        </form>
     </div>
 
-    <div id="message-container"></div> <!-- Container for messages -->
-
-    <script src="/scripts/main.js"></script> <!-- Link to external JavaScript -->
+    <script>
+        const pwInput = document.getElementById('password');
+        const toggle = document.getElementById('togglePass');
+        if (pwInput && toggle) {
+            toggle.addEventListener('click', () => {
+                pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
+                toggle.textContent = pwInput.type === 'password' ? 'Show' : 'Hide';
+            });
+        }
+        const capsAlert = document.getElementById('capsAlert');
+        if (pwInput && capsAlert) {
+            pwInput.addEventListener('keydown', e => {
+                if (e.getModifierState && e.getModifierState('CapsLock')) capsAlert.hidden = false;
+            });
+            pwInput.addEventListener('keyup', e => {
+                if (!e.getModifierState || !e.getModifierState('CapsLock')) capsAlert.hidden = true;
+            });
+        }
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            const firstName = document.getElementById('firstName');
+            const lastName = document.getElementById('lastName');
+            const email = document.getElementById('email');
+            const mobile = document.getElementById('mobile');
+            const password = document.getElementById('password');
+            const gender = document.getElementById('gender');
+            let isValid = true;
+            if (!firstName.value.trim()) {
+                isValid = false;
+                firstName.reportValidity();
+            } else if (!lastName.value.trim()) {
+                isValid = false;
+                lastName.reportValidity();
+            } else if (!email.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                isValid = false;
+                email.reportValidity();
+            } else if (!mobile.value.trim() || !/^[0-9]{10}$/.test(mobile.value)) {
+                isValid = false;
+                mobile.reportValidity();
+            } else if (!password.value.trim() || password.value.length < 6) {
+                isValid = false;
+                password.reportValidity();
+            } else if (!gender.value.trim()) {
+                isValid = false;
+                gender.reportValidity();
+            }
+            if (!isValid) {
+                e.preventDefault();
+                const firstInvalid = document.querySelector('#signupForm :invalid');
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                }
+            }
+        });
+    </script>
 </body>
 </html>

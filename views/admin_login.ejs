@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   
+  <meta charset="UTF-8">
+    <title>Admin Login • MyGreenHome</title>
+   
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+      <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: url("/images/green.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      background-color: #eef2f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .auth-container {
+      position: relative;
+      max-width: 320px;
+      margin: 0 auto;
+      padding: 18px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: url("/images/download.jpeg") no-repeat center center;
+      background-size: cover;
+      box-sizing: border-box;
+    }
+
+    .auth-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(3px);
+      z-index: 0;
+      border-radius: 12px;
+    }
+
+    .auth-container * {
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+      color: green;
+      font-size: 19px;
+    }
+
+    .auth-container p {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 3px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px 34px 8px 10px;
+      font-size: 13px;
+      border: 1.5px solid #ccc;
+      border-radius: 5px;
+      height: 38px;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .password-group {
+      position: relative;
+    }
+
+    .toggle-pass {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 6px; /* push icon down */
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4A90E2;
+  display: flex;
+  align-items: center;
+}
+
+
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 5px;
+      gap: 10px;
+    }
+
+    button[type="submit"] {
+      padding: 9px 20px;
+      border: none;
+      font-size: 13px;
+      color: white;
+      background-color: #4A90E2;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    button[type="submit"]:hover {
+      background: #357ab8;
+    }
+
+    .error-msg {
+      color: #e74c3c;
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    #capsAlert {
+      color: #e74c3c;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .auth-container { max-width: 270px; padding: 12px; } /* reduced for tablet */
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 5px; }
+      .auth-container { width: 100%; padding: 8px; border-radius: 8px; } /* reduced for mobile */
+    }
+  </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <h2>Admin Login</h2>
+        <p>Access Administrator Panel</p>
+
+        <% if (error) { %>
+            <p class="error-msg">
+        <%= error %>
+      </p>
+          <% } %>
+
+            <form id="adminLoginForm" action="/auth/admin-login" method="POST">
+                <div class="form-group">
+                    <label for="username">Admin Email</label>
+                    <input id="username" name="username" type="email" required placeholder="admin@example.com">
+                  </div>
+
+                <div class="form-group password-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required placeholder="Enter password">
+                    <button type="button" id="togglePass" class="toggle-pass" aria-label="Toggle Password">👁️</button>
+                    <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
+                  </div>
+
+                <div class="form-actions">
+                    <button type="submit">Admin Login</button>
+                  </div>
+
+                <p style="text-align: center; font-size: 14px;">
+                    Not an admin? <a href="/auth" style="color: #4A90E2; text-decoration: none;">User Login</a>
+                  </p>
+              </form>
+          </div>
+
+   
+  <script>
+    const pwInput = document.getElementById('password');
+    const toggle = document.getElementById('togglePass');
+    const capsAlert = document.getElementById('capsAlert');
+
+    if (pwInput && toggle) {
+      toggle.addEventListener('click', () => {
+        const isHidden = pwInput.type === 'password';
+        pwInput.type = isHidden ? 'text' : 'password';
+        toggle.textContent = isHidden ? '🙈' : '👁️';
+      });
+    }
+
+    if (pwInput && capsAlert) {
+      pwInput.addEventListener('keydown', e => {
+        capsAlert.hidden = !e.getModifierState || !e.getModifierState('CapsLock');
+      });
+      pwInput.addEventListener('keyup', e => {
+        capsAlert.hidden = !e.getModifierState || !e.getModifierState('CapsLock');
+      });
+    }
+  </script>
+</body>
+
+</html>
