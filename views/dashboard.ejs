@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial="1.0">
+    <title>TechArMy Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css"> </head>
+<body>
+    <div class="container">
+        <h2>Welcome to Your TechArMy Dashboard, <%= userEmail %>!</h2>
+        <p>Your email has been verified and you are logged in.</p>
+        <p>This is where you would start managing your digital product catalog.</p>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('jwtToken'); // Clear token
+            window.location.href = '/'; // Redirect to login page
+        }
+        // You'd typically fetch user data using the JWT and display it.
+        // For now, userEmail is hardcoded in res.render.
+    </script>
+</body>
+</html>
