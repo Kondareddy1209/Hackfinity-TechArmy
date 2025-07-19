@@ -2,10 +2,11 @@
 <html>
 
 <head>
-     
+         
+       
     <meta charset="UTF-8">
-      <title>Verify OTP • MyGreenHome</title>
-      <style>
+          <title>Verify OTP • Agent Seller</title>
+          <style>
         /* --- Styles for the OTP verification page --- */
         * {
             margin: 0;
@@ -187,51 +188,63 @@
 </head>
 
 <body>
-      <div class="auth-container">
-            <h2>Verify OTP</h2>
-            <p>We've sent a 6-digit code to <strong id="displayEmail"></strong></p>
+          <div class="auth-container">
+                    <h2>Verify OTP</h2>
+                    <p>We've sent a 6-digit code to <strong id="displayEmail"></strong></p>
 
-            <% if (error) { %>
-                    <p id="serverError" class="error-msg" style="text-align: center;">
-                <%= error %>
-            </p>
-                <% } else { %>
-                <p id="serverError" class="error-msg" style="text-align: center;"></p>
-                <% } %>
+                    <% if (error) { %>
+                                <p id="serverError" class="error-msg" style="text-align: center;">
+                                <%= error %>
+                                </p>
+                            <% } else { %>
+                                <p id="serverError" class="error-msg" style="text-align: center;"></p>
+                                <% } %>
 
-                        <% if (message) { %>
-                                <p id="successMessage" class="message-success" style="text-align: center;">
-                            <%= message %>
-                        </p>
-                            <% } else { %>
-                            <p id="successMessage" class="message-success" style="text-align: center;"></p>
-                            <% } %>
+                                            <% if (message) { %>
+                                                        <p id="successMessage" class="message-success"
+                            style="text-align: center;">
+                                                        <%= message %>
+                                                        </p>
+                                                    <% } else { %>
+                                                        <p id="successMessage" class="message-success"
+                                style="text-align: center;"></p>
+                                                        <% } %>
 
 
-                                    <form id="otpForm" action="/auth/verify-otp" method="POST" novalidate>
-                                          <input type="hidden" name="username" id="hiddenUsername"
+                                                                    <form id="otpForm" action="/auth/verify-otp"
+                                    method="POST" novalidate>
+                                                                              <input type="hidden" name="username"
+                                        id="hiddenUsername"                                        
                                         value="<%= username %>">
-                                          <input type="hidden" name="isPasswordReset" id="isPasswordResetInput"
+                                                                              <input type="hidden"
+                                        name="isPasswordReset" id="isPasswordResetInput"                                
+                                               
                                         value="<%= typeof isPasswordReset !== 'undefined' && isPasswordReset ? 'true' : 'false' %>">
 
-                                          <div class="form-group">
-                                                <label for="otp">OTP Code</label>
-                                                <input           id="otp"           name="otp"           type="text"    
-                                                  minlength="6"           maxlength="6"           placeholder="123456"  
-                                                    required           autocomplete="one-time-code"        >
-                                              </div>
-                                          <p id="otpError" class="error-msg"></p>
+                                                                              <div class="form-group">
+                                                                                        <label for="otp">OTP
+                                            Code</label>
+                                                                                        <input           id="otp"      
+                                                name="otp"           type="text"                                        
+                                                          minlength="6"           maxlength="6"          
+                                            placeholder="123456"                                                      
+                                            required           autocomplete="one-time-code"        >
+                                                                                      </div>
+                                                                              <p id="otpError" class="error-msg"></p>
 
-                                          <button type="submit" id="verifyBtn" disabled>Verify & Continue</button>
-                                        </form>
+                                                                              <button type="submit" id="verifyBtn"
+                                        disabled>Verify & Continue</button>
+                                                                            </form>
 
-                                    <div class="resend-container">
-                                          <a href="#" class="resend-link" id="resendLink">Didn't receive the code?
-                                        Resend OTP</a>
-                                        </div>
-                                  </div>
+                                                                    <div class="resend-container">
+                                                                              <a href="#" class="resend-link"
+                                        id="resendLink">Didn't receive the code?
+                                                                                Resend OTP</a>
+                                                                            </div>
+                                                                  </div>
 
-     
+         
+       
     <script>
         const otpInput = document.getElementById('otp');
         const verifyBtn = document.getElementById('verifyBtn');

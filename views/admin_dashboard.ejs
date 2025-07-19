@@ -1,111 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+       
     <meta charset="UTF-8">
+       
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard • MyGreenHome</title>
+        <title>Admin Dashboard • Agent Seller</title>
+       
     <script src="https://cdn.tailwindcss.com"></script>
+       
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
+        <style>
         /* Custom styles for Admin Dashboard */
         body {
             font-family: 'Inter', sans-serif;
         }
+
         .stat-card {
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
+
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         }
+
         .action-btn {
-            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out;
         }
+
         .action-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
+
         .user-list-item {
-            transition: background-color 0.1s ease-in-out;
+            transition: all 0.2s ease-in-out;
         }
+
         .user-list-item:hover {
-            background-color: #f0fdf4; /* Light green hover */
+            background-color: #f0fdf4;
+            transform: translateX(5px);
+        }
+
+        .dashboard-section {
+            margin-bottom: 2rem;
+        }
+
+        /* Mobile-specific improvements */
+        @media (max-width: 640px) {
+            .stat-card {
+                padding: 1.5rem !important;
+            }
+            
+            .action-btn {
+                padding: 1rem !important;
+            }
+            
+            .user-list-item {
+                padding: 0.75rem !important;
+            }
+            
+            .user-list-item:hover {
+                transform: none;
+            }
+        }
+
+        /* Tablet improvements */
+        @media (max-width: 1024px) {
+            .stat-card:hover {
+                transform: translateY(-2px);
+            }
+            
+            .action-btn:hover {
+                transform: translateY(-1px);
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Include the navbar partial -->
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900 font-sans min-h-screen">
+
     <%- include('partials/navbar') %>
 
-    <!-- Main Content Area -->
-    <div class="flex-grow p-6 max-w-6xl mx-auto w-full">
-        <h2 class="text-3xl font-bold text-center text-blue-800 mb-8 mt-4">👑 Admin Dashboard</h2>
-        <p class="text-center text-lg text-gray-600 mb-10">Overview and management tools for MyGreenHome.</p>
+    <div class="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 max-w-7xl">
+        
+        <!-- Header Section -->
+        <div class="dashboard-section text-center mb-8 sm:mb-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 rounded-full mb-3 sm:mb-4">
+                <i data-lucide="crown" class="w-8 h-8 sm:w-10 sm:h-10 text-blue-600"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 px-4">Admin Dashboard</h1>
+            <p class="text-base sm:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+                Complete overview and management tools for Agent Seller platform
+            </p>
+        </div>
 
-        <!-- Admin Stats Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-            <div class="stat-card bg-white shadow-lg rounded-xl p-6 text-center">
-                <i data-lucide="users" class="w-12 h-12 text-blue-600 mx-auto mb-3"></i>
-                <h4 class="text-xl font-semibold text-gray-700 mb-2">Total Users</h4>
-                <p class="text-4xl font-bold text-blue-800"><%= totalUsers %></p>
-            </div>
-            <div class="stat-card bg-white shadow-lg rounded-xl p-6 text-center">
-                <i data-lucide="shield" class="w-12 h-12 text-purple-600 mx-auto mb-3"></i>
-                <h4 class="text-xl font-semibold text-gray-700 mb-2">Admin Accounts</h4>
-                <p class="text-4xl font-bold text-purple-800"><%= adminUsers %></p>
-            </div>
-            <div class="stat-card bg-white shadow-lg rounded-xl p-6 text-center">
-                <i data-lucide="bar-chart-2" class="w-12 h-12 text-green-600 mx-auto mb-3"></i>
-                <h4 class="text-xl font-semibold text-gray-700 mb-2">Total Bills Analyzed</h4>
-                <p class="text-4xl font-bold text-green-800">N/A</p>
+        <!-- Statistics Cards Section -->
+        <div class="dashboard-section">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6 text-center px-4">Platform Statistics</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                <div class="stat-card bg-white shadow-lg rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center border border-gray-100">
+                    <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full mb-3 sm:mb-4">
+                        <i data-lucide="users" class="w-6 h-6 sm:w-8 sm:h-8 text-blue-600"></i>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-700 mb-2">Total Users</h4>
+                    <p class="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-800 mb-2">
+                        <%= totalUsers %>
+                    </p>
+                    <p class="text-xs sm:text-sm text-gray-500">Registered members</p>
+                </div>
+                
+                <div class="stat-card bg-white shadow-lg rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center border border-gray-100">
+                    <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-purple-100 rounded-full mb-3 sm:mb-4">
+                        <i data-lucide="shield" class="w-6 h-6 sm:w-8 sm:h-8 text-purple-600"></i>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-700 mb-2">Admin Accounts</h4>
+                    <p class="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-800 mb-2">
+                        <%= adminUsers %>
+                    </p>
+                    <p class="text-xs sm:text-sm text-gray-500">Administrative users</p>
+                </div>
+                
+                <div class="stat-card bg-white shadow-lg rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center border border-gray-100 sm:col-span-2 xl:col-span-1">
+                    <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full mb-3 sm:mb-4">
+                        <i data-lucide="bar-chart-2" class="w-6 h-6 sm:w-8 sm:h-8 text-green-600"></i>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-700 mb-2">Bills Analyzed</h4>
+                    <p class="text-2xl sm:text-3xl lg:text-4xl font-bold text-green-800 mb-2">N/A</p>
+                    <p class="text-xs sm:text-sm text-gray-500">Coming soon</p>
+                </div>
             </div>
         </div>
 
-        <!-- Admin Actions -->
-        <div class="flex flex-wrap justify-center gap-4 mb-12">
-            <a href="/admin/users" class="action-btn bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-700">
-                <i data-lucide="user-cog" class="w-5 h-5"></i>
-                <span>Manage Users</span>
-            </a>
-            <a href="/admin/products/add" class="action-btn bg-green-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-green-700">
-                <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                <span>Add Admin Product</span>
-            </a>
-            <a href="/user/listings/add" class="action-btn bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-purple-700">
-                <i data-lucide="package-plus" class="w-5 h-5"></i>
-                <span>Add Public Listing</span>
-            </a>
-            <a href="/user_dashboard" class="action-btn bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center space-x-2 hover:bg-gray-700">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                <span>Back to User Dashboard</span>
-            </a>
+        <!-- Quick Actions Section -->
+        <div class="dashboard-section">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4 sm:mb-6 text-center px-4">Quick Actions</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <a href="/admin/users" class="action-btn bg-blue-600 text-white p-4 sm:p-6 rounded-xl font-semibold text-center hover:bg-blue-700 group">
+                    <div class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 rounded-lg mb-2 sm:mb-3 group-hover:bg-blue-400">
+                        <i data-lucide="user-cog" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    </div>
+                    <div class="text-base sm:text-lg font-semibold">Manage Users</div>
+                    <div class="text-xs sm:text-sm opacity-90">View and edit users</div>
+                </a>
+                
+                <a href="/admin/products/add" class="action-btn bg-green-600 text-white p-4 sm:p-6 rounded-xl font-semibold text-center hover:bg-green-700 group">
+                    <div class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-lg mb-2 sm:mb-3 group-hover:bg-green-400">
+                        <i data-lucide="plus-circle" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    </div>
+                    <div class="text-base sm:text-lg font-semibold">Add Product</div>
+                    <div class="text-xs sm:text-sm opacity-90">Admin products</div>
+                </a>
+                
+                <a href="/user/listings/add" class="action-btn bg-purple-600 text-white p-4 sm:p-6 rounded-xl font-semibold text-center hover:bg-purple-700 group">
+                    <div class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-purple-500 rounded-lg mb-2 sm:mb-3 group-hover:bg-purple-400">
+                        <i data-lucide="package-plus" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    </div>
+                    <div class="text-base sm:text-lg font-semibold">Add Listing</div>
+                    <div class="text-xs sm:text-sm opacity-90">Public listings</div>
+                </a>
+                
+                <a href="/user_dashboard" class="action-btn bg-gray-600 text-white p-4 sm:p-6 rounded-xl font-semibold text-center hover:bg-gray-700 group">
+                    <div class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gray-500 rounded-lg mb-2 sm:mb-3 group-hover:bg-gray-400">
+                        <i data-lucide="arrow-left" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                    </div>
+                    <div class="text-base sm:text-lg font-semibold">User View</div>
+                    <div class="text-xs sm:text-sm opacity-90">Switch to user</div>
+                </a>
+            </div>
         </div>
 
-        <!-- Recent Signups Section -->
-        <h3 class="text-2xl font-bold text-center text-gray-700 mb-6">Recent Signups</h3>
-        <div class="bg-white shadow-lg rounded-xl p-6">
-            <% if (recentSignups && recentSignups.length > 0) { %>
-                <ul class="divide-y divide-gray-200">
-                    <% recentSignups.forEach(signup => { %>
-                        <li class="user-list-item flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 px-2">
-                            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
-                                <img src="<%= signup.profilePicture || '/images/default_image.png' %>" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-gray-300">
-                                <div>
-                                    <span class="block text-lg font-medium text-gray-800"><%= signup.firstName || '' %> <%= signup.lastName || '' %>)</span>
-                                    <span class="block text-sm text-gray-500"><%= signup.email %></span>
+        <!-- Recent Activity Section -->
+        <div class="dashboard-section">
+            <div class="bg-white shadow-lg rounded-xl sm:rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full">
+                            <i data-lucide="user-plus" class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Recent Signups</h3>
+                    </div>
+                </div>
+                
+                <div class="p-3 sm:p-4 lg:p-6">
+                    <% if (recentSignups && recentSignups.length > 0) { %>
+                        <div class="space-y-3 sm:space-y-4">
+                            <% recentSignups.forEach((signup, index) => { %>
+                                <div class="user-list-item flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg sm:rounded-xl border border-gray-100 hover:border-green-200 space-y-3 sm:space-y-0">
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="relative flex-shrink-0">
+                                            <img src="<%= signup.profilePicture || '/images/default_image.png' %>" 
+                                                 alt="Profile" 
+                                                 class="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full object-cover border-2 border-gray-200">
+                                            <div class="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                                                <span class="text-xs text-white font-bold"><%= index + 1 %></span>
+                                            </div>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 truncate">
+                                                <%= signup.firstName || 'Unknown' %> <%= signup.lastName || 'User' %>
+                                            </div>
+                                            <div class="text-xs sm:text-sm text-gray-600 flex items-center space-x-1 sm:space-x-2">
+                                                <i data-lucide="mail" class="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"></i>
+                                                <span class="truncate"><%= signup.email %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right sm:text-left sm:pl-4">
+                                        <div class="text-xs sm:text-sm font-medium text-gray-700">Joined</div>
+                                        <div class="text-xs sm:text-sm text-gray-500 flex items-center space-x-1 justify-end sm:justify-start">
+                                            <i data-lucide="calendar" class="w-3 h-3 sm:w-4 sm:h-4"></i>
+                                            <span><%= new Date(signup.createdAt).toLocaleDateString() %></span>
+                                        </div>
+                                    </div>
                                 </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-8 sm:py-12">
+                            <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full mb-3 sm:mb-4">
+                                <i data-lucide="users" class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400"></i>
                             </div>
-                            <small class="text-gray-500 text-sm">Joined: <%= new Date(signup.createdAt).toLocaleDateString() %></small>
-                        </li>
-                    <% }); %>
-                </ul>
-            <% } else { %>
-                <div class="text-center text-gray-500 py-8 italic">No recent signups.</div>
-            <% } %>
+                            <h4 class="text-base sm:text-lg font-semibold text-gray-600 mb-2">No Recent Signups</h4>
+                            <p class="text-sm sm:text-base text-gray-500 px-4">New user registrations will appear here</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
         </div>
+
     </div>
 
-    <!-- Include the footer partial -->
     <%- include('partials/footer') %>
 
     <script>
@@ -115,4 +242,5 @@
         });
     </script>
 </body>
+
 </html>

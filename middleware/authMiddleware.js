@@ -16,7 +16,7 @@ const requireAuth = (req, res, next) => {
             if (err) {
                 console.log(err.message);
                 // Redirect to login or send unauthorized status
-                res.redirect('/login'); // Example: redirect to login page
+                res.redirect('/auth/login'); // Example: redirect to login page
             } else {
                 console.log(decodedToken); // Log the decoded token payload
                 // You can attach user info to req.user here if needed
@@ -25,7 +25,7 @@ const requireAuth = (req, res, next) => {
         });
     } else {
         // No token found, redirect to login or send unauthorized status
-        res.redirect('/login'); // Example: redirect to login page
+        res.redirect('/auth/login'); // Example: redirect to login page
     }
 };
 

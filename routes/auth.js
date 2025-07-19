@@ -312,7 +312,7 @@ router.get('/logout', requireAuth, (req, res) => {
     // Clear the authentication token cookie
     res.clearCookie('token');
     // Redirect to the main authentication/login page
-    res.redirect('/auth');
+    res.redirect('/auth'); // This redirects to the base /auth route which renders login.ejs
 });
 
 // @route   GET /forgot-password

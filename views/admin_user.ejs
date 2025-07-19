@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+       
     <meta charset="UTF-8">
+       
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users • Admin Panel</title>
+        <title>Manage Users • Admin Panel</title>
+       
     <script src="https://cdn.tailwindcss.com"></script>
+       
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
+        <style>
         body {
             font-family: 'Inter', sans-serif;
         }
+
         .admin-page-container {
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 15px;
         }
+
         .admin-heading {
             text-align: center;
             margin-top: 25px;
@@ -22,39 +29,51 @@
             font-size: 1.8em;
             color: #333;
         }
+
         .table-responsive-wrapper {
             overflow-x: auto;
             margin: 20px 0;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             background-color: white;
-            border: 1px solid #e5e7eb; /* gray-200 */
+            border: 1px solid #e5e7eb;
+            /* gray-200 */
         }
+
         .admin-table {
             width: 100%;
             border-collapse: collapse;
             min-width: 650px;
         }
+
         .admin-table th,
         .admin-table td {
             padding: 12px 15px;
-            border: 1px solid #e5e7eb; /* gray-200 */
+            border: 1px solid #e5e7eb;
+            /* gray-200 */
             text-align: left;
             vertical-align: middle;
         }
+
         .admin-table th {
-            background-color: #f3f4f6; /* gray-100 */
+            background-color: #f3f4f6;
+            /* gray-100 */
             font-weight: bold;
             color: #333;
             text-transform: uppercase;
             font-size: 0.9em;
         }
+
         .admin-table tbody tr:nth-child(even) {
-            background-color: #f9fafb; /* gray-50 */
+            background-color: #f9fafb;
+            /* gray-50 */
         }
+
         .admin-table tbody tr:hover {
-            background-color: #f0fdf4; /* Light green hover */
+            background-color: #f0fdf4;
+            /* Light green hover */
         }
+
         .admin-table .profile-img {
             width: 36px;
             height: 36px;
@@ -62,6 +81,7 @@
             object-fit: cover;
             border: 1px solid #d1d5db;
         }
+
         .admin-table select {
             padding: 6px 8px;
             border-radius: 4px;
@@ -70,12 +90,14 @@
             min-width: 80px;
             background-color: white;
         }
+
         .admin-table .action-buttons {
             display: flex;
             flex-wrap: nowrap;
             gap: 8px;
             justify-content: flex-start;
         }
+
         .admin-table .action-buttons button {
             padding: 8px 12px;
             border-radius: 6px;
@@ -86,27 +108,39 @@
             white-space: nowrap;
             transition: background-color 0.2s ease, transform 0.1s ease;
         }
+
         .admin-table .action-buttons button:hover {
             transform: translateY(-1px);
         }
+
         .admin-table .action-buttons .update-btn {
-            background-color: #22c55e; /* green-500 */
+            background-color: #22c55e;
+            /* green-500 */
         }
+
         .admin-table .action-buttons .update-btn:hover {
-            background-color: #16a34a; /* green-600 */
+            background-color: #16a34a;
+            /* green-600 */
         }
+
         .admin-table .action-buttons .delete-btn {
-            background-color: #ef4444; /* red-500 */
+            background-color: #ef4444;
+            /* red-500 */
         }
+
         .admin-table .action-buttons .delete-btn:hover {
-            background-color: #dc2626; /* red-600 */
+            background-color: #dc2626;
+            /* red-600 */
         }
+
         .admin-table .action-buttons button:disabled {
-            background-color: #9ca3af; /* gray-400 */
+            background-color: #9ca3af;
+            /* gray-400 */
             cursor: not-allowed;
             opacity: 0.7;
             transform: none;
         }
+
         .message-success {
             background-color: #d4edda;
             color: #155724;
@@ -117,6 +151,7 @@
             text-align: center;
             font-weight: 500;
         }
+
         .message-error {
             background-color: #f8d7da;
             color: #721c24;
@@ -127,42 +162,51 @@
             text-align: center;
             font-weight: 500;
         }
+
         .back-to-admin-dashboard {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             margin-top: 30px;
             padding: 12px 24px;
-            background-color: #6b7280; /* gray-500 */
+            background-color: #6b7280;
+            /* gray-500 */
             color: white;
             border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
             transition: background-color 0.2s ease, transform 0.2s ease;
         }
+
         .back-to-admin-dashboard:hover {
-            background-color: #4b5563; /* gray-600 */
+            background-color: #4b5563;
+            /* gray-600 */
             transform: translateY(-2px);
         }
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .admin-table {
-                min-width: 550px; /* Allow horizontal scroll for smaller screens */
+                min-width: 550px;
+                /* Allow horizontal scroll for smaller screens */
             }
+
             .admin-table th,
             .admin-table td {
                 padding: 8px 10px;
                 font-size: 0.85em;
             }
+
             .admin-table .profile-img {
                 width: 30px;
                 height: 30px;
             }
+
             .admin-table select {
                 font-size: 0.8em;
                 padding: 4px 6px;
             }
+
             .admin-table .action-buttons button {
                 padding: 6px 10px;
                 font-size: 0.75em;
@@ -170,90 +214,131 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Include the navbar partial -->
-    <%- include('partials/navbar') %>
+            <%- include('partials/navbar') %>
 
-    <!-- Main Content Area -->
-    <div class="flex-grow p-6 w-full">
-        <div class="admin-page-container">
-            <h2 class="admin-heading">👥 Manage Users</h2>
+                <div class="flex-grow p-6 w-full">
+                    <div class="admin-page-container">
+                            <h2 class="admin-heading">👥 Manage Users</h2>
 
-            <% if (message) { %>
-                <div class="message-success"><%= message %></div>
-            <% } %>
-            <% if (error) { %>
-                <div class="message-error"><%= error %></div>
-            <% } %>
+                            <% if (message) { %>
+                                    <div class="message-success">
+                        <%= message %>
+                    </div>
+                                <% } %>
+                                    <% if (error) { %>
+                                            <div class="message-error">
+                                <%= error %>
+                            </div>
+                                        <% } %>
 
-            <div class="table-responsive-wrapper">
-                <% if (allUsers && allUsers.length > 0) { %>
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>Profile</th>
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Role</th>
-                                <th>Joined</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% allUsers.forEach(userItem => { %>
-                                <tr>
-                                    <td>
-                                        <img src="<%= userItem.profilePicture || '/images/default_image.png' %>" alt="<%= userItem.email %>" class="profile-img">
-                                    </td>
-                                    <td><%= userItem.email %></td>
-                                    <td><%= userItem.firstName || '' %> <%= userItem.lastName || '' %></td>
-                                    <td>
-                                        <form action="/admin/users/update-role/<%= userItem._id %>" method="POST" class="flex items-center gap-2">
-                                            <select name="newRole" class="rounded-md">
-                                                <option value="user" <%= userItem.role === 'user' ? 'selected' : '' %>>User</option>
-                                                <option value="admin" <%= userItem.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                                            </select>
-                                            <button type="submit" class="update-btn">
-                                                <i data-lucide="refresh-cw" class="w-4 h-4 inline-block align-middle"></i> Update
-                                            </button>
-                                        </form>
-                                    </td>
-                                    <td><%= new Date(userItem.createdAt).toLocaleDateString() %></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <form action="/admin/users/delete/<%= userItem._id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete <%= userItem.email %>? This action cannot be undone.');">
-                                                <button type="submit" class="delete-btn" <%= (user && user._id && userItem._id && user._id.toString() === userItem._id.toString()) ? 'disabled title="Cannot delete your own account"' : '' %>>
-                                                    <i data-lucide="trash-2" class="w-4 h-4 inline-block align-middle"></i> Delete
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                <% } else { %>
-                    <div class="text-center text-gray-500 py-8 italic">No users found in the system.</div>
-                <% } %>
-            </div>
+                                            <div class="table-responsive-wrapper">
+                                                    <% if (allUsers && allUsers.length> 0) { %>
+                                                            <table class="admin-table">
+                                                                    <thead>
+                                                                            <tr>
+                                                                                    <th>Profile</th>
+                                                                                    <th>Email</th>
+                                                                                    <th>Name</th>
+                                                                                    <th>Role</th>
+                                                                                    <th>Joined</th>
+                                                                                    <th>Actions</th>
+                                                                                </tr>
+                                                                        </thead>
+                                                                    <tbody>
+                                                                            <% allUsers.forEach(userItem=> { %>
+                                                                                    <tr>
+                                                                                            <td>
+                                                                                                    <img
+                                                                src="<%= userItem.profilePicture || '/images/default_image.png' %>"
+                                                                alt="<%= userItem.email %>" class="profile-img">
+                                                                                                </td>
+                                                                                            <td>
+                                                            <%= userItem.email %>
+                                                        </td>
+                                                                                            <td>
+                                                            <%= userItem.firstName || '' %>
+                                                                <%= userItem.lastName || '' %>
+                                                        </td>
+                                                                                            <td>
+                                                                                                    <form
+                                                                action="/admin/users/update-role/<%= userItem._id %>"
+                                                                method="POST" class="flex items-center gap-2">
+                                                                                                            <select
+                                                                    name="newRole" class="rounded-md">
+                                                                                                                   
+                                                                    <option value="user" <%=userItem.role==='user'
+                                                                        ? 'selected' : '' %>>User</option>
+                                                                                                                   
+                                                                    <option value="admin" <%=userItem.role==='admin'
+                                                                        ? 'selected' : '' %>>Admin</option>
+                                                                                                               
+                                                                </select>
+                                                                                                            <button
+                                                                    type="submit" class="update-btn">
+                                                                                                                    <i
+                                                                        data-lucide="refresh-cw"
+                                                                        class="w-4 h-4 inline-block align-middle"></i>
+                                                                    Update
+                                                                                                               
+                                                                </button>
+                                                                                                        </form>
+                                                                                                </td>
+                                                                                            <td>
+                                                            <%= new Date(userItem.createdAt).toLocaleDateString() %>
+                                                        </td>
+                                                                                            <td>
+                                                                                                    <div
+                                                                class="action-buttons">
+                                                                                                            <form
+                                                                    action="/admin/users/delete/<%= userItem._id %>"
+                                                                    method="POST"
+                                                                    onsubmit="return confirm('Are you sure you want to delete <%= userItem.email %>? This action cannot be undone.');">
+                                                                                                                   
+                                                                    <button type="submit" class="delete-btn" <%=(user &&
+                                                                        user._id && userItem._id &&
+                                                                        user._id.toString()===userItem._id.toString())
+                                                                        ? 'disabled title="Cannot delete your own account"'
+                                                                        : '' %>>
+                                                                                                                       
+                                                                            <i data-lucide="trash-2"
+                                                                            class="w-4 h-4 inline-block align-middle"></i>
+                                                                        Delete
+                                                                                                                       
+                                                                    </button>
+                                                                                                                </form>
+                                                                                                        </div>
+                                                                                                </td>
+                                                                                        </tr>
+                                                                                <% }); %>
+                                                                                </tbody>
+                                                                </table>
+                                                        <% } else { %>
+                                                                <div class="text-center text-gray-500 py-8 italic">No
+                                                users found in the system.</div>
+                                                            <% } %>
+                                                            </div>
 
-            <div class="flex justify-center">
-                <a href="/admin/dashboard" class="back-to-admin-dashboard">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Back to Admin Dashboard
-                </a>
-            </div>
-        </div>
-    </div>
+                                            <div class="flex justify-center">
+                                                    <a href="/admin/dashboard" class="back-to-admin-dashboard">
+                                                            <i data-lucide="arrow-left" class="w-5 h-5"></i> Back to
+                                        Admin Dashboard
+                                                        </a>
+                                                </div>
+                                        </div>
+                </div>
 
-    <!-- Include the footer partial -->
-    <%- include('partials/footer') %>
+                <%- include('partials/footer') %>
 
-    <script>
-        // Initialize Lucide icons after the DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-        });
-    </script>
+               
+            <script>
+                // Initialize Lucide icons after the DOM is loaded
+                document.addEventListener('DOMContentLoaded', () => {
+                    lucide.createIcons();
+                });
+            </script>
 </body>
+
 </html>

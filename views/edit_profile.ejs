@@ -7,215 +7,738 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
+
+        /* Container styling */
         .form-container {
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        .form-group label {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
+
+        /* Form input styling */
+        .form-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
         }
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="tel"],
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: #ffffff;
+            transform: translateY(-1px);
         }
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #3b82f6; /* blue-500 */
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+
+        .form-input:invalid:not(:placeholder-shown) {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
-        .btn-primary {
-            background-color: #22c55e; /* green-500 */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+
+        .form-input:valid:not(:placeholder-shown) {
+            border-color: #10b981;
         }
-        .btn-primary:hover {
-            background-color: #16a34a; /* green-600 */
-            transform: translateY(-2px);
+
+        /* Profile picture styling */
+        .profile-picture-container {
+            position: relative;
+            display: inline-block;
         }
-        .btn-secondary {
-            background-color: #6b7280; /* gray-500 */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-        .btn-secondary:hover {
-            background-color: #4b5563; /* gray-600 */
-            transform: translateY(-2px);
-        }
-        .message-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .message-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .profile-picture-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .profile-picture-upload img {
-            width: 120px;
-            height: 120px;
+
+        .profile-picture {
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #d1d5db;
-            margin-bottom: 10px;
+            border: 4px solid #fff;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
         }
-        .profile-picture-upload input[type="file"] {
-            display: none; /* Hide default file input */
+
+        .profile-picture:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
-        .custom-file-upload {
-            border: 1px solid #3b82f6;
-            display: inline-block;
-            padding: 8px 15px;
+
+        .upload-overlay {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            border-radius: 8px;
-            background-color: #eff6ff; /* blue-50 */
-            color: #3b82f6;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
         }
-        .custom-file-upload:hover {
-            background-color: #dbeafe; /* blue-100 */
+
+        .upload-overlay:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+        }
+
+        /* Button styling */
+        .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+
+        /* Message styling */
+        .message {
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gender select custom styling */
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #6b7280;
+            pointer-events: none;
+        }
+
+        /* Mobile responsive design */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 20px 16px;
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+
+            .profile-picture {
+                width: 120px;
+                height: 120px;
+            }
+
+            .upload-overlay {
+                width: 36px;
+                height: 36px;
+                bottom: 4px;
+                right: 4px;
+            }
+
+            .form-buttons {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 14px 24px;
+            }
+
+            h2 {
+                font-size: 1.875rem;
+                line-height: 2.25rem;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Validation styling */
+        .field-valid {
+            position: relative;
+        }
+
+        .field-valid::after {
+            content: '✓';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .field-invalid {
+            position: relative;
+        }
+
+        .field-invalid::after {
+            content: '✗';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        /* Focus styles for accessibility */
+        .form-input:focus,
+        .btn:focus,
+        .upload-overlay:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Include the navbar partial -->
-    <%- include('partials/navbar') %>
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-800 min-h-screen">
+    <!-- Navigation would be included here -->
+    <!-- <%- include('partials/navbar') %> -->
 
-    <!-- Main Content Area -->
-    <div class="flex-grow p-6 w-full">
-        <div class="form-container">
-            <h2 class="text-3xl font-bold text-center text-blue-800 mb-8">Edit Profile</h2>
+    <div class="container mx-auto px-4 py-8">
+        <div class="form-container max-w-4xl mx-auto rounded-3xl shadow-2xl p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                    <i data-lucide="user-circle" class="w-8 h-8 text-blue-600"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Edit Your Profile</h2>
+                <p class="text-gray-600 text-lg">Update your personal information</p>
+            </div>
 
-            <% if (message) { %>
-                <div class="message-success"><%= message %></div>
-            <% } %>
-            <% if (error) { %>
-                <div class="message-error"><%= error %></div>
-            <% } %>
+            <!-- Messages -->
+            <div id="messageContainer">
+                <!-- Messages will be inserted here dynamically -->
+            </div>
 
-            <form action="/dashboard/profile" method="POST" enctype="multipart/form-data" class="space-y-6">
-                <div class="profile-picture-upload">
-                    <img id="profilePreview" src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile Picture">
-                    <label for="profilePicture" class="custom-file-upload">
-                        <i data-lucide="image" class="w-5 h-5 inline-block align-middle mr-2"></i> Change Profile Picture
-                    </label>
-                    <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
+            <!-- Form -->
+            <form id="profileForm" class="space-y-8" enctype="multipart/form-data" novalidate>
+                <!-- Profile Picture Section -->
+                <div class="flex flex-col items-center mb-8">
+                    <div class="profile-picture-container mb-4">
+                        <img 
+                            id="profilePreview" 
+                            src="/images/default_image.png" 
+                            alt="Profile Picture" 
+                            class="profile-picture"
+                        >
+                        <label for="profilePicture" class="upload-overlay" title="Change profile picture">
+                            <i data-lucide="camera" class="w-5 h-5"></i>
+                        </label>
+                        <input 
+                            type="file" 
+                            id="profilePicture" 
+                            name="profilePicture" 
+                            accept="image/*" 
+                            class="hidden"
+                        >
+                    </div>
+                    <p class="text-sm text-gray-500 text-center max-w-xs">
+                        Click the camera icon to upload a new profile picture. 
+                        <br>Supported formats: JPG, PNG, GIF (Max 5MB)
+                    </p>
+                    <div id="uploadStatus" class="text-xs text-center mt-2 min-h-[16px]"></div>
                 </div>
 
+                <!-- Name Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" value="<%= user.firstName || '' %>" required class="rounded-lg">
+                        <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-3">
+                            First Name <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="firstName" 
+                                name="firstName" 
+                                required 
+                                minlength="2"
+                                maxlength="50"
+                                class="form-input w-full px-4 py-3 rounded-xl"
+                                placeholder="Enter your first name"
+                                value=""
+                            >
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Minimum 2 characters</p>
                     </div>
+
                     <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" value="<%= user.lastName || '' %>" required class="rounded-lg">
+                        <label for="lastName" class="block text-sm font-semibold text-gray-700 mb-3">
+                            Last Name <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="lastName" 
+                                name="lastName" 
+                                required 
+                                minlength="2"
+                                maxlength="50"
+                                class="form-input w-full px-4 py-3 rounded-xl"
+                                placeholder="Enter your last name"
+                                value=""
+                            >
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Minimum 2 characters</p>
                     </div>
                 </div>
 
+                <!-- Email Field -->
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" value="<%= user.email || '' %>" required class="rounded-lg" readonly title="Email cannot be changed directly here.">
-                    <p class="text-sm text-gray-500 mt-1">Email cannot be changed directly. Contact support if needed.</p>
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-3">
+                        Email Address <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required 
+                            readonly
+                            class="form-input w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 cursor-not-allowed"
+                            placeholder="your.email@example.com"
+                            value=""
+                            title="Email cannot be changed here"
+                        >
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                        Email cannot be changed directly. Contact support if needed.
+                    </p>
                 </div>
 
+                <!-- Mobile Number Field -->
                 <div class="form-group">
-                    <label for="mobile">Mobile Number</label>
-                    <input type="tel" id="mobile" name="mobile" value="<%= user.mobile || '' %>" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" required class="rounded-lg">
+                    <label for="mobile" class="block text-sm font-semibold text-gray-700 mb-3">
+                        Mobile Number <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i data-lucide="phone" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <input 
+                            type="tel" 
+                            id="mobile" 
+                            name="mobile" 
+                            required 
+                            pattern="[0-9]{10}"
+                            maxlength="10"
+                            class="form-input w-full pl-12 pr-4 py-3 rounded-xl"
+                            placeholder="1234567890"
+                            value=""
+                        >
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Enter 10-digit mobile number without spaces or dashes</p>
+                    <div id="mobileValidation" class="text-xs mt-1 min-h-[16px]"></div>
                 </div>
 
+                <!-- Gender Field -->
                 <div class="form-group">
-                    <label for="gender">Gender</label>
-                    <select id="gender" name="gender" required class="rounded-lg">
-                        <option value="">Select Gender</option>
-                        <option value="Male" <%= user.gender === 'Male' ? 'selected' : '' %>>Male</option>
-                        <option value="Female" <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
-                        <option value="Other" <%= user.gender === 'Other' ? 'selected' : '' %>>Other</option>
-                    </select>
+                    <label for="gender" class="block text-sm font-semibold text-gray-700 mb-3">
+                        Gender <span class="text-red-500">*</span>
+                    </label>
+                    <div class="select-wrapper relative">
+                        <select 
+                            id="gender" 
+                            name="gender" 
+                            required 
+                            class="form-input w-full px-4 py-3 rounded-xl appearance-none cursor-pointer"
+                        >
+                            <option value="">Select your gender</option>
+                            <option value="Male">👨 Male</option>
+                            <option value="Female">👩 Female</option>
+                            <option value="Other">🏳️‍⚧️ Other</option>
+                            <option value="Prefer not to say">🤐 Prefer not to say</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="flex justify-end gap-4 mt-8">
-                    <button type="submit" class="btn-primary flex items-center space-x-2">
-                        <i data-lucide="save" class="w-5 h-5"></i>
-                        <span>Save Changes</span>
-                    </button>
-                    <a href="/user_dashboard" class="btn-secondary flex items-center space-x-2">
+                <!-- Form Buttons -->
+                <div class="form-buttons flex flex-col-reverse md:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
+                    <a 
+                        href="/user_dashboard" 
+                        class="btn btn-secondary flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-white font-semibold text-center no-underline"
+                    >
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                         <span>Back to Dashboard</span>
                     </a>
+                    <button 
+                        type="submit" 
+                        class="btn btn-primary flex items-center justify-center gap-2 px-8 py-3 rounded-xl text-white font-semibold border-none cursor-pointer"
+                    >
+                        <i data-lucide="save" class="w-5 h-5"></i>
+                        <span>Save Changes</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Include the footer partial -->
-    <%- include('partials/footer') %>
+    <!-- Footer would be included here -->
+    <!-- <%- include('partials/footer') %> -->
 
     <script>
-        // Initialize Lucide icons after the DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons
             lucide.createIcons();
 
-            // Profile picture preview logic
+            // Form elements
+            const form = document.getElementById('profileForm');
             const profilePictureInput = document.getElementById('profilePicture');
             const profilePreview = document.getElementById('profilePreview');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const messageContainer = document.getElementById('messageContainer');
+            const mobileInput = document.getElementById('mobile');
+            const mobileValidation = document.getElementById('mobileValidation');
 
-            if (profilePictureInput && profilePreview) {
-                profilePictureInput.addEventListener('change', function() {
-                    const file = this.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            profilePreview.src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
+            // Form state
+            let isSubmitting = false;
+            let currentImageFile = null;
+
+            // Utility Functions
+            function showMessage(text, type = 'success') {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type === 'success' ? 'message-success' : 'message-error'}`;
+                messageDiv.innerHTML = `
+                    <div class="flex items-center justify-center gap-2">
+                        <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i>
+                        <span>${text}</span>
+                    </div>
+                `;
+                messageContainer.innerHTML = '';
+                messageContainer.appendChild(messageDiv);
+                lucide.createIcons();
+                
+                // Auto-hide success messages
+                if (type === 'success') {
+                    setTimeout(() => {
+                        messageDiv.style.opacity = '0';
+                        setTimeout(() => messageDiv.remove(), 300);
+                    }, 5000);
+                }
+
+                // Scroll to message
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            function setLoading(loading) {
+                isSubmitting = loading;
+                const submitBtn = form.querySelector('button[type="submit"]');
+                
+                if (loading) {
+                    form.classList.add('loading');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span>Saving Changes...</span>';
+                } else {
+                    form.classList.remove('loading');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i><span>Save Changes</span>';
+                    lucide.createIcons();
+                }
+            }
+
+            function addValidationStyling(input, isValid) {
+                const parent = input.parentElement;
+                parent.classList.remove('field-valid', 'field-invalid');
+                
+                if (input.value.trim()) {
+                    parent.classList.add(isValid ? 'field-valid' : 'field-invalid');
+                }
+            }
+
+            // Profile Picture Upload
+            profilePictureInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                
+                if (!file) {
+                    uploadStatus.textContent = '';
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/i)) {
+                    uploadStatus.innerHTML = '<span class="text-red-500">❌ Please select a valid image file (JPG, PNG, GIF)</span>';
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    uploadStatus.innerHTML = '<span class="text-red-500">❌ File size must be less than 5MB</span>';
+                    this.value = '';
+                    return;
+                }
+
+                currentImageFile = file;
+                uploadStatus.innerHTML = '<span class="text-green-600">✅ Image ready for upload</span>';
+
+                // Preview the image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profilePreview.src = e.target.result;
+                    profilePreview.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        profilePreview.style.transform = 'scale(1)';
+                    }, 200);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Mobile Number Validation
+            mobileInput.addEventListener('input', function(e) {
+                // Remove non-numeric characters
+                this.value = this.value.replace(/[^0-9]/g, '');
+                
+                const isValid = /^[0-9]{10}$/.test(this.value);
+                addValidationStyling(this, isValid);
+
+                if (this.value.length === 0) {
+                    mobileValidation.textContent = '';
+                } else if (this.value.length < 10) {
+                    mobileValidation.innerHTML = '<span class="text-amber-600">⚠️ Enter 10 digits</span>';
+                } else if (this.value.length === 10) {
+                    mobileValidation.innerHTML = '<span class="text-green-600">✅ Valid mobile number</span>';
+                }
+            });
+
+            // Real-time validation for name fields
+            const nameFields = [document.getElementById('firstName'), document.getElementById('lastName')];
+            nameFields.forEach(field => {
+                field.addEventListener('input', function() {
+                    const isValid = this.value.trim().length >= 2;
+                    addValidationStyling(this, isValid);
+                });
+
+                field.addEventListener('blur', function() {
+                    if (this.value.trim().length < 2 && this.value.length > 0) {
+                        this.setCustomValidity('Name must be at least 2 characters long');
                     } else {
-                        profilePreview.src = '<%= user.profilePicture || "/images/default_image.png" %>';
+                        this.setCustomValidity('');
                     }
                 });
+            });
+
+            // Gender selection validation
+            document.getElementById('gender').addEventListener('change', function() {
+                addValidationStyling(this, this.value !== '');
+            });
+
+            // Form Validation
+            function validateForm() {
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const mobile = document.getElementById('mobile').value.trim();
+                const gender = document.getElementById('gender').value;
+
+                if (!firstName || firstName.length < 2) {
+                    showMessage('First name must be at least 2 characters long.', 'error');
+                    document.getElementById('firstName').focus();
+                    return false;
+                }
+
+                if (!lastName || lastName.length < 2) {
+                    showMessage('Last name must be at least 2 characters long.', 'error');
+                    document.getElementById('lastName').focus();
+                    return false;
+                }
+
+                if (!mobile || !/^[0-9]{10}$/.test(mobile)) {
+                    showMessage('Please enter a valid 10-digit mobile number.', 'error');
+                    document.getElementById('mobile').focus();
+                    return false;
+                }
+
+                if (!gender) {
+                    showMessage('Please select your gender.', 'error');
+                    document.getElementById('gender').focus();
+                    return false;
+                }
+
+                return true;
             }
+
+            // Form Submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (isSubmitting) return;
+
+                if (!validateForm()) return;
+
+                setLoading(true);
+
+                try {
+                    // Simulate form submission
+                    const formData = new FormData(form);
+                    
+                    // Add the image file if selected
+                    if (currentImageFile) {
+                        formData.set('profilePicture', currentImageFile);
+                    }
+
+                    // Simulate API call
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    showMessage('🎉 Profile updated successfully!');
+                    
+                    // Reset upload status
+                    uploadStatus.textContent = '';
+                    currentImageFile = null;
+
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    showMessage('Failed to update profile. Please try again.', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            // Keyboard navigation improvements
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') {
+                    e.preventDefault();
+                    const inputs = Array.from(form.querySelectorAll('input:not([readonly]), select'));
+                    const currentIndex = inputs.indexOf(e.target);
+                    const nextInput = inputs[currentIndex + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
+
+            // Initialize form with placeholder data (in real app, this would come from server)
+            function initializeForm() {
+                // This would typically be populated from server-side template
+                // For demo purposes, using placeholder data
+                document.getElementById('firstName').value = 'John';
+                document.getElementById('lastName').value = 'Doe';
+                document.getElementById('email').value = 'john.doe@example.com';
+                document.getElementById('mobile').value = '1234567890';
+                document.getElementById('gender').value = 'Male';
+                
+                // Update validation styling for pre-filled fields
+                nameFields.forEach(field => {
+                    if (field.value) addValidationStyling(field, field.value.length >= 2);
+                });
+                
+                if (mobileInput.value) {
+                    addValidationStyling(mobileInput, /^[0-9]{10}$/.test(mobileInput.value));
+                }
+                
+                if (document.getElementById('gender').value) {
+                    addValidationStyling(document.getElementById('gender'), true);
+                }
+            }
+
+            // Initialize the form
+            initializeForm();
         });
     </script>
 </body>

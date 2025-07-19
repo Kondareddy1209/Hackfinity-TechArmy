@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Update Product • MyGreenHome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-morphism {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .form-container:hover {
+            box-shadow: 
+                0 35px 70px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .floating-label {
+            position: relative;
+            margin-bottom: 2rem;
+            group: float;
+        }
+
+        .floating-label input,
+        .floating-label textarea,
+        .floating-label select {
+            width: 100%;
+            padding: 1.25rem 1rem 0.75rem 1rem;
+            border-radius: 16px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .floating-label select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+            padding-right: 3rem;
+        }
+
+        .floating-label input:focus,
+        .floating-label textarea:focus,
+        .floating-label select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 
+                0 0 0 4px rgba(34, 197, 94, 0.1),
+                0 8px 25px rgba(34, 197, 94, 0.15);
+        }
+
+        .floating-label label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            font-size: 1rem;
+            color: #6b7280;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            padding: 0 0.5rem;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .floating-label input:focus + label,
+        .floating-label textarea:focus + label,
+        .floating-label select:focus + label,
+        .floating-label input:not(:placeholder-shown) + label,
+        .floating-label textarea:not(:placeholder-shown) + label,
+        .floating-label select:not([value=""]) + label,
+        .floating-label.has-value label {
+            top: -0.75rem;
+            left: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--primary);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+            font-weight: 600;
+            transform: scale(0.95);
+        }
+
+        .image-upload-area {
+            border: 2px dashed rgba(34, 197, 94, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-upload-area:hover,
+        .image-upload-area.drag-over {
+            border-color: var(--primary);
+            background: rgba(34, 197, 94, 0.05);
+            transform: scale(1.02);
+        }
+
+        .image-upload-area.has-image {
+            padding: 1rem;
+            border-style: solid;
+            border-color: var(--primary);
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .btn-danger {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            text-decoration: none;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 
+                0 4px 15px rgba(34, 197, 94, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 
+                0 8px 25px rgba(34, 197, 94, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: white;
+            box-shadow: 
+                0 4px 15px rgba(100, 116, 139, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 
+                0 8px 25px rgba(100, 116, 139, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 
+                0 4px 15px rgba(239, 68, 68, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-danger:hover {
+            box-shadow: 
+                0 8px 25px rgba(239, 68, 68, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .message-success,
+        .message-error {
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message-success {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #15803d;
+        }
+
+        .message-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .header-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(10deg); }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .input-group {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-left: 1rem;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <nav class="glass-morphism sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-xl flex items-center justify-center">
+                        <i data-lucide="leaf" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">Agent seller</h1>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="/dashboard" class="text-white hover:text-green-300 transition-all duration-300 flex items-center gap-2">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        Dashboard
+                    </a>
+                    <a href="/products" class="text-white hover:text-green-300 transition-all duration-300 flex items-center gap-2">
+                        <i data-lucide="package" class="w-4 h-4"></i>
+                        Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-grow p-6 w-full">
+        <div class="form-container max-w-5xl mx-auto mt-8 p-10 rounded-3xl">
+            <div class="text-center mb-12">
+                <div class="relative inline-flex items-center justify-center w-24 h-24 mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i data-lucide="package-plus" class="w-10 h-10 text-white"></i>
+                    </div>
+                </div>
+                <h2 class="text-5xl font-bold header-gradient mb-6" id="formTitle">Add New Product</h2>
+                <div class="max-w-3xl mx-auto">
+                    <p class="text-xl text-gray-600 leading-relaxed mb-4" id="formSubtitle">
+                        Create a new product entry for your sustainable marketplace
+                    </p>
+                    <div class="flex items-center justify-center gap-6">
+                        <div class="flex items-center gap-2 text-sm text-gray-500">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            <span>All fields are validated in real-time</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Update Mode</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="updateModeToggle" onchange="toggleUpdateMode()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="messageContainer" class="mb-8">
+                </div>
+
+            <form id="productForm" class="space-y-8">
+                <input type="hidden" id="productId" name="productId">
+                
+                <div class="form-grid">
+                    <div class="floating-label input-group lg:col-span-2">
+                        <input type="text" id="name" name="name" placeholder=" " required autocomplete="off">
+                        <label for="name">
+                            <i data-lucide="tag" class="w-4 h-4"></i>
+                            Product Name
+                        </label>
+                    </div>
+                </div>
+
+                <div class="floating-label input-group">
+                    <textarea id="description" name="description" rows="4" placeholder=" " required></textarea>
+                    <label for="description">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                        Product Description
+                    </label>
+                </div>
+
+                <div class="form-grid">
+                    <div class="floating-label input-group">
+                        <input type="number" id="price" name="price" step="0.01" min="0" placeholder=" " required>
+                        <label for="price">
+                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                            Price (USD)
+                        </label>
+                    </div>
+
+                    <div class="floating-label input-group">
+                        <select id="category" name="category" required>
+                            <option value="">Choose Category</option>
+                            <option value="Agriculture">🌱 Agriculture & Farming</option>
+                            <option value="Handicrafts">🎨 Handicrafts & Arts</option>
+                            <option value="Food & Groceries">🥬 Food & Groceries</option>
+                            <option value="Retail">🏪 Retail & Commerce</option>
+                            <option value="Sustainable Living">♻️ Sustainable Living</option>
+                            <option value="Other">📦 Other</option>
+                        </select>
+                        <label for="category">
+                            <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+                            Product Category
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="image" class="w-5 h-5"></i>
+                        Product Image
+                    </h3>
+                    
+                    <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageInput').click()">
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                        
+                        <div id="uploadPrompt" class="text-center">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="upload" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-700 mb-2">Upload Product Image</h4>
+                            <p class="text-gray-500 mb-4">Click to browse or drag and drop your image here</p>
+                            <div class="text-sm text-gray-400">
+                                <span>Supports: JPG, PNG, GIF up to 10MB</span>
+                            </div>
+                        </div>
+
+                        <div id="imagePreviewContainer" style="display: none;" class="text-center">
+                            <img id="imagePreview" class="image-preview mx-auto mb-4" alt="Product preview">
+                            <div class="flex justify-center gap-4">
+                                <button type="button" onclick="changeImage()" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                    Change Image
+                                </button>
+                                <button type="button" onclick="removeImage()" class="btn-danger">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="floating-label input-group">
+                    <input type="text" id="keywords" name="keywords" placeholder=" ">
+                    <label for="keywords">
+                        <i data-lucide="hash" class="w-4 h-4"></i>
+                        Search Keywords (comma-separated, optional)
+                    </label>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
+                    <button type="button" onclick="goBack()" class="btn-secondary">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span>Back to Dashboard</span>
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn-primary">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                        <span id="submitBtnText">Add Product</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="glass-morphism mt-20">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="leaf" class="w-4 h-4"></i>
+                    </div>
+                    <span class="text-white font-semibold">MyGreenHome</span>
+                </div>
+                <p class="text-gray-300">&copy; 2024 MyGreenHome. Building a sustainable future together.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let isUpdateMode = false;
+        let selectedImage = null;
+        let currentProduct = null; // This will hold product data when in update mode
+
+        // Enhanced form handling
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            const form = document.getElementById('productForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const messageContainer = document.getElementById('messageContainer');
+            const productIdInput = document.getElementById('productId');
+            const nameInput = document.getElementById('name');
+            const descriptionInput = document.getElementById('description');
+            const priceInput = document.getElementById('price');
+            const categorySelect = document.getElementById('category');
+            const keywordsInput = document.getElementById('keywords');
+            const imageUrlInput = document.getElementById('imageUrl'); // Not present in HTML, used in update mode logic
+
+            // Setup floating labels with enhanced validation
+            setupFloatingLabels();
+            setupFormValidation();
+            setupDragAndDrop(); // Setup drag and drop for image upload
+            
+            form.addEventListener('submit', handleFormSubmit);
+
+            // Check if we're in update mode based on URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const productIdFromUrl = urlParams.get('id'); // Get 'id' from URL for update mode
+            if (productIdFromUrl) {
+                // Manually set updateModeToggle state and call toggleUpdateMode
+                // as there is no physical checkbox in the HTML for it.
+                isUpdateMode = true; // Set global flag
+                toggleUpdateMode(); // Call function to switch UI
+                loadProductForUpdate(productIdFromUrl);
+            } else {
+                 isUpdateMode = false; // Ensure it's explicitly false when adding a new product
+                 toggleUpdateMode(); // Set initial UI for 'Add Product'
+            }
+        });
+
+        // Function to toggle between Add and Update mode UI
+        function toggleUpdateMode() {
+            const formTitle = document.getElementById('formTitle');
+            const formSubtitle = document.getElementById('formSubtitle');
+            const submitBtnText = document.getElementById('submitBtnText');
+            const submitBtn = document.getElementById('submitBtn');
+            const productIdInput = document.getElementById('productId'); // Ensure productId is always hidden
+
+            // Note: The toggle switch for `updateModeToggle` from original code
+            // seems to be for a different UI (Add/Edit) than this form is.
+            // This form is loaded directly as 'Add Product', or for 'Update Product' via URL param.
+            // So, `isUpdateMode` is set by URL param, not a UI toggle on this page.
+            
+            if (isUpdateMode) {
+                formTitle.textContent = 'Update Product';
+                formSubtitle.textContent = 'Modify existing product information in your sustainable marketplace.';
+                submitBtnText.textContent = 'Update Product';
+                submitBtn.innerHTML = '<i data-lucide="edit" class="w-5 h-5"></i><span id="submitBtnText">Update Product</span>';
+                lucide.createIcons();
+                productIdInput.type = 'hidden'; // Ensure product ID field is hidden if update mode
+            } else {
+                formTitle.textContent = 'Add New Product';
+                formSubtitle.textContent = 'Create a new product entry for your sustainable marketplace.';
+                submitBtnText.textContent = 'Add Product';
+                submitBtn.innerHTML = '<i data-lucide="plus-circle" class="w-5 h-5"></i><span id="submitBtnText">Add Product</span>';
+                lucide.createIcons();
+                productIdInput.value = ''; // Clear ID if switching to Add mode
+                document.getElementById('productForm').reset(); // Clear form
+                removeImage(); // Clear image preview
+                clearFloatingLabels(); // Reset floating labels
+            }
+        }
+
+        // Function to load product data into the form for update mode
+        async function loadProductForUpdate(productId) {
+            try {
+                // In a real application, you would fetch this from your backend API
+                // Example: const response = await fetch(`/api/products/${productId}`);
+                // const data = await response.json();
+                
+                // For now, using a placeholder for fetched product data
+                // This would be replaced by actual data from your MongoDB Product model
+                // fetched from the server by a dedicated API route.
+                const response = await fetch(`/api/admin/products/${productId}`); // Assuming you create this API route
+                const data = await response.json(); // Assuming API returns JSON
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Failed to load product data.');
+                }
+
+                currentProduct = data.product; // Set currentProduct from fetched data
+                
+                document.getElementById('productId').value = currentProduct.id || currentProduct._id;
+                document.getElementById('name').value = currentProduct.name;
+                document.getElementById('description').value = currentProduct.description;
+                document.getElementById('price').value = currentProduct.price;
+                document.getElementById('category').value = currentProduct.category;
+                document.getElementById('keywords').value = Array.isArray(currentProduct.keywords) ? currentProduct.keywords.join(', ') : currentProduct.keywords || '';
+                
+                if (currentProduct.imageUrl) {
+                    loadExistingImage(currentProduct.imageUrl);
+                } else {
+                    removeImage(); // Ensure no old image is shown if no URL
+                }
+                
+                updateAllFloatingLabels(); // Ensure labels are correctly positioned
+                showMessage('Product loaded for editing. Make your changes and click Update Product.', 'success');
+            } catch (error) {
+                console.error("Error loading product for update:", error);
+                showMessage(`Failed to load product for editing: ${error.message}.`, 'error');
+                // Fallback to add mode if product loading fails
+                isUpdateMode = false;
+                toggleUpdateMode();
+            }
+        }
+        
+        function loadExistingImage(imageUrl) {
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const uploadArea = document.getElementById('imageUploadArea');
+            
+            imagePreview.src = imageUrl;
+            imagePreviewContainer.style.display = 'block';
+            uploadPrompt.style.display = 'none';
+            uploadArea.classList.add('has-image');
+        }
+
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('imageUploadArea');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('drag-over'), false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('drag-over'), false);
+            });
+            
+            uploadArea.addEventListener('drop', handleDrop, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                handleImageFile(files[0]);
+            }
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleImageFile(file);
+            }
+        }
+
+        function handleImageFile(file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select a valid image file (JPG, PNG, GIF)', 'error');
+                return;
+            }
+            
+            // Validate file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                showMessage('File size must be less than 10MB', 'error');
+                return;
+            }
+            
+            selectedImage = file;
+            
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById('imagePreview');
+                const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+                const uploadPrompt = document.getElementById('uploadPrompt');
+                const uploadArea = document.getElementById('imageUploadArea');
+                
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'block';
+                uploadPrompt.style.display = 'none';
+                uploadArea.classList.add('has-image');
+                
+                showMessage(`Image "${file.name}" ready for upload.`, 'success');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function changeImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        function removeImage() {
+            selectedImage = null;
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const uploadPrompt = document.getElementById('uploadPrompt');
+            const uploadArea = document.getElementById('imageUploadArea');
+            const imageInput = document.getElementById('imageInput');
+            
+            imagePreviewContainer.style.display = 'none';
+            uploadPrompt.style.display = 'flex'; // Changed to flex for proper centering
+            uploadArea.classList.remove('has-image');
+            imageInput.value = ''; // Clear file input element
+            
+            showMessage('Image removed successfully', 'success');
+        }
+
+        function setupFloatingLabels() {
+            const floatingInputs = document.querySelectorAll('.floating-label input, .floating-label textarea, .floating-label select');
+            
+            floatingInputs.forEach(input => {
+                input.addEventListener('input', updateFloatingLabel);
+                input.addEventListener('blur', updateFloatingLabel);
+                input.addEventListener('focus', updateFloatingLabel);
+                
+                updateFloatingLabel.call(input); // Call on initial load
+                
+                function updateFloatingLabel() {
+                    const parent = this.closest('.floating-label');
+                    if (this.value !== '' || this.matches(':focus')) {
+                        parent.classList.add('has-value');
+                    } else {
+                        parent.classList.remove('has-value');
+                    }
+                }
+            });
+        }
+
+        function updateAllFloatingLabels() {
+            document.querySelectorAll('.floating-label input, .floating-label textarea, .floating-label select').forEach(input => {
+                const parent = input.closest('.floating-label');
+                if (input.value !== '') {
+                    parent.classList.add('has-value');
+                } else {
+                    parent.classList.remove('has-value');
+                }
+            });
+        }
+
+        function clearFloatingLabels() {
+            document.querySelectorAll('.floating-label').forEach(label => {
+                label.classList.remove('has-value');
+            });
+        }
+
+        function setupFormValidation() {
+            const inputs = document.querySelectorAll('input[required], textarea[required], select[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', validateField);
+                input.addEventListener('input', clearValidation); // Clear validation feedback on input
+                
+                function validateField() {
+                    const parent = this.closest('.floating-label') || this.closest('.input-group'); // Check closest parent for styling
+                    if (!this.validity.valid) {
+                        this.style.borderColor = '#ef4444'; // Red border on invalid
+                        if(parent) parent.classList.add('invalid'); // Add class for more complex styling
+                    } else {
+                        this.style.borderColor = ''; // Reset border
+                        if(parent) parent.classList.remove('invalid');
+                    }
+                }
+                
+                function clearValidation() {
+                    const parent = this.closest('.floating-label') || this.closest('.input-group');
+                    this.style.borderColor = '';
+                    if(parent) parent.classList.remove('invalid');
+                }
+            });
+        }
+
+        async function handleFormSubmit(e) { // Changed to async
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('productForm');
+            
+            // Client-side validation before sending
+            if (!form.checkValidity()) {
+                showMessage('Please fill in all required fields correctly.', 'error');
+                form.reportValidity(); // Show native browser validation messages
+                return;
+            }
+
+            // Set loading state
+            const originalContent = submitBtn.innerHTML;
+            const actionText = isUpdateMode ? 'Updating' : 'Adding';
+            submitBtn.innerHTML = `<div class="loading-spinner"></div><span>${actionText} Product...</span>`;
+            submitBtn.disabled = true;
+            submitBtn.style.pointerEvents = 'none'; // Prevent re-clicks
+
+            const formData = new FormData(form); // Use FormData for both text and files
+            
+            // If in update mode, ensure productId is sent
+            if (isUpdateMode && currentProduct) {
+                formData.set('productId', currentProduct.id || currentProduct._id);
+            }
+
+            // Append selectedImage manually, if any. FormData from form already includes file input,
+            // but if you have a custom file input and 'selectedImage' is used, explicitly append.
+            if (selectedImage) {
+                 formData.set('image', selectedImage); // 'image' is the field name backend expects
+            } else if (isUpdateMode && currentProduct && currentProduct.imageUrl && !document.getElementById('imageInput').value) {
+                // If in update mode, no new image selected, and there was an existing image,
+                // you might want to send a flag or the old URL.
+                // For simplicity, if selectedImage is null, backend should understand to keep existing.
+                // Or you could send `formData.append('currentImageUrl', currentProduct.imageUrl);`
+            }
+
+            try {
+                // Determine the correct backend endpoint based on mode
+                // IMPORTANT: The `method` here determines which backend route (POST or PUT) is hit.
+                // You only have a POST /admin/products. For PUT, you need a new route.
+                const url = isUpdateMode ? `/admin/products/${currentProduct.id || currentProduct._id}` : '/admin/products';
+                const method = isUpdateMode ? 'PUT' : 'POST'; // Backend needs a PUT route for update
+
+                console.log(`[Client] Sending product data: URL=${url}, Method=${method}`); // Debug log
+
+                const response = await fetch(url, {
+                    method: method,
+                    body: formData // FormData automatically sets 'Content-Type: multipart/form-data'
+                });
+
+                const result = await response.json(); // Expect JSON response from backend
+
+                if (response.ok) { // Check if HTTP status is 2xx
+                    const successMessage = isUpdateMode 
+                        ? '🎉 Product updated successfully! Changes have been saved.'
+                        : '🎉 Product added successfully! It will appear in the catalog shortly.';
+                    showMessage(result.message || successMessage, 'success');
+                    
+                    if (!isUpdateMode) {
+                        form.reset(); // Clear form fields after successful add
+                        removeImage(); // Clear image preview if adding
+                        clearFloatingLabels(); // Reset floating labels
+                    }
+                    // For update mode, keep data in form, or reload if needed.
+                    // If you want the list to auto-update, you would navigate back to /user/all-products
+                    // or trigger a reload of the product list there.
+
+                } else {
+                    // Server-side validation or other errors (e.g., 400, 409, 500)
+                    const errorMessage = result.error || 'An unexpected error occurred.';
+                    showMessage(`❌ ${errorMessage}`, 'error');
+                    console.error("[Client] Server response error:", result); // Log full error from server
+                }
+            } catch (networkError) {
+                console.error('Network Error during product submission:', networkError);
+                showMessage('❌ Network error. Could not connect to the server. Please check your internet connection.', 'error');
+            } finally {
+                // Reset button state
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+                submitBtn.style.pointerEvents = '';
+                lucide.createIcons();
+            }
+        }
+
+        // Message display function
+        function showMessage(text, type) {
+            const container = document.getElementById('messageContainer');
+            const messageClass = type === 'success' ? 'message-success' : 'message-error';
+            const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+            
+            container.innerHTML = `
+                <div class="${messageClass} p-6 rounded-xl mb-6 text-center font-medium text-lg">
+                    <i data-lucide="${icon}" class="w-6 h-6 inline mr-3"></i>
+                    ${text}
+                </div>
+            `;
+            
+            lucide.createIcons(); // Ensure icons within message are rendered
+            
+            // Auto-hide after 6 seconds
+            setTimeout(() => {
+                const messageEl = container.firstElementChild;
+                if (messageEl) {
+                    messageEl.style.opacity = '0';
+                    messageEl.style.transform = 'translateY(-20px) scale(0.95)';
+                    setTimeout(() => {
+                        container.innerHTML = '';
+                    }, 300);
+                }
+            }, 6000);
+        }
+
+        function goBack() {
+            window.history.back(); // Simple back navigation
+        }
+
+        // Sample function to demonstrate product loading in update mode (should be replaced by API call)
+        // This function is currently NOT used directly by the fixed loadProductForUpdate above,
+        // but it's part of the provided original code.
+        function loadSampleProducts() {
+            const products = [
+                {
+                    id: '1',
+                    name: 'Organic Bamboo Toothbrush',
+                    description: 'Eco-friendly bamboo toothbrush with soft bristles. Biodegradable handle made from sustainable bamboo.',
+                    price: 8.99,
+                    category: 'Sustainable Living',
+                    keywords: 'bamboo, toothbrush, eco-friendly, biodegradable, organic'
+                },
+                {
+                    id: '2',
+                    name: 'Handwoven Cotton Tote Bag',
+                    description: 'Beautiful handwoven cotton tote bag made by local artisans. Perfect for shopping and daily use.',
+                    price: 15.50,
+                    category: 'Handicrafts',
+                    keywords: 'cotton, tote bag, handwoven, artisan, sustainable'
+                }
+            ];
+            
+            return products;
+        }
+    </script>
+</body>
+</html>

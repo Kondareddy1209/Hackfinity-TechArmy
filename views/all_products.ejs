@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,158 +8,707 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
         body {
-            font-family: 'Inter', sans-serif;
-        }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-        .product-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
         }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+        .main-content-wrapper {
+            flex-grow: 1;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        .search-input-container {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .search-input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            z-index: 2;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .search-btn {
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .search-btn:hover::before {
+            left: 100%;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-btn.primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .search-btn.secondary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .search-btn.tertiary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
         .product-card-image-container {
             width: 100%;
-            height: 200px; /* Fixed height for consistency */
+            height: 240px;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
+            position: relative;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
         }
+
         .product-card-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures image covers the area */
+            object-fit: cover;
+            transition: transform 0.4s ease;
         }
+
+        .product-card:hover .product-card-image {
+            transform: scale(1.1);
+        }
+
         .product-card-body {
-            padding: 16px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
+            padding: 24px;
+            position: relative;
+            z-index: 2;
         }
-        .product-card-body h3 {
+
+        .product-card-title {
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-        }
-        .product-card-body p {
-            font-size: 0.95rem;
-            color: #4b5563;
-            line-height: 1.5;
+            color: #1f2937;
             margin-bottom: 12px;
+            line-height: 1.4;
+            background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
+        .product-card-description {
+            font-size: 0.95rem;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-card-keywords {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
         .product-card-footer {
-            padding: 16px;
-            background-color: #f9fafb;
-            border-top: 1px solid #e5e7eb;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-top: 1px solid #e5e7eb;
+            position: relative;
+            z-index: 2;
         }
-        .product-card-footer .price {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #22c55e; /* green-500 */
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .product-card-footer .category {
+
+        .product-category {
             font-size: 0.85rem;
             color: #6b7280;
-            background-color: #e5e7eb;
-            padding: 4px 8px;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 2rem;
+        }
+
+        .loading-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
         .no-products-message {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 40px;
-            font-style: italic;
+            padding: 4rem 2rem;
             color: #6b7280;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
+
+        .search-status {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+        }
+
         .back-to-dashboard-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 40px;
-            padding: 12px 24px;
-            background-color: #6b7280; /* gray-500 */
+            gap: 12px;
+            margin-top: 3rem;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
             color: white;
-            border-radius: 8px;
+            border-radius: 16px;
             font-weight: 600;
             text-decoration: none;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
         }
+
+        .back-to-dashboard-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .back-to-dashboard-link:hover::before {
+            left: 100%;
+        }
+
         .back-to-dashboard-link:hover {
-            background-color: #4b5563; /* gray-600 */
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                margin: 10px;
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-input-container {
+                min-width: auto;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-section {
+                padding: 1.5rem 1rem;
+                margin-bottom: 2rem;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Include the navbar partial -->
+<body>
     <%- include('partials/navbar') %>
 
-    <!-- Main Content Area -->
-    <div class="flex-grow p-6 max-w-6xl mx-auto w-full">
-        <h2 class="text-3xl font-bold text-center text-green-700 mb-8 mt-4">All Products in Catalog</h2>
-        <p class="text-center text-lg text-gray-600 mb-10">Browse products available from various sources.</p>
+    <div class="main-content-wrapper">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    🌱 Product Catalog
+                </h1>
+                <p class="text-xl md:text-2xl opacity-90 font-light">
+                    Discover eco-friendly products for your green lifestyle
+                </p>
+            </div>
+        </div>
 
-        <% if (products && products.length > 0) { %>
-            <div class="product-grid">
-                <% products.forEach(product => { %>
-                    <div class="product-card">
-                        <div class="product-card-image-container">
-                            <img src="<%= product.imageUrl || '/images/default_product.png' %>" alt="<%= product.name %>" class="product-card-image">
-                        </div>
-                        <div class="product-card-body">
-                            <h3 class="text-xl"><%= product.name %></h3>
-                            <p><%= product.description %></p>
-                            <% if (product.keywords && product.keywords.length > 0) { %>
-                                <p class="text-sm text-gray-500 mt-auto">Keywords: <%= product.keywords.join(', ') %></p>
-                            <% } %>
-                        </div>
-                        <div class="product-card-footer">
-                            <span class="price">$<%= product.price.toFixed(2) %></span>
-                            <span class="category"><%= product.category %></span>
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-container">
+                    <input type="text" id="productSearchInput" placeholder="Search for eco-friendly products..."
+                        class="search-input">
+                    <svg class="search-input-icon icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                </div>
+                <div class="search-controls">
+                    <button type="button" id="micSearchBtn" class="search-btn primary" title="Voice Search">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" x2="12" y1="19" y2="22" />
+                            <line x1="8" x2="16" y1="22" y2="22" />
+                        </svg>
+                    </button>
+                    <label for="imageSearchInput" class="search-btn secondary" title="Image Search">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                            <circle cx="9" cy="9" r="2" />
+                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                        </svg>
+                        <input type="file" id="imageSearchInput" accept="image/*" class="hidden">
+                    </label>
+                    <button type="button" id="resetSearchBtn" class="search-btn tertiary" title="Reset Search">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                            <path d="M21 3v5h-5" />
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                            <path d="M8 16H3v5" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="searchStatus" class="search-status"></div>
+
+        <div class="product-grid" id="dynamicProductGrid">
+            <div class="loading-grid">
+                <% for(let i=0; i < 6; i++) { %>
+                    <div class="loading-card">
+                        <div class="skeleton h-60"></div>
+                        <div class="p-6">
+                            <div class="skeleton h-6 mb-3 rounded"></div>
+                            <div class="skeleton h-4 mb-2 rounded"></div>
+                            <div class="skeleton h-4 mb-4 rounded w-3/4"></div>
+                            <div class="flex justify-between items-center">
+                                <div class="skeleton h-8 w-24 rounded"></div>
+                                <div class="skeleton h-6 w-20 rounded-full"></div>
+                            </div>
                         </div>
                     </div>
-                <% }); %>
+                    <% } %>
             </div>
-        <% } else { %>
-            <div class="no-products-message">
-                <p>No products found in the general catalog yet.</p>
-                <p>Admins can add products via their dashboard.</p>
-            </div>
-        <% } %>
+        </div>
 
-        <div class="flex justify-center">
+        <div class="flex justify-center mt-8">
             <a href="/user_dashboard" class="back-to-dashboard-link">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i> Back to Dashboard
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="m12 19-7-7 7-7" />
+                    <path d="M19 12H5" />
+                </svg>
+                <span>Back to Dashboard</span>
             </a>
         </div>
     </div>
 
-    <!-- Include the footer partial -->
     <%- include('partials/footer') %>
 
     <script>
-        // Initialize Lucide icons after the DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+            const productSearchInput = document.getElementById('productSearchInput');
+            const micSearchBtn = document.getElementById('micSearchBtn');
+            const imageSearchInput = document.getElementById('imageSearchInput');
+            const resetSearchBtn = document.getElementById('resetSearchBtn');
+            const searchStatus = document.getElementById('searchStatus');
+            const dynamicProductGrid = document.getElementById('dynamicProductGrid');
+
+            // Store all products initially fetched from the server via EJS
+            let allProducts = <%- JSON.stringify(products || []) %>; 
+            
+            // Debugging: Log the contents of allProducts on client-side
+            console.log("[Client] allProducts received:", allProducts); 
+            console.log("[Client] Number of products received:", allProducts.length); 
+
+            // Function to render products in the grid
+            function renderProducts(productsToRender) {
+                console.log("[Client] renderProducts called with:", productsToRender);
+                dynamicProductGrid.innerHTML = ''; // Clear existing content (including skeleton)
+                
+                if (productsToRender.length === 0) {
+                    dynamicProductGrid.innerHTML = '<div class="no-products-message">🔍 No products found matching your criteria.<br><span style="font-size: 1rem; margin-top: 1rem; display: block; opacity: 0.7;">Try adjusting your search terms.</span></div>';
+                    return;
+                }
+                
+                productsToRender.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('product-card');
+                    // Ensure all product properties are safely accessed with || defaults
+                    productCard.innerHTML = `
+                        <div class="product-card-image-container">
+                            <img src="${product.imageUrl || '/images/default_product.png'}" alt="${product.name || 'Product Image'}" class="product-card-image" onerror="this.src='/images/default_product.png'">
+                        </div>
+                        <div class="product-card-body">
+                            <h3 class="product-card-title">${product.name || 'Untitled Product'}</h3>
+                            <p class="product-card-description">${product.description || 'No description available.'}</p>
+                            ${product.keywords && Array.isArray(product.keywords) && product.keywords.length > 0 ? 
+                                `<div class="product-card-keywords">🏷️ ${product.keywords.join(', ')}</div>` : 
+                                ''}
+                        </div>
+                        <div class="product-card-footer">
+                            <span class="product-price">$${(parseFloat(product.price) || 0).toFixed(2)}</span>
+                            <span class="product-category">${product.category || 'Uncategorized'}</span>
+                        </div>
+                    `;
+                    dynamicProductGrid.appendChild(productCard);
+                });
+            }
+
+            // Initial render of all products using the data passed from the server
+            renderProducts(allProducts);
+
+            // --- Text Search ---
+            let searchTimeout;
+            productSearchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchStatus.textContent = ''; // Clear status on new input
+                searchTimeout = setTimeout(() => {
+                    performClientSideSearch(productSearchInput.value.trim());
+                }, 300); // Debounce search
+            });
+
+            // --- Voice Search (Web Speech API) ---
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+
+                micSearchBtn.addEventListener('click', () => {
+                    micSearchBtn.innerHTML = '<svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+                    searchStatus.innerHTML = '🎤 Listening... Speak now.';
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Speech recognition start error:", e);
+                        searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Microphone error. Please allow access.</span>';
+                        resetMicButton();
+                    }
+                });
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    productSearchInput.value = transcript;
+                    searchStatus.innerHTML = `✨ Transcribed: "${transcript}"`;
+                    performClientSideSearch(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Voice search error: ${event.error}</span>`;
+                    console.error('Speech recognition error:', event.error);
+                    resetMicButton();
+                };
+
+                recognition.onend = () => {
+                    resetMicButton();
+                    if (searchStatus.textContent.includes('Listening')) {
+                        searchStatus.innerHTML = '🔇 No speech detected. Please try again.';
+                    }
+                };
+
+                function resetMicButton() {
+                    micSearchBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="8" x2="16" y1="22" y2="22"/></svg>';
+                }
+            } else {
+                micSearchBtn.disabled = true;
+                micSearchBtn.style.opacity = '0.5';
+                searchStatus.innerHTML = '⚠️ Voice search not supported in this browser.';
+            }
+
+            // --- Image Search ---
+            imageSearchInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    searchStatus.textContent = '';
+                    return;
+                }
+
+                if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/i) || file.size > 5 * 1024 * 1024) {
+                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Invalid image format or size (JPG/PNG/GIF, max 5MB).</span>';
+                    event.target.value = '';
+                    return;
+                }
+
+                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 🔍 Analyzing image...';
+
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                try {
+                    const response = await fetch('/api/search-by-image', { 
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        const searchKeywords = Array.isArray(result.keywords) ? result.keywords.join(', ') : result.query || '';
+                        productSearchInput.value = searchKeywords;
+                        searchStatus.innerHTML = `✨ Image analysis complete. Searching for: "${searchKeywords}"`;
+                        performClientSideSearch(searchKeywords);
+                    } else {
+                        searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Error analyzing image: ${result.message || 'Unknown error'}.</span>`;
+                    }
+                } catch (error) {
+                    console.error('Image search API error:', error);
+                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Network error analyzing image</span>';
+                } finally {
+                    event.target.value = '';
+                }
+            });
+
+            // --- Reset Search ---
+            resetSearchBtn.addEventListener('click', () => {
+                productSearchInput.value = '';
+                searchStatus.textContent = '';
+                renderProducts(allProducts);
+            });
+
+            // --- Core Client-Side Search Logic ---
+            function performClientSideSearch(query) {
+                if (!query) {
+                    renderProducts(allProducts);
+                    searchStatus.textContent = '';
+                    return;
+                }
+
+                const lowerCaseQuery = query.toLowerCase();
+                const filteredProducts = allProducts.filter(product => {
+                    if (product.name && product.name.toLowerCase().includes(lowerCaseQuery)) return true;
+                    if (product.description && product.description.toLowerCase().includes(lowerCaseQuery)) return true;
+                    if (product.category && product.category.toLowerCase().includes(lowerCaseQuery)) return true;
+                    
+                    if (product.keywords) {
+                        if (Array.isArray(product.keywords)) {
+                            return product.keywords.some(keyword => typeof keyword === 'string' && keyword.toLowerCase().includes(lowerCaseQuery));
+                        } else if (typeof product.keywords === 'string') {
+                            return product.keywords.toLowerCase().includes(lowerCaseQuery);
+                        }
+                    }
+                    
+                    return false;
+                });
+
+                renderProducts(filteredProducts);
+                searchStatus.innerHTML = `📊 Found ${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} for "${query}".`;
+            }
         });
     </script>
 </body>
+
 </html>

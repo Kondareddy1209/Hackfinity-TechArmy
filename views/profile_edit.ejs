@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile • MyGreenHome</title>
+    <title>Profile • Agent Seller</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
+        /* General reset and base body styling */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: #f0f2f5;
+            /* Consistent with your global style.css */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            /* For sticky footer and proper content flow */
         }
-        .form-container {
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: #fff;
+
+        /* Adjusted main content wrapper for better spacing */
+        .main-content-wrapper {
+            flex-grow: 1;
+            /* Allows content to take available space */
+            padding: 24px;
+            /* Global padding */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            /* Center the profile container */
+            align-items: flex-start;
+            /* Align to top, not center (useful for long forms) */
+        }
+
+        /* Profile Container styling */
+        .profile-container {
+            background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 700px;
+            /* Max width consistent with your older profile_edit.ejs */
+            width: 100%;
+            /* Take full width up to max-width */
+            margin: 0 auto;
+            /* Ensures centering within main-content-wrapper */
         }
+
+        /* Form input styling */
         .form-group label {
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
             display: block;
         }
+
         .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group input[type="tel"],
@@ -35,185 +73,942 @@
             font-size: 1rem;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
+
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #3b82f6; /* blue-500 */
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+            border-color: #3b82f6;
+            /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            /* blue-500 with opacity */
         }
-        .btn-primary {
-            background-color: #22c55e; /* green-500 */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+
+        /* Profile picture styling */
+        .profile-picture-container {
+            position: relative;
+            display: inline-block;
+            /* Allows centering via text-align on parent */
         }
-        .btn-primary:hover {
-            background-color: #16a34a; /* green-600 */
-            transform: translateY(-2px);
-        }
-        .btn-secondary {
-            background-color: #6b7280; /* gray-500 */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-        .btn-secondary:hover {
-            background-color: #4b5563; /* gray-600 */
-            transform: translateY(-2px);
-        }
-        .message-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .message-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .profile-picture-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .profile-picture-upload img {
+
+        .profile-picture {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #d1d5db;
-            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
-        .profile-picture-upload input[type="file"] {
-            display: none; /* Hide default file input */
+
+        .profile-picture:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
-        .custom-file-upload {
-            border: 1px solid #3b82f6;
-            display: inline-block;
-            padding: 8px 15px;
+
+        .upload-overlay {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background-color: #3b82f6;
+            /* Blue */
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            border-radius: 8px;
-            background-color: #eff6ff; /* blue-50 */
-            color: #3b82f6;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+            transition: all 0.2s ease;
         }
-        .custom-file-upload:hover {
-            background-color: #dbeafe; /* blue-100 */
+
+        .upload-overlay:hover {
+            transform: scale(1.1);
+            background-color: #2563eb;
+            /* Darker blue on hover */
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Button styling - unified with btn-common */
+        .btn-common {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            text-decoration: none;
+            /* For anchor tags styled as buttons */
+            width: auto;
+            /* Allow buttons to size naturally, or use Tailwind w-full on mobile */
+        }
+
+        .btn-primary {
+            background-color: #22c55e;
+            /* green-500 */
+        }
+
+        .btn-primary:hover {
+            background-color: #16a34a;
+            /* green-600 */
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            /* gray-500 */
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            /* gray-600 */
+            transform: translateY(-2px);
+        }
+
+        .btn-edit-mode {
+            /* Specific style for the edit button when in view mode */
+            background-color: #3b82f6;
+            /* blue-500 */
+            color: white;
+        }
+
+        .btn-edit-mode:hover {
+            background-color: #2563eb;
+            /* blue-600 */
+        }
+
+        .btn-edit-mode:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Profile info cards */
+        .profile-info-card {
+            background: #f9fafb;
+            /* Light gray background */
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            /* Consistent radius */
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            /* Lighter shadow */
+        }
+
+        /* Message styling (consistent with prior provided code) */
+        .message {
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading state */
+        .loading .btn-primary {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .loading .btn-primary span {
+            visibility: hidden;
+            /* Hide text */
+        }
+
+        .loading .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Validation styling */
+        .form-group.field-valid .form-input {
+            border-color: #10b981;
+            /* green-500 */
+        }
+
+        .form-group.field-invalid .form-input {
+            border-color: #ef4444;
+            /* red-500 */
+        }
+
+        /* Focus styles for accessibility */
+        .form-group input:focus,
+        .form-group select:focus,
+        .btn-common:focus,
+        .upload-overlay:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Page transition */
+        .page {
+            display: none;
+            width: 100%;
+            /* Occupy full width of its parent */
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                padding: 16px;
+                /* Reduce padding on mobile */
+            }
+
+            .profile-container {
+                margin: 0;
+                /* Remove fixed margin for full width on small screens */
+                border-radius: 0;
+                /* No border radius on full-width mobile container */
+                box-shadow: none;
+                /* No shadow on full-width mobile container */
+            }
+
+            .profile-buttons {
+                flex-direction: column-reverse;
+                /* Stack buttons, Save on top */
+                gap: 12px;
+            }
+
+            .btn-common {
+                /* Apply to all relevant buttons */
+                width: 100%;
+                /* Full width buttons on mobile */
+                padding: 14px 24px;
+            }
+
+            .profile-picture {
+                /* Adjust profile picture size for smaller screens */
+                width: 100px;
+                height: 100px;
+            }
+
+            .upload-overlay {
+                /* Adjust camera icon size for smaller screens */
+                width: 32px;
+                height: 32px;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
+<body class="min-h-screen flex flex-col">
     <%- include('partials/navbar') %>
 
-    <div class="flex-grow p-6 w-full">
-        <div class="form-container">
-            <h2 class="text-3xl font-bold text-center text-blue-800 mb-8">Edit Profile</h2>
+        <div class="main-content-wrapper">
 
-            <% if (message) { %>
-                <div class="message-success"><%= message %></div>
-            <% } %>
-            <% if (error) { %>
-                <div class="message-error"><%= error %></div>
-            <% } %>
-
-            <form action="/dashboard/profile" method="POST" enctype="multipart/form-data" class="space-y-6">
-                <div class="profile-picture-upload">
-                    <img id="profilePreview" src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile Picture">
-                    <label for="profilePicture" class="custom-file-upload">
-                        <i data-lucide="image" class="w-5 h-5 inline-block align-middle mr-2"></i> Change Profile Picture
-                    </label>
-                    <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" value="<%= user.firstName || '' %>" required class="rounded-lg">
+            <div id="viewProfilePage" class="page active">
+                <div class="profile-container">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                            <i data-lucide="user-circle" class="w-8 h-8 text-blue-600"></i>
+                        </div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">My Profile</h2>
+                        <p class="text-gray-600 text-lg">View and manage your account information</p>
                     </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" value="<%= user.lastName || '' %>" required class="rounded-lg">
+
+                    <div class="flex flex-col items-center mb-8">
+                        <div class="profile-picture-container mb-4">
+                            <img id="viewProfilePicture" src="<%= user.profilePicture || '/images/default_image.png' %>"
+                                alt="Profile Picture" class="profile-picture">
+                        </div>
+                        <h3 id="viewFullName" class="text-2xl font-bold text-gray-800 mb-2">
+                            <%= user.firstName || '' %>
+                                <%= user.lastName || '' %>
+                        </h3>
+                        <p id="viewEmail" class="text-gray-600 mb-4">
+                            <%= user.email %>
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="profile-info-card">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                    <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800">Personal Information</h4>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">First Name:</span>
+                                    <span id="viewFirstName" class="font-medium text-gray-800">
+                                        <%= user.firstName || 'N/A' %>
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Last Name:</span>
+                                    <span id="viewLastName" class="font-medium text-gray-800">
+                                        <%= user.lastName || 'N/A' %>
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Gender:</span>
+                                    <span id="viewGender" class="font-medium text-gray-800">
+                                        <% if (user.gender==='Male' ) { %>👨 Male
+                                            <% } else if (user.gender==='Female' ) { %>👩 Female
+                                                <% } else if (user.gender==='Other' ) { %>🏳️‍⚧️ Other
+                                                    <% } else if (user.gender==='Prefer not to say' ) { %>🤐 Prefer not
+                                                        to say
+                                                        <% } else { %>N/A
+                                                            <% } %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-info-card">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                    <i data-lucide="phone" class="w-5 h-5 text-green-600"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800">Contact Information</h4>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Email:</span>
+                                    <span id="viewEmailDetails" class="font-medium text-gray-800 text-sm">
+                                        <%= user.email %>
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Mobile:</span>
+                                    <span id="viewMobile" class="font-medium text-gray-800">
+                                        <%= user.mobile || 'N/A' %>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="profile-buttons flex flex-col-reverse md:flex-row justify-end gap-4 pt-8 border-t border-gray-200">
+                        <a href="/user_dashboard" class="btn btn-secondary btn-common flex items-center justify-center">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                            <span>Back to Dashboard</span>
+                        </a>
+                        <button id="editProfileBtn"
+                            class="btn btn-edit-mode btn-common flex items-center justify-center">
+                            <i data-lucide="edit" class="w-5 h-5"></i>
+                            <span>Edit Profile</span>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" value="<%= user.email || '' %>" required class="rounded-lg" readonly title="Email cannot be changed directly here.">
-                    <p class="text-sm text-gray-500 mt-1">Email cannot be changed directly. Contact support if needed.</p>
-                </div>
+            <div id="editProfilePage" class="page">
+                <div class="profile-container">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                            <i data-lucide="edit" class="w-8 h-8 text-blue-600"></i>
+                        </div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Edit Your Profile</h2>
+                        <p class="text-gray-600 text-lg">Update your personal information</p>
+                    </div>
 
-                <div class="form-group">
-                    <label for="mobile">Mobile Number</label>
-                    <input type="tel" id="mobile" name="mobile" value="<%= user.mobile || '' %>" pattern="[0-9]{10}" title="Please enter a 10-digit mobile number" required class="rounded-lg">
-                </div>
+                    <div id="messageContainer">
+                        <% if (locals.message) { %>
+                            <div class="message message-success">
+                                <%= message %>
+                            </div>
+                            <% } %>
+                                <% if (locals.error) { %>
+                                    <div class="message message-error">
+                                        <%= error %>
+                                    </div>
+                                    <% } %>
+                    </div>
 
-                <div class="form-group">
-                    <label for="gender">Gender</label>
-                    <select id="gender" name="gender" required class="rounded-lg">
-                        <option value="">Select Gender</option>
-                        <option value="Male" <%= user.gender === 'Male' ? 'selected' : '' %>>Male</option>
-                        <option value="Female" <%= user.gender === 'Female' ? 'selected' : '' %>>Female</option>
-                        <option value="Other" <%= user.gender === 'Other' ? 'selected' : '' %>>Other</option>
-                    </select>
-                </div>
+                    <form id="profileForm" class="space-y-8" enctype="multipart/form-data" novalidate>
+                        <div class="flex flex-col items-center mb-8">
+                            <div class="profile-picture-container mb-4">
+                                <img id="profilePreview" src="<%= user.profilePicture || '/images/default_image.png' %>"
+                                    alt="Profile Picture" class="profile-picture">
+                                <label for="profilePicture" class="upload-overlay" title="Change profile picture">
+                                    <i data-lucide="camera" class="w-5 h-5"></i>
+                                </label>
+                                <input type="file" id="profilePicture" name="profilePicture" accept="image/*"
+                                    class="hidden">
+                            </div>
+                            <p class="text-sm text-gray-500 text-center max-w-xs">
+                                Click the camera icon to upload a new profile picture.
+                                <br>Supported formats: JPG, PNG, GIF (Max 5MB)
+                            </p>
+                            <div id="uploadStatus" class="text-xs text-center mt-2 min-h-[16px]"></div>
+                        </div>
 
-                <div class="flex justify-end gap-4 mt-8">
-                    <button type="submit" class="btn-primary flex items-center space-x-2">
-                        <i data-lucide="save" class="w-5 h-5"></i>
-                        <span>Save Changes</span>
-                    </button>
-                    <a href="/user_dashboard" class="btn-secondary flex items-center space-x-2">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                        <span>Back to Dashboard</span>
-                    </a>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-3">
+                                    First Name <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="firstName" name="firstName" required minlength="2"
+                                        maxlength="50" class="form-input w-full px-4 py-3 rounded-xl"
+                                        placeholder="Enter your first name" value="<%= user.firstName || '' %>">
+                                    <span class="field-validation-icon"></span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Minimum 2 characters</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lastName" class="block text-sm font-semibold text-gray-700 mb-3">
+                                    Last Name <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="lastName" name="lastName" required minlength="2"
+                                        maxlength="50" class="form-input w-full px-4 py-3 rounded-xl"
+                                        placeholder="Enter your last name" value="<%= user.lastName || '' %>">
+                                    <span class="field-validation-icon"></span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Minimum 2 characters</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-3">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                                <input type="email" id="email" name="email" required readonly
+                                    class="form-input w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 cursor-not-allowed"
+                                    placeholder="your.email@example.com" value="<%= user.email || '' %>"
+                                    title="Email cannot be changed here">
+                                <span class="field-validation-icon"></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                                Email cannot be changed directly. Contact support if needed.
+                            </p>
+                            <div id="emailValidation" class="text-xs mt-1 min-h-[16px]"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mobile" class="block text-sm font-semibold text-gray-700 mb-3">
+                                Mobile Number <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i data-lucide="phone" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                                <input type="tel" id="mobile" name="mobile" required pattern="[0-9]{10}" maxlength="10"
+                                    class="form-input w-full pl-12 pr-4 py-3 rounded-xl" placeholder="1234567890"
+                                    value="<%= user.mobile || '' %>">
+                                <span class="field-validation-icon"></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Enter 10-digit mobile number without spaces or dashes
+                            </p>
+                            <div id="mobileValidation" class="text-xs mt-1 min-h-[16px]"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gender" class="block text-sm font-semibold text-gray-700 mb-3">
+                                Gender <span class="text-red-500">*</span>
+                            </label>
+                            <div class="select-wrapper relative">
+                                <select id="gender" name="gender" required
+                                    class="form-input w-full px-4 py-3 rounded-xl appearance-none cursor-pointer">
+                                    <option value="">Select your gender</option>
+                                    <option value="Male" <%=user.gender==='Male' ? 'selected' : '' %>>👨 Male</option>
+                                    <option value="Female" <%=user.gender==='Female' ? 'selected' : '' %>>👩 Female
+                                    </option>
+                                    <option value="Other" <%=user.gender==='Other' ? 'selected' : '' %>>🏳️‍⚧️ Other
+                                    </option>
+                                    <option value="Prefer not to say" <%=user.gender==='Prefer not to say' ? 'selected'
+                                        : '' %>>🤐 Prefer not to say</option>
+                                </select>
+                                <span class="field-validation-icon"></span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="profile-buttons flex flex-col-reverse md:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
+                            <button type="button" id="cancelEditBtn"
+                                class="btn btn-secondary btn-common flex items-center justify-center">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                                <span>Cancel</span>
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-common flex items-center justify-center">
+                                <i data-lucide="save" class="w-5 h-5"></i>
+                                <span>Save Changes</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
 
-    <%- include('partials/footer') %>
+        <%- include('partials/footer') %>
 
-    <script>
-        // Initialize Lucide icons after the DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+        <!-- User data passed from server via data attribute -->
+        <div id="user-data" data-user='<%- JSON.stringify(user) %>' style="display: none;"></div>
 
-            // Profile picture preview logic
-            const profilePictureInput = document.getElementById('profilePicture');
-            const profilePreview = document.getElementById('profilePreview');
+        <script type="module">
+                // Import Firebase for profile picture upload if you implement it on client-side
+                // import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+                // import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+                // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 
-            if (profilePictureInput && profilePreview) {
-                profilePictureInput.addEventListener('change', function() {
-                    const file = this.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            profilePreview.src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Initialize Lucide icons
+                    lucide.createIcons();
+
+                    // Get user data from server via data attribute to avoid linter errors
+                    const serverUserData = JSON.parse(document.getElementById('user-data').dataset.user);
+                    // const app = initializeApp(firebaseConfig); // If firebase is used for client-side storage
+                    // const storage = getStorage(app); // If firebase is used for client-side storage
+
+                    // Page elements
+                    const viewProfilePage = document.getElementById('viewProfilePage');
+                    const editProfilePage = document.getElementById('editProfilePage');
+                    const editProfileBtn = document.getElementById('editProfileBtn');
+                    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+                    // Form elements
+                    const form = document.getElementById('profileForm');
+                    const profilePictureInput = document.getElementById('profilePicture');
+                    const profilePreview = document.getElementById('profilePreview');
+                    const uploadStatus = document.getElementById('uploadStatus');
+                    const messageContainer = document.getElementById('messageContainer');
+                    const firstNameInput = document.getElementById('firstName');
+                    const lastNameInput = document.getElementById('lastName');
+                    const emailInput = document.getElementById('email'); // Readonly, but still referenced
+                    const mobileInput = document.getElementById('mobile');
+                    const mobileValidation = document.getElementById('mobileValidation');
+                    const genderSelect = document.getElementById('gender');
+
+                    // View profile elements for updating after edit
+                    const viewFirstName = document.getElementById('viewFirstName');
+                    const viewLastName = document.getElementById('viewLastName');
+                    const viewFullName = document.getElementById('viewFullName');
+                    const viewMobile = document.getElementById('viewMobile');
+                    const viewGender = document.getElementById('viewGender');
+                    const viewProfilePicture = document.getElementById('viewProfilePicture');
+
+                    // Internal state
+                    let isSubmitting = false;
+                    let currentImageFile = null;
+
+                    // Initial render state based on server-side message/error passed through EJS locals
+                    // Note: messages/errors are directly in EJS now, so only need to handle URL params if any
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const urlMessage = urlParams.get('message');
+                    const urlError = urlParams.get('error');
+
+                    if (urlMessage) {
+                        showMessage(decodeURIComponent(urlMessage), 'success');
+                        window.history.replaceState({}, document.title, window.location.pathname); // Clean URL
+                    } else if (urlError) {
+                        showMessage(decodeURIComponent(urlError), 'error');
+                        showEditProfile(); // Stay on edit page if an error occurred during submission
+                        window.history.replaceState({}, document.title, window.location.pathname); // Clean URL
                     } else {
-                        profilePreview.src = '<%= user.profilePicture || "/images/default_image.png" %>';
+                        showViewProfile(); // Default to view profile if no messages/errors
                     }
+
+
+                    // Page Navigation Functions
+                    function showViewProfile() {
+                        viewProfilePage.classList.add('active');
+                        editProfilePage.classList.remove('active');
+                        updateViewProfileData(); // Ensure view data is current
+                        clearMessages();
+                        console.log('Switched to view profile');
+                    }
+
+                    function showEditProfile() {
+                        editProfilePage.classList.add('active');
+                        viewProfilePage.classList.remove('active');
+                        populateEditForm(); // Populate form with current user data
+                        clearMessages();
+                        console.log('Switched to edit profile');
+                    }
+
+                    // Update the data displayed in the "View Profile" section
+                    function updateViewProfileData() {
+                        viewFirstName.textContent = serverUserData.firstName || 'N/A';
+                        viewLastName.textContent = serverUserData.lastName || 'N/A';
+                        viewFullName.textContent = `${serverUserData.firstName || ''} ${serverUserData.lastName || ''}`.trim();
+                        viewEmail.textContent = serverUserData.email || 'N/A'; // Update primary email display
+                        viewEmailDetails.textContent = serverUserData.email || 'N/A'; // Update contact info email display
+                        viewMobile.textContent = serverUserData.mobile || 'N/A';
+                        viewProfilePicture.src = serverUserData.profilePicture || '/images/default_image.png';
+
+                        // Update gender display with emoji
+                        const genderEmojis = {
+                            'Male': '👨 Male',
+                            'Female': '👩 Female',
+                            'Other': '🏳️‍⚧️ Other',
+                            'Prefer not to say': '🤐 Prefer not to say'
+                        };
+                        viewGender.innerHTML = genderEmojis[serverUserData.gender] || serverUserData.gender || 'N/A';
+                    }
+
+                    // Populate edit form from the `serverUserData` object
+                    function populateEditForm() {
+                        firstNameInput.value = serverUserData.firstName || '';
+                        lastNameInput.value = serverUserData.lastName || '';
+                        emailInput.value = serverUserData.email || ''; // Readonly, but value set
+                        mobileInput.value = serverUserData.mobile || '';
+                        genderSelect.value = serverUserData.gender || '';
+                        profilePreview.src = serverUserData.profilePicture || '/images/default_image.png';
+
+                        // Clear and re-apply validation styling for fresh start
+                        clearAllValidation();
+                        uploadStatus.textContent = '';
+                        currentImageFile = null; // Clear selected file from previous session
+                        profilePictureInput.value = ''; // Reset file input element
+                        validatePrefilledFields(); // Apply validation styles based on loaded data
+                    }
+
+                    // Function to clear all validation styling on the form
+                    function clearAllValidation() {
+                        [firstNameInput, lastNameInput, mobileInput, genderSelect].forEach(input => {
+                            clearValidationStyling(input);
+                        });
+                    }
+
+                    // Function to clear validation styling on a single input
+                    function clearValidationStyling(input) {
+                        const formGroup = input.closest('.form-group');
+                        if (formGroup) {
+                            formGroup.classList.remove('field-valid', 'field-invalid');
+                        }
+                    }
+
+                    // Function to trigger initial validation on pre-filled fields
+                    function validatePrefilledFields() {
+                        firstNameInput.dispatchEvent(new Event('input'));
+                        lastNameInput.dispatchEvent(new Event('input'));
+                        mobileInput.dispatchEvent(new Event('input'));
+                        genderSelect.dispatchEvent(new Event('change'));
+                    }
+
+                    // Event listeners for page navigation buttons
+                    editProfileBtn.addEventListener('click', (e) => {
+                        e.preventDefault(); // Prevent default button behavior
+                        console.log('Edit button clicked');
+                        showEditProfile();
+                    });
+                    cancelEditBtn.addEventListener('click', (e) => {
+                        e.preventDefault(); // Prevent default button behavior
+                        console.log('Cancel button clicked');
+                        showViewProfile();
+                    });
+
+                    // Utility Functions for messages and loading state
+                    function clearMessages() {
+                        messageContainer.innerHTML = '';
+                    }
+
+                    function showMessage(text, type = 'success') {
+                        clearMessages();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message ${type === 'success' ? 'message-success' : 'message-error'}`;
+                        messageDiv.innerHTML = `
+                    <div class="flex items-center justify-center gap-2">
+                        <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i>
+                        <span>${text}</span>
+                    </div>
+                `;
+                        messageContainer.appendChild(messageDiv);
+                        lucide.createIcons();
+
+                        if (type === 'success') {
+                            setTimeout(() => {
+                                messageDiv.style.opacity = '0';
+                                setTimeout(() => messageDiv.remove(), 300);
+                            }, 5000);
+                        }
+                        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    function setLoading(loading) {
+                        isSubmitting = loading;
+                        const submitBtn = form.querySelector('button[type="submit"]');
+
+                        if (loading) {
+                            form.classList.add('loading');
+                            if (submitBtn) {
+                                submitBtn.disabled = true;
+                                submitBtn.innerHTML = '<span>Saving Changes...</span>';
+                            }
+                        } else {
+                            form.classList.remove('loading');
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i><span>Save Changes</span>';
+                                lucide.createIcons();
+                            }
+                        }
+                    }
+
+                    // Real-time validation for input fields
+                    firstNameInput.addEventListener('input', function () {
+                        addValidationStyling(this, this.value.trim().length >= 2);
+                    });
+                    firstNameInput.addEventListener('blur', function () {
+                        if (this.value.trim().length === 0) { // Clear validation if field becomes empty
+                            clearValidationStyling(this);
+                        }
+                    });
+
+                    lastNameInput.addEventListener('input', function () {
+                        addValidationStyling(this, this.value.trim().length >= 2);
+                    });
+                    lastNameInput.addEventListener('blur', function () {
+                        if (this.value.trim().length === 0) {
+                            clearValidationStyling(this);
+                        }
+                    });
+
+                    mobileInput.addEventListener('input', function () {
+                        this.value = this.value.replace(/[^0-9]/g, ''); // Ensure only digits
+                        const isValid = /^[0-9]{10}$/.test(this.value);
+                        addValidationStyling(this, isValid);
+
+                        if (this.value.length === 0) {
+                            mobileValidation.textContent = '';
+                        } else if (this.value.length < 10) {
+                            mobileValidation.innerHTML = '<span class="text-amber-600">⚠️ Enter 10 digits</span>';
+                        } else if (this.value.length === 10) {
+                            mobileValidation.innerHTML = '<span class="text-green-600">✅ Valid mobile number</span>';
+                        }
+                    });
+                    mobileInput.addEventListener('blur', function () {
+                        if (this.value.length === 0) {
+                            mobileValidation.textContent = ''; // Clear message if empty
+                            clearValidationStyling(this);
+                        }
+                    });
+
+                    genderSelect.addEventListener('change', function () {
+                        addValidationStyling(this, this.value !== '');
+                    });
+                    genderSelect.addEventListener('blur', function () {
+                        if (this.value === '') {
+                            clearValidationStyling(this);
+                        }
+                    });
+
+                    // Form Validation on Submission (for Save Changes button)
+                    function validateForm() {
+                        let isValid = true;
+                        clearMessages(); // Clear previous messages
+
+                        const firstName = firstNameInput.value.trim();
+                        const lastName = lastNameInput.value.trim();
+                        const mobile = mobileInput.value.trim();
+                        const gender = genderSelect.value;
+
+                        if (!firstName || firstName.length < 2) {
+                            showMessage('First name must be at least 2 characters long.', 'error');
+                            addValidationStyling(firstNameInput, false);
+                            firstNameInput.focus();
+                            isValid = false;
+                        } else {
+                            addValidationStyling(firstNameInput, true);
+                        }
+
+                        // Chained validation - only proceed if previous field was valid to prevent multiple error messages
+                        if (isValid && (!lastName || lastName.length < 2)) {
+                            showMessage('Last name must be at least 2 characters long.', 'error');
+                            addValidationStyling(lastNameInput, false);
+                            lastNameInput.focus();
+                            isValid = false;
+                        } else if (isValid) { // Only set valid style if overall form is still valid
+                            addValidationStyling(lastNameInput, true);
+                        }
+
+                        if (isValid && (!mobile || !/^[0-9]{10}$/.test(mobile))) {
+                            showMessage('Please enter a valid 10-digit mobile number.', 'error');
+                            addValidationStyling(mobileInput, false);
+                            mobileInput.focus();
+                            isValid = false;
+                        } else if (isValid) {
+                            addValidationStyling(mobileInput, true);
+                        }
+
+                        if (isValid && !gender) {
+                            showMessage('Please select your gender.', 'error');
+                            addValidationStyling(genderSelect, false);
+                            genderSelect.focus();
+                            isValid = false;
+                        } else if (isValid) {
+                            addValidationStyling(genderSelect, true);
+                        }
+
+                        return isValid;
+                    }
+
+                    // Form Submission Handler
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+
+                        if (isSubmitting) return; // Prevent double submission
+
+                        if (!validateForm()) {
+                            messageContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            return;
+                        }
+
+                        setLoading(true);
+
+                        const formData = new FormData();
+                        formData.append('firstName', firstNameInput.value.trim());
+                        formData.append('lastName', lastNameInput.value.trim());
+                        formData.append('email', emailInput.value.trim()); // Email is readonly, sent for backend consistency
+                        formData.append('mobile', mobileInput.value.trim());
+                        formData.append('gender', genderSelect.value);
+
+                        if (currentImageFile) {
+                            formData.append('profilePicture', currentImageFile); // Append the actual File object
+                        }
+                        // NOTE: If no new file, the backend should implicitly keep the existing one.
+                        // No need to send `user.profilePicture` here if no change, as multipart/form-data doesn't work that way.
+
+                        try {
+                            // This endpoint needs to be a POST route in dashboardRoutes.js
+                            const response = await fetch('/dashboard/profile', {
+                                method: 'POST',
+                                body: formData // FormData handles content-type for multipart/form-data
+                            });
+
+                            const result = await response.json(); // Assuming your backend sends JSON response
+
+                            if (response.ok) {
+                                showMessage(result.message || 'Profile updated successfully!', 'success');
+                                // Update the local `serverUserData` with the new data from the backend's response
+                                // This assumes the backend returns the updated user object or confirms success
+                                serverUserData.firstName = firstNameInput.value.trim();
+                                serverUserData.lastName = lastNameInput.value.trim();
+                                serverUserData.mobile = mobileInput.value.trim();
+                                serverUserData.gender = genderSelect.value;
+                                if (result.profilePictureUrl) { // Assuming backend returns the new image URL after upload
+                                    serverUserData.profilePicture = result.profilePictureUrl;
+                                } else if (currentImageFile) {
+                                    // If backend doesn't return URL but we uploaded, update preview with local URL (temporary)
+                                    serverUserData.profilePicture = profilePreview.src;
+                                }
+
+                                // Switch back to view mode after a short delay
+                                setTimeout(() => {
+                                    showViewProfile();
+                                }, 1000);
+
+                            } else {
+                                showMessage(result.error || 'Failed to update profile. Please try again.', 'error');
+                            }
+
+                        } catch (error) {
+                            console.error('Network error during profile update:', error);
+                            showMessage('Network error: Could not connect to the server. ' + error.message, 'error');
+                        } finally {
+                            setLoading(false);
+                        }
+                    });
+
+                    // Keyboard navigation for form elements
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit' && e.target.type !== 'file') {
+                            e.preventDefault();
+                            // Get all *visible and enabled* form elements within the current page's form
+                            const currentActivePage = document.querySelector('.page.active');
+                            if (!currentActivePage) return;
+
+                            const formElements = Array.from(currentActivePage.querySelectorAll(
+                                'input:not([readonly]):not([type="hidden"]):not([type="file"]):not(:disabled), select:not(:disabled), button:not([type="submit"]):not(:disabled)'
+                            ));
+                            const currentIndex = formElements.indexOf(document.activeElement);
+                            const nextInput = formElements[currentIndex + 1];
+                            if (nextInput) {
+                                nextInput.focus();
+                            } else {
+                                // If no next input, try to focus the submit button on the current form
+                                const submitButton = currentActivePage.querySelector('button[type="submit"]');
+                                if (submitButton && !submitButton.disabled) {
+                                    submitButton.focus();
+                                }
+                            }
+                        }
+                    });
                 });
-            }
-        });
-    </script>
+            </script>
 </body>
+
 </html>

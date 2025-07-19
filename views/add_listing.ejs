@@ -3,213 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product Listing • MyGreenHome</title>
+    <title>Add Product Listing • Agent Seller</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
         }
+
+        /* Enhanced form styling with reduced container */
         .form-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #e2e8f0;
+            backdrop-filter: blur(10px);
         }
-        .form-group label {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
+
+        .form-input {
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
         }
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea,
-        .form-group select {
+
+        .form-input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+            background: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Button animations */
+        .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
         }
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #3b82f6; /* blue-500 */
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* blue-500 with opacity */
+
+        .btn:hover:before {
+            left: 100%;
         }
+
         .btn-primary {
-            background-color: #22c55e; /* green-500 */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
         }
+
         .btn-primary:hover {
-            background-color: #16a34a; /* green-600 */
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
         }
+
         .btn-secondary {
-            background-color: #6b7280; /* gray-500 */
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
         }
+
         .btn-secondary:hover {
-            background-color: #4b5563; /* gray-600 */
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
         }
-        .message-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .message-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .input-with-mic {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+
+        /* Voice input styling */
         .mic-button {
-            background-color: #3b82f6; /* blue-500 */
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
+
         .mic-button:hover:not(:disabled) {
-            background-color: #2563eb; /* blue-600 */
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
-        .mic-button:disabled {
-            background-color: #9ca3af; /* gray-400 */
-            cursor: not-allowed;
-        }
+
         .mic-button.recording {
-            background-color: #ef4444; /* red-500 */
-            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation: pulse-glow 1.5s infinite;
         }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+                transform: scale(1.05);
+            }
+        }
+
+        /* Message styling */
+        .message {
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 16px 12px;
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .input-with-mic {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .input-with-mic input,
+            .input-with-mic textarea {
+                width: 100%;
+            }
+
+            .mic-button {
+                align-self: flex-end;
+                width: 48px;
+                height: 48px;
+            }
+
+            .form-buttons {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+                line-height: 2rem;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .btn {
+            position: relative;
+        }
+
+        .loading .btn::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Enhanced focus visibility */
+        .form-input:focus,
+        .btn:focus,
+        .mic-button:focus {
+            outline: 2px solid #22c55e;
+            outline-offset: 2px;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Include the navbar partial -->
-    <%- include('partials/navbar') %>
+<body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-screen">
+    <!-- Navigation would be included here -->
+    <!-- <%- include('partials/navbar') %> -->
 
-    <!-- Main Content Area -->
-    <div class="flex-grow p-6 w-full">
-        <div class="form-container">
-            <h2 class="text-3xl font-bold text-center text-green-700 mb-8">Add New Product Listing</h2>
-            <p class="text-center text-lg text-gray-600 mb-8">
-                List your products for others to discover!
-            </p>
+    <div class="container mx-auto px-4 py-6">
+        <div class="form-container max-w-2xl mx-auto rounded-xl shadow-lg p-6">
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
+                    <i data-lucide="plus-circle" class="w-6 h-6 text-green-600"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Add New Product Listing</h2>
+                <p class="text-gray-600">Share your products with our community</p>
+            </div>
 
-            <% if (message) { %>
-                <div class="message-success"><%= message %></div>
-            <% } %>
-            <% if (error) { %>
-                <div class="message-error"><%= error %></div>
-            <% } %>
+            <!-- Messages -->
+            <div id="messageContainer"></div>
 
-            <form id="addListingForm" action="/user/listings" method="POST" class="space-y-6">
+            <!-- Form -->
+            <form id="addListingForm" class="space-y-6" novalidate>
+                <!-- Product Name -->
                 <div class="form-group">
-                    <label for="name">Product Name</label>
-                    <div class="input-with-mic">
-                        <input type="text" id="name" name="name" required placeholder="e.g., Hand-woven Basket">
-                        <button type="button" id="micName" class="mic-button" title="Speak product name">
-                            <i data-lucide="mic" class="w-5 h-5"></i>
+                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Product Name <span class="text-red-500">*</span>
+                    </label>
+                    <div class="input-with-mic flex gap-3">
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            required 
+                            class="form-input flex-1 px-3 py-2.5 rounded-lg"
+                            placeholder="e.g., Hand-woven Basket"
+                            maxlength="100"
+                        >
+                        <button 
+                            type="button" 
+                            id="micName" 
+                            class="mic-button flex items-center justify-center w-10 h-10 rounded-lg text-white border-none cursor-pointer"
+                            title="Speak product name"
+                            aria-label="Voice input for product name"
+                        >
+                            <i data-lucide="mic" class="w-4 h-4"></i>
                         </button>
                     </div>
-                    <p id="nameStatus" class="text-sm text-gray-500 mt-1"></p>
+                    <p id="nameStatus" class="text-xs text-gray-500 mt-1 min-h-[16px]"></p>
                 </div>
 
+                <!-- Description -->
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <div class="input-with-mic">
-                        <textarea id="description" name="description" rows="5" required placeholder="Describe your product, its features, and benefits."></textarea>
-                        <button type="button" id="micDescription" class="mic-button" title="Speak description">
-                            <i data-lucide="mic" class="w-5 h-5"></i>
+                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <div class="input-with-mic flex gap-3">
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            rows="3" 
+                            required 
+                            class="form-input flex-1 px-3 py-2.5 rounded-lg resize-vertical"
+                            placeholder="Describe your product, its features, and benefits..."
+                            maxlength="500"
+                        ></textarea>
+                        <button 
+                            type="button" 
+                            id="micDescription" 
+                            class="mic-button flex items-center justify-center w-10 h-10 rounded-lg text-white border-none cursor-pointer"
+                            title="Speak description"
+                            aria-label="Voice input for description"
+                        >
+                            <i data-lucide="mic" class="w-4 h-4"></i>
                         </button>
                     </div>
-                    <p id="descriptionStatus" class="text-sm text-gray-500 mt-1"></p>
+                    <p id="descriptionStatus" class="text-xs text-gray-500 mt-1 min-h-[16px]"></p>
+                    <p id="charCount" class="text-xs text-gray-400 mt-1">0/500 characters</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Price and Category Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group">
-                        <label for="price">Price ($)</label>
-                        <input type="number" id="price" name="price" step="0.01" min="0" required placeholder="e.g., 25.99">
+                        <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Price ($) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">$</span>
+                            <input 
+                                type="number" 
+                                id="price" 
+                                name="price" 
+                                step="0.01" 
+                                min="0" 
+                                max="999999.99"
+                                required 
+                                class="form-input w-full pl-7 pr-3 py-2.5 rounded-lg"
+                                placeholder="25.99"
+                            >
+                        </div>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="category">Category</label>
-                        <select id="category" name="category" required>
+                        <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Category <span class="text-red-500">*</span>
+                        </label>
+                        <select id="category" name="category" required class="form-input w-full px-3 py-2.5 rounded-lg">
                             <option value="">Select a Category</option>
-                            <option value="Agriculture">Agriculture</option>
-                            <option value="Handicrafts">Handicrafts</option>
-                            <option value="Food & Groceries">Food & Groceries</option>
-                            <option value="Retail">Retail</option>
-                            <option value="Other">Other</option>
+                            <option value="Agriculture">🌱 Agriculture</option>
+                            <option value="Handicrafts">🎨 Handicrafts</option>
+                            <option value="Food & Groceries">🍎 Food & Groceries</option>
+                            <option value="Retail">🛍️ Retail</option>
+                            <option value="Other">📦 Other</option>
                         </select>
                     </div>
                 </div>
 
+                <!-- Image URL -->
                 <div class="form-group">
-                    <label for="imageUrl">Image URL (Optional)</label>
-                    <input type="text" id="imageUrl" name="imageUrl" placeholder="e.g., https://example.com/my-product.jpg">
+                    <label for="imageUrl" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Product Image URL
+                        <span class="text-gray-500 font-normal">(Optional)</span>
+                    </label>
+                    <input 
+                        type="url" 
+                        id="imageUrl" 
+                        name="imageUrl" 
+                        class="form-input w-full px-3 py-2.5 rounded-lg"
+                        placeholder="https://example.com/my-product.jpg"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">Provide a direct link to your product image for better visibility</p>
                 </div>
 
+                <!-- Contact Information -->
                 <div class="form-group">
-                    <label for="contactInfo">Contact Information (e.g., Phone, Email, Address)</label>
-                    <input type="text" id="contactInfo" name="contactInfo" placeholder="e.g., +1234567890, myemail@example.com">
+                    <label for="contactInfo" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Contact Information
+                        <span class="text-gray-500 font-normal">(Phone, Email, or Address)</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        id="contactInfo" 
+                        name="contactInfo" 
+                        class="form-input w-full px-3 py-2.5 rounded-lg"
+                        placeholder="e.g., +1234567890, email@example.com"
+                        maxlength="200"
+                    >
                 </div>
 
-                <div class="flex justify-end gap-4 mt-8">
-                    <button type="submit" class="btn-primary flex items-center space-x-2">
-                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                        <span>Add Listing</span>
-                    </button>
-                    <a href="/user_dashboard" class="btn-secondary flex items-center space-x-2">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <!-- Form Buttons -->
+                <div class="form-buttons flex flex-col-reverse md:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+                    <a href="/user_dashboard" class="btn btn-secondary flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-semibold text-center no-underline">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
                         <span>Back to Dashboard</span>
                     </a>
+                    <button type="submit" class="btn btn-primary flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-semibold border-none cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Add Listing</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Include the footer partial -->
-    <%- include('partials/footer') %>
+    <!-- Footer would be included here -->
+    <!-- <%- include('partials/footer') %> -->
 
     <script type="module">
+        // Firebase imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -217,7 +377,12 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // Firebase configuration (provided by the environment)
+        // App state
+        let userId = null;
+        let isAuthReady = false;
+        let isSubmitting = false;
+
+        // Firebase configuration
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -227,17 +392,16 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        let userId = null;
-        let isAuthReady = false;
-
-        // Elements
-        const addListingForm = document.getElementById('addListingForm');
+        // DOM Elements
+        const form = document.getElementById('addListingForm');
+        const messageContainer = document.getElementById('messageContainer');
         const nameInput = document.getElementById('name');
         const descriptionInput = document.getElementById('description');
         const priceInput = document.getElementById('price');
         const categorySelect = document.getElementById('category');
         const imageUrlInput = document.getElementById('imageUrl');
         const contactInfoInput = document.getElementById('contactInfo');
+        const charCount = document.getElementById('charCount');
 
         // Voice input elements
         const micNameBtn = document.getElementById('micName');
@@ -245,17 +409,66 @@
         const nameStatus = document.getElementById('nameStatus');
         const descriptionStatus = document.getElementById('descriptionStatus');
 
-        // Check for Web Speech API support
+        // Utility Functions
+        function showMessage(text, type = 'success') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`;
+            messageDiv.innerHTML = `
+                <div class="flex items-center justify-center gap-2">
+                    <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i>
+                    <span>${text}</span>
+                </div>
+            `;
+            messageContainer.innerHTML = '';
+            messageContainer.appendChild(messageDiv);
+            lucide.createIcons();
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.opacity = '0';
+                    setTimeout(() => messageDiv.remove(), 300);
+                }, 5000);
+            }
+        }
+
+        function setLoading(loading) {
+            isSubmitting = loading;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const backBtn = form.querySelector('a[href="/user_dashboard"]');
+            
+            if (loading) {
+                form.classList.add('loading');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span>Adding Listing...</span>';
+            } else {
+                form.classList.remove('loading');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i data-lucide="plus-circle" class="w-4 h-4"></i><span>Add Listing</span>';
+                lucide.createIcons();
+            }
+        }
+
+        // Character count for description
+        descriptionInput.addEventListener('input', () => {
+            const count = descriptionInput.value.length;
+            charCount.textContent = `${count}/500 characters`;
+            charCount.className = count > 450 ? 'text-xs text-red-500 mt-1' : 'text-xs text-gray-400 mt-1';
+        });
+
+        // Voice Recognition Setup
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognitionAvailable = SpeechRecognition !== undefined;
 
         if (!recognitionAvailable) {
             micNameBtn.disabled = true;
             micDescriptionBtn.disabled = true;
-            nameStatus.textContent = "Speech input not supported in this browser.";
-            descriptionStatus.textContent = "Speech input not supported in this browser.";
+            micNameBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            micDescriptionBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            nameStatus.textContent = "Voice input not available";
+            descriptionStatus.textContent = "Voice input not available";
         } else {
-            const setupRecognition = (inputElement, statusElement, micButton) => {
+            function setupVoiceRecognition(inputElement, statusElement, micButton) {
                 const recognition = new SpeechRecognition();
                 recognition.continuous = false;
                 recognition.lang = 'en-US';
@@ -267,59 +480,65 @@
                 recognition.onstart = () => {
                     isRecording = true;
                     micButton.classList.add('recording');
-                    statusElement.textContent = "Listening... Speak now.";
-                    micButton.innerHTML = '<i data-lucide="pause-circle" class="w-5 h-5"></i>';
+                    statusElement.textContent = "🎤 Listening... Speak now";
+                    micButton.innerHTML = '<i data-lucide="pause-circle" class="w-4 h-4"></i>';
                     lucide.createIcons();
                 };
 
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
-                    inputElement.value = transcript;
-                    statusElement.textContent = `Transcribed: "${transcript}"`;
+                    const currentValue = inputElement.value;
+                    inputElement.value = currentValue ? `${currentValue} ${transcript}` : transcript;
+                    statusElement.textContent = `✅ Added: "${transcript}"`;
+                    
+                    // Update character count if it's the description field
+                    if (inputElement === descriptionInput) {
+                        descriptionInput.dispatchEvent(new Event('input'));
+                    }
                 };
 
                 recognition.onerror = (event) => {
                     console.error("Speech recognition error:", event.error);
-                    statusElement.textContent = `Error: ${event.error}. Please try again.`;
-                    isRecording = false;
-                    micButton.classList.remove('recording');
-                    micButton.innerHTML = '<i data-lucide="mic" class="w-5 h-5"></i>';
-                    lucide.createIcons();
+                    statusElement.textContent = `❌ Error: ${event.error}. Try again.`;
                 };
 
                 recognition.onend = () => {
                     isRecording = false;
                     micButton.classList.remove('recording');
-                    micButton.innerHTML = '<i data-lucide="mic" class="w-5 h-5"></i>';
+                    micButton.innerHTML = '<i data-lucide="mic" class="w-4 h-4"></i>';
                     lucide.createIcons();
+                    
                     if (statusElement.textContent.includes("Listening")) {
-                        statusElement.textContent = "Ready for voice input.";
+                        statusElement.textContent = "Ready for voice input";
                     }
                 };
 
-                micButton.addEventListener('click', () => {
+                micButton.addEventListener('click', async () => {
                     if (isRecording) {
                         recognition.stop();
-                    } else {
-                        try {
-                            recognition.start();
-                        } catch (e) {
-                            console.error("Error starting recognition:", e);
-                            statusElement.textContent = "Error starting voice input. Please ensure microphone access is granted.";
-                        }
+                        return;
+                    }
+
+                    try {
+                        // Request microphone permission
+                        await navigator.mediaDevices.getUserMedia({ audio: true });
+                        recognition.start();
+                    } catch (error) {
+                        console.error("Microphone permission denied:", error);
+                        statusElement.textContent = "❌ Microphone access denied. Please allow and try again.";
                     }
                 });
-            };
+            }
 
-            setupRecognition(nameInput, nameStatus, micNameBtn);
-            setupRecognition(descriptionInput, descriptionStatus, micDescriptionBtn);
+            setupVoiceRecognition(nameInput, nameStatus, micNameBtn);
+            setupVoiceRecognition(descriptionInput, descriptionStatus, micDescriptionBtn);
         }
 
-        // Authenticate with Firebase
+        // Firebase Authentication
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
-                console.log("Firebase authenticated. User ID:", userId);
+                console.log("✅ Firebase authenticated. User ID:", userId);
                 isAuthReady = true;
             } else {
                 try {
@@ -329,59 +548,119 @@
                         await signInAnonymously(auth);
                     }
                 } catch (error) {
-                    console.error("Firebase authentication failed:", error);
-                    alert("Authentication failed. Please refresh the page or log in.");
-                    window.location.href = '/auth/login'; // Redirect to login
+                    console.error("❌ Firebase authentication failed:", error);
+                    showMessage("Authentication failed. Please refresh the page.", "error");
                 }
             }
         });
 
-        // Handle form submission for adding a new listing
-        addListingForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            if (!isAuthReady || !userId) {
-                alert("User not authenticated. Please try again.");
-                return;
-            }
-
+        // Form Validation
+        function validateForm() {
             const name = nameInput.value.trim();
             const description = descriptionInput.value.trim();
             const price = parseFloat(priceInput.value);
             const category = categorySelect.value;
-            const imageUrl = imageUrlInput.value.trim();
-            const contactInfo = contactInfoInput.value.trim();
 
-            if (!name || !description || isNaN(price) || price < 0 || !category) {
-                alert("Please fill in all required fields: Product Name, Description, Price, and Category.");
+            if (!name) {
+                nameInput.focus();
+                showMessage("Please enter a product name.", "error");
+                return false;
+            }
+
+            if (!description) {
+                descriptionInput.focus();
+                showMessage("Please enter a product description.", "error");
+                return false;
+            }
+
+            if (isNaN(price) || price < 0) {
+                priceInput.focus();
+                showMessage("Please enter a valid price.", "error");
+                return false;
+            }
+
+            if (!category) {
+                categorySelect.focus();
+                showMessage("Please select a category.", "error");
+                return false;
+            }
+
+            // Validate image URL if provided
+            const imageUrl = imageUrlInput.value.trim();
+            if (imageUrl && !isValidUrl(imageUrl)) {
+                imageUrlInput.focus();
+                showMessage("Please enter a valid image URL.", "error");
+                return false;
+            }
+
+            return true;
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Form Submission
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (isSubmitting) return;
+
+            if (!isAuthReady || !userId) {
+                showMessage("Please wait for authentication to complete.", "error");
                 return;
             }
 
+            if (!validateForm()) return;
+
+            setLoading(true);
+
             try {
-                // Add product to a PUBLIC Firestore collection
-                const docRef = await addDoc(collection(db, `artifacts/${appId}/public/listings`), {
-                    name,
-                    description,
-                    price,
-                    category,
-                    imageUrl: imageUrl || 'https://placehold.co/400x300/e5e7eb/4b5563?text=No+Image', // Placeholder if no image URL
-                    contactInfo,
-                    listedBy: userId, // Store the ID of the user who listed this product
-                    listedAt: serverTimestamp() // Firestore server timestamp
-                });
+                const formData = {
+                    name: nameInput.value.trim(),
+                    description: descriptionInput.value.trim(),
+                    price: parseFloat(priceInput.value),
+                    category: categorySelect.value,
+                    imageUrl: imageUrlInput.value.trim() || 'https://placehold.co/400x300/e5e7eb/4b5563?text=No+Image',
+                    contactInfo: contactInfoInput.value.trim(),
+                    listedBy: userId,
+                    listedAt: serverTimestamp()
+                };
 
-                alert('Product listing added successfully!');
-                console.log("Document written with ID: ", docRef.id);
-
-                // Clear form
-                addListingForm.reset();
-                nameStatus.textContent = '';
-                descriptionStatus.textContent = '';
-
+                const docRef = await addDoc(collection(db, `artifacts/${appId}/public/listings`), formData);
+                
+                console.log("✅ Document written with ID:", docRef.id);
+                showMessage("🎉 Product listing added successfully!");
+                
+                // Reset form
+                form.reset();
+                charCount.textContent = "0/500 characters";
+                nameStatus.textContent = "";
+                descriptionStatus.textContent = "";
+                
+                // Scroll to top to show success message
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
             } catch (error) {
-                console.error("Error adding document: ", error);
-                alert("Failed to add product listing: " + error.message);
+                console.error("❌ Error adding document:", error);
+                showMessage(`Failed to add listing: ${error.message}`, "error");
+            } finally {
+                setLoading(false);
             }
+        });
+
+        // Initialize tooltips and accessibility
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add proper ARIA labels and descriptions
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            requiredFields.forEach(field => {
+                field.setAttribute('aria-required', 'true');
+            });
         });
     </script>
 </body>
