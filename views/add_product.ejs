@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Products • MyGreenHome</title>
+    <title>Admin - Add Product • MyGreenHome</title>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://unpkg.com">
@@ -17,7 +17,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Optimized Font Loading */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         body {
@@ -27,376 +26,160 @@
             background-attachment: fixed;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         .main-content-wrapper {
             flex-grow: 1;
-            max-width: 1400px;
+            max-width: 800px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 25px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 24px;
+            border-radius: 20px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 90%;
         }
 
-        .hero-section {
+        .section-title {
             text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 20px;
-            color: white;
-            position: relative;
-            overflow: hidden;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .search-section {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-
-        .search-container {
+        .tabs {
             display: flex;
-            gap: 12px;
-            align-items: stretch;
-            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 1.5rem;
         }
 
-        .search-input-container {
-            position: relative;
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 16px 20px 16px 50px;
-            font-size: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            background: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 20px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .search-input-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
-            z-index: 2;
-        }
-
-        .search-controls {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .search-btn {
-            padding: 16px;
-            border-radius: 16px;
+        .tab-button {
+            padding: 10px 20px;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            font-weight: 600;
             border: none;
             cursor: pointer;
-            display: flex;
+            border-radius: 8px;
+            margin: 0 5px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            background-color: #059669;
+            color: white;
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: #d1d5db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        textarea,
+        select,
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-size: 1rem;
+            color: #374151;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-button,
+        .upload-button {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
+            margin-right: 1rem; /* For spacing if multiple buttons */
         }
 
-        .search-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .search-btn:hover::before {
-            left: 100%;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-3px);
+        .submit-button:hover,
+        .upload-button:hover {
+            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .search-btn.primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-        }
-
-        .search-btn.secondary {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-        }
-
-        .search-btn.tertiary {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-top: 2rem;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            position: relative;
-            cursor: pointer;
-        }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.05), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .product-card:hover::before {
-            opacity: 1;
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .product-card-image-container {
-            width: 100%;
-            height: 240px;
-            overflow: hidden;
-            position: relative;
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-        }
-
-        .product-card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .product-card:hover .product-card-image {
-            transform: scale(1.1);
-        }
-
-        .product-card-body {
-            padding: 24px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .product-card-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 12px;
-            line-height: 1.4;
-            background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .product-card-description {
-            font-size: 0.95rem;
-            color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .product-card-keywords {
-            font-size: 0.85rem;
-            color: #9ca3af;
-            margin-bottom: 16px;
-            padding: 8px 12px;
-            background: rgba(59, 130, 246, 0.1);
+        .status-message {
+            margin-top: 1.5rem;
+            padding: 15px;
             border-radius: 8px;
-            border-left: 3px solid #3b82f6;
-        }
-
-        .product-card-footer {
-            padding: 20px 24px;
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #e5e7eb;
-            position: relative;
-            z-index: 2;
-        }
-
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .product-category {
-            font-size: 0.85rem;
-            color: #6b7280;
-            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-            padding: 6px 12px;
-            border-radius: 20px;
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .loading-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-            margin-top: 2rem;
-        }
-
-        .loading-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            height: 400px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
-            }
-        }
-
-        .no-products-message {
-            grid-column: 1 / -1;
             text-align: center;
-            padding: 4rem 2rem;
-            color: #6b7280;
-            font-size: 1.25rem;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden by default */
         }
 
-        .search-status {
-            text-align: center;
-            margin: 1rem 0;
-            padding: 1rem;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
-            font-weight: 500;
+        .status-message.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #34d399;
         }
 
-        .back-to-dashboard-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 3rem;
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-            border-radius: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
+        .status-message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
         }
 
-        .back-to-dashboard-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .back-to-dashboard-link:hover::before {
-            left: 100%;
-        }
-
-        .back-to-dashboard-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-        }
-
-        .icon {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2;
+        .status-message.info {
+            background-color: #e0f2fe;
+            color: #1e40af;
+            border: 1px solid #60a5fa;
         }
 
         .spinner {
@@ -407,35 +190,48 @@
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
             }
         }
 
-        @media (max-width: 768px) {
-            .main-content-wrapper {
-                margin: 10px;
-                padding: 16px;
-                border-radius: 16px;
-            }
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            margin-right: 8px;
+        }
+        
+        .icon.no-margin { /* For icons that should not have right margin */
+            margin-right: 0;
+        }
 
-            .search-container {
-                flex-direction: column;
-            }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background: #6b7280;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
 
-            .search-input-container {
-                min-width: auto;
-            }
+        .back-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
 
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-section {
-                padding: 1.5rem 1rem;
-                margin-bottom: 2rem;
-            }
+        .flex-end {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -444,104 +240,94 @@
     <%- include('partials/navbar') %>
 
     <div class="main-content-wrapper">
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">
-                    🌱 Product Catalog
-                </h1>
-                <p class="text-xl md:text-2xl opacity-90 font-light">
-                    Discover eco-friendly products for your green lifestyle
-                </p>
-            </div>
+        <h1 class="section-title">📦 Manage Products</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="single-product">Add Single Product</button>
+            <button class="tab-button" data-tab="bulk-upload">Bulk Upload (Excel)</button>
         </div>
 
-        <div class="search-section">
-            <div class="search-container">
-                <div class="search-input-container">
-                    <input type="text" id="productSearchInput" placeholder="Search for eco-friendly products..."
-                        class="search-input">
-                    <svg class="search-input-icon icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="m21 21-4.35-4.35" />
-                    </svg>
+        <div id="single-product-tab" class="tab-content active">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Product</h2>
+            <form id="addProductForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Product Name:</label>
+                    <input type="text" id="name" name="name" required>
                 </div>
-                <div class="search-controls">
-                    <button type="button" id="micSearchBtn" class="search-btn primary" title="Voice Search">
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                            <line x1="12" x2="12" y1="19" y2="22" />
-                            <line x1="8" x2="16" y1="22" y2="22" />
-                        </svg>
-                    </button>
-                    <label for="imageSearchInput" class="search-btn secondary" title="Image Search">
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                            <circle cx="9" cy="9" r="2" />
-                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
-                        </svg>
-                        <input type="file" id="imageSearchInput" accept="image/*" class="hidden">
-                    </label>
-                    <button type="button" id="resetSearchBtn" class="search-btn tertiary" title="Reset Search">
-                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-                            <path d="M21 3v5h-5" />
-                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-                            <path d="M8 16H3v5" />
-                        </svg>
-                    </button>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required></textarea>
                 </div>
-            </div>
-            <div class="mt-4">
-                <label for="productCategoryFilter" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
-                <select id="productCategoryFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    <option value="">All Categories</option>
-                    <option value="Home & Garden">Home & Garden</option>
-                    <option value="Fashion">Fashion</option>
-                    <option value="Beauty & Personal Care">Beauty & Personal Care</option>
-                    <option value="Food & Beverages">Food & Beverages</option>
-                    <option value="Kids & Baby">Kids & Baby</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Services">Services</option>
+                <div class="form-group">
+                    <label for="price">Price ($):</label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Agriculture & Farming">🌱 Agriculture & Farming</option>
+                        <option value="Arts & Handicrafts">🎨 Arts & Handicrafts</option>
+                        <option value="Food & Groceries">🍎 Food & Groceries</option>
+                        <option value="Retail & Fashion">🛍️ Retail & Fashion</option>
+                        <option value="Technology">💻 Technology</option>
+                        <option value="Home & Garden">🏡 Home & Garden</option>
+                        <option value="Services">🛠️ Services</option>
+                        <option value="Other">📦 Other</option>
                     </select>
-            </div>
-        </div>
-
-        <div id="searchStatus" class="search-status"></div>
-
-        <div class="product-grid" id="dynamicProductGrid">
-            <div class="loading-grid" id="initialLoadingGrid">
-                <% for(let i=0; i < 6; i++) { %>
-                <div class="loading-card">
-                    <div class="skeleton h-60"></div>
-                    <div class="p-6">
-                        <div class="skeleton h-6 mb-3 rounded"></div>
-                        <div class="skeleton h-4 mb-2 rounded"></div>
-                        <div class="skeleton h-4 mb-4 rounded w-3/4"></div>
-                        <div class="flex justify-between items-center">
-                            <div class="skeleton h-8 w-24 rounded"></div>
-                            <div class="skeleton h-6 w-20 rounded-full"></div>
-                        </div>
-                    </div>
                 </div>
-                <% } %>
-            </div>
+                <div class="form-group">
+                    <label for="keywords">Keywords (comma-separated):</label>
+                    <input type="text" id="keywords" name="keywords" placeholder="e.g., organic, handmade, sustainable">
+                </div>
+                <div class="form-group">
+                    <label for="image">Product Image:</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <p class="text-sm text-gray-500 mt-1">Max 10MB. Leave blank if providing an Image URL.</p>
+                </div>
+                <div class="form-group">
+                    <label for="imageUrl">Or Image URL:</label>
+                    <input type="url" id="imageUrl" name="imageUrl" placeholder="http://example.com/image.jpg">
+                    <p class="text-sm text-gray-500 mt-1">Image file will take precedence if both are provided.</p>
+                </div>
+                <button type="submit" class="submit-button">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add Product
+                </button>
+            </form>
+            <div id="singleProductStatus" class="status-message" style="display: none;"></div>
         </div>
 
-        <div class="flex justify-center mt-8">
-            <button id="loadMoreBtn" class="search-btn primary" style="display: none;">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                Load More Products
-            </button>
+        <div id="bulk-upload-tab" class="tab-content">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Bulk Upload Products via Excel</h2>
+            <form id="excelUploadForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="excelFile">Upload Product Excel Sheet (.xlsx, .xls)</label>
+                    <input type="file" id="excelFile" name="excelFile" accept=".xlsx, .xls" required>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Please ensure your Excel sheet has columns for: "Product Name", "Description", "Price", "Category", "Keywords" (optional), "Image URL" (optional).
+                        "Product Name" will be used to identify and update existing products, otherwise new products will be created.
+                    </p>
+                </div>
+                <button type="submit" class="upload-button">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M4 14.899A7 7 0 0 1 15.71 8h1.79a4.5 4.5 0 0 1 0 9H13M12 20V10M12 10l-4 4M12 10l4 4" />
+                    </svg>
+                    Upload Excel
+                </button>
+            </form>
+            <div id="bulkUploadStatus" class="status-message" style="display: none;"></div>
         </div>
 
-        <div class="flex justify-center mt-8">
-            <a href="/user_dashboard" class="back-to-dashboard-link">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <div class="flex-end">
+            <a href="/admin_dashboard" class="back-link">
+                <svg class="icon no-margin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="m12 19-7-7 7-7" />
                     <path d="M19 12H5" />
                 </svg>
-                <span>Back to Dashboard</span>
+                Back to Admin Dashboard
             </a>
         </div>
     </div>
@@ -550,268 +336,123 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const productSearchInput = document.getElementById('productSearchInput');
-            const productCategoryFilter = document.getElementById('productCategoryFilter'); // New category filter
-            const micSearchBtn = document.getElementById('micSearchBtn');
-            const imageSearchInput = document.getElementById('imageSearchInput');
-            const resetSearchBtn = document.getElementById('resetSearchBtn');
-            const searchStatus = document.getElementById('searchStatus');
-            const dynamicProductGrid = document.getElementById('dynamicProductGrid');
-            const initialLoadingGridHtml = dynamicProductGrid.innerHTML; // Store skeleton HTML
-            const loadMoreBtn = document.getElementById('loadMoreBtn'); // Get the load more button
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
 
-            let allLoadedProducts = []; // Stores all products currently loaded
-            const productsPerPage = 12; // Number of products to load per request
-            let currentPage = 1;
-            let currentSearchQuery = '';
-            let currentCategoryFilter = '';
-            let totalProductsCount = 0; // To store the total count from the API
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
 
-            // Event listener for Load More button
-            loadMoreBtn.addEventListener('click', () => {
-                currentPage++;
-                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, true); // Append
-            });
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
 
-            // Event listener for category filter
-            productCategoryFilter.addEventListener('change', () => {
-                currentCategoryFilter = productCategoryFilter.value;
-                currentPage = 1; // Reset to first page for new filter
-                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
-            });
-
-            // Function to render products in the grid
-            function renderProducts(productsToRender, append = false) {
-                if (!append) {
-                    dynamicProductGrid.innerHTML = ''; // Clear existing content unless appending
-                }
-
-                if (productsToRender.length === 0 && allLoadedProducts.length === 0 && !append) {
-                    dynamicProductGrid.innerHTML = '<div class="no-products-message">🔍 No products found matching your criteria.<br><span style="font-size: 1rem; margin-top: 1rem; display: block; opacity: 0.7;">Try adjusting your search terms.</span></div>';
-                    loadMoreBtn.style.display = 'none';
-                    return;
-                }
-
-                const fragment = document.createDocumentFragment(); // Use a document fragment for efficient DOM updates
-
-                productsToRender.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.classList.add('product-card');
-                    // Ensure all product properties are safely accessed with || defaults
-                    productCard.innerHTML = `
-                        <div class="product-card-image-container">
-                            <img src="${product.imageUrl || '/images/default_product.png'}"
-                                 alt="${product.name || 'Product Image'}"
-                                 class="product-card-image"
-                                 onerror="this.src='/images/default_product.png'"
-                                 loading="lazy">
-                        </div>
-                        <div class="product-card-body">
-                            <h3 class="product-card-title">${product.name || 'Untitled Product'}</h3>
-                            <p class="product-card-description">${product.description || 'No description available.'}</p>
-                            ${product.keywords && Array.isArray(product.keywords) && product.keywords.length > 0 ?
-                                `<div class="product-card-keywords">🏷️ ${product.keywords.join(', ')}</div>` :
-                                ''}
-                        </div>
-                        <div class="product-card-footer">
-                            <span class="product-price">$${(parseFloat(product.price) || 0).toFixed(2)}</span>
-                            <span class="product-category">${product.category || 'Uncategorized'}</span>
-                        </div>
-                    `;
-                    fragment.appendChild(productCard);
-                });
-                dynamicProductGrid.appendChild(fragment); // Append all at once
-
-                // Show/hide load more button based on total products and currently loaded count
-                if (allLoadedProducts.length < totalProductsCount) {
-                    loadMoreBtn.style.display = 'block';
-                } else {
-                    loadMoreBtn.style.display = 'none';
-                }
-
-                // If Lucide icons are in dynamically added content, re-render them
-                lucide.createIcons();
-            }
-
-            // Function to fetch products from the API
-            async function fetchProducts(query = '', category = '', page = 1, limit = productsPerPage, append = false) {
-                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading products...';
-                loadMoreBtn.disabled = true; // Disable load more during fetch
-                loadMoreBtn.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Loading...'; // Update button text with spinner
-
-                if (!append) { // Show skeletons only for initial load or new search
-                    dynamicProductGrid.innerHTML = initialLoadingGridHtml;
-                }
-
-                try {
-                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&page=${page}&limit=${limit}`);
-                    if (!response.ok) {
-                        // If response is not OK, try to read error as JSON, then fallback to text
-                        let errorData;
-                        try {
-                            errorData = await response.json();
-                        } catch (e) {
-                            errorData = { message: await response.text() || 'Unknown error occurred.' };
+                    tabContents.forEach(content => {
+                        if (content.id === `${targetTab}-tab`) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
                         }
-                        throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorData.message || errorData.error}`);
-                    }
-                    const data = await response.json();
-
-                    totalProductsCount = data.totalProducts; // Update total count
-
-                    if (append) {
-                        allLoadedProducts = allLoadedProducts.concat(data.products);
-                    } else {
-                        allLoadedProducts = data.products; // For new search/initial load, replace
-                    }
-
-                    renderProducts(data.products, append); // Pass only the new products to render if appending
-                    searchStatus.textContent = `Displaying ${allLoadedProducts.length} of ${totalProductsCount} products.`;
-
-                } catch (error) {
-                    console.error("Failed to fetch products:", error);
-                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Failed to load products: ${error.message}. Please try again.</span>`;
-                    dynamicProductGrid.innerHTML = '<div class="no-products-message">Failed to load products. Network error or server issue.</div>';
-                    loadMoreBtn.style.display = 'none';
-                } finally {
-                    loadMoreBtn.disabled = false;
-                    loadMoreBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Load More Products';
-                }
-            }
-
-            // Initial load of products when the page is ready
-            fetchProducts();
-
-            // --- Text Search ---
-            let searchTimeout;
-            productSearchInput.addEventListener('input', () => {
-                clearTimeout(searchTimeout);
-                searchStatus.textContent = ''; // Clear status on new input
-                searchTimeout = setTimeout(() => {
-                    currentSearchQuery = productSearchInput.value.trim();
-                    currentPage = 1; // Reset to first page for new search
-                    allLoadedProducts = []; // Clear current products for a new search
-                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
-                }, 300); // Debounce search
+                    });
+                });
             });
 
-            // --- Voice Search (Web Speech API) ---
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (SpeechRecognition) {
-                const recognition = new SpeechRecognition();
-                recognition.continuous = false;
-                recognition.lang = 'en-US';
-                recognition.interimResults = false;
+            // Single Product Add Form
+            const addProductForm = document.getElementById('addProductForm');
+            const singleProductStatus = document.getElementById('singleProductStatus');
 
-                micSearchBtn.addEventListener('click', () => {
-                    micSearchBtn.innerHTML = '<svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
-                    searchStatus.innerHTML = '🎤 Listening... Speak now.';
-                    try {
-                        recognition.start();
-                    } catch (e) {
-                        console.error("Speech recognition start error:", e);
-                        searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Microphone error. Please allow access.</span>';
-                        resetMicButton();
-                    }
-                });
+            addProductForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
 
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    productSearchInput.value = transcript;
-                    searchStatus.innerHTML = `✨ Transcribed: "${transcript}"`;
-                    currentSearchQuery = transcript;
-                    currentPage = 1;
-                    allLoadedProducts = []; // Clear for new search
-                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
-                };
+                displayStatus(singleProductStatus, 'info', '<svg class="icon spinner inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Adding product...');
 
-                recognition.onerror = (event) => {
-                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Voice search error: ${event.error}</span>`;
-                    console.error('Speech recognition error:', event.error);
-                    resetMicButton();
-                };
-
-                recognition.onend = () => {
-                    resetMicButton();
-                    if (searchStatus.textContent.includes('Listening')) {
-                        searchStatus.innerHTML = '🔇 No speech detected. Please try again.';
-                    }
-                };
-
-                function resetMicButton() {
-                    micSearchBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="8" x2="16" y1="22" y2="22"/></svg>';
-                }
-            } else {
-                micSearchBtn.disabled = true;
-                micSearchBtn.style.opacity = '0.5';
-                searchStatus.innerHTML = '⚠️ Voice search not supported in this browser.';
-            }
-
-            // --- Image Search ---
-            imageSearchInput.addEventListener('change', async (event) => {
-                const file = event.target.files[0];
-                if (!file) {
-                    searchStatus.textContent = '';
-                    return;
-                }
-
-                if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/i) || file.size > 5 * 1024 * 1024) {
-                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Invalid image format or size (JPG/PNG/GIF, max 5MB).</span>';
-                    event.target.value = '';
-                    return;
-                }
-
-                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 🔍 Analyzing image...';
-
-                const formData = new FormData();
-                formData.append('image', file);
-                formData.append('query', productSearchInput.value.trim()); // Send current text query too
+                const formData = new FormData(addProductForm); // Collects all form data including files
 
                 try {
-                    // This fetches from the new /api/search-by-image endpoint
-                    const response = await fetch('/api/search-by-image', {
+                    const response = await fetch('/admin/products', { // This is your existing route
                         method: 'POST',
-                        body: formData
+                        body: formData,
                     });
 
-                    if (!response.ok) {
-                        let errorData;
-                        try {
-                            errorData = await response.json();
-                        } catch (e) {
-                            errorData = { message: await response.text() || 'Unknown error occurred during image analysis.' };
-                        }
-                        throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorData.message || errorData.error}`);
-                    }
                     const result = await response.json();
 
-                    const searchKeywords = Array.isArray(result.keywords) ? result.keywords.join(', ') : result.query || '';
-                    productSearchInput.value = searchKeywords; // Update search input with AI-generated keywords
-                    searchStatus.innerHTML = `✨ Image analysis complete. Searching for: "${searchKeywords}"`;
-                    currentSearchQuery = searchKeywords; // Update state
-                    currentPage = 1;
-                    allLoadedProducts = []; // Clear for new search
-                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage); // Fetch using AI keywords
-
+                    if (response.ok) {
+                        displayStatus(singleProductStatus, 'success', `✅ ${result.message}`);
+                        addProductForm.reset(); // Clear the form
+                    } else {
+                        displayStatus(singleProductStatus, 'error', `❌ ${result.error || 'Failed to add product.'}`);
+                    }
                 } catch (error) {
-                    console.error('Image search API error:', error);
-                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Error analyzing image: ${error.message || 'Network error analyzing image'}.</span>`;
-                } finally {
-                    event.target.value = '';
+                    console.error('Error adding product:', error);
+                    displayStatus(singleProductStatus, 'error', '⛔ Network error. Failed to add product.');
                 }
             });
 
-            // --- Reset Search ---
-            resetSearchBtn.addEventListener('click', () => {
-                productSearchInput.value = '';
-                productCategoryFilter.value = ''; // Reset category filter too
-                searchStatus.textContent = '';
-                currentSearchQuery = '';
-                currentCategoryFilter = '';
-                currentPage = 1;
-                allLoadedProducts = []; // Clear loaded products to start fresh
-                fetchProducts(); // Re-fetch initial set
+            // Bulk Upload Form
+            const excelUploadForm = document.getElementById('excelUploadForm');
+            const bulkUploadStatus = document.getElementById('bulkUploadStatus');
+
+            excelUploadForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const fileInput = document.getElementById('excelFile');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    displayStatus(bulkUploadStatus, 'error', 'Please select an Excel file to upload.');
+                    return;
+                }
+
+                if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+                    displayStatus(bulkUploadStatus, 'error', 'Invalid file type. Please upload an .xlsx or .xls file.');
+                    return;
+                }
+
+                displayStatus(bulkUploadStatus, 'info', '<svg class="icon spinner inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Uploading and processing...');
+
+                const formData = new FormData();
+                formData.append('excelFile', file);
+
+                try {
+                    const response = await fetch('/api/admin/products/bulk-upload', { // NEW API ENDPOINT
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        let successMessage = `✅ Upload successful! ${result.insertedCount || 0} products added, ${result.updatedCount || 0} products updated.`;
+                        if (result.errors && result.errors.length > 0) {
+                            successMessage += `<br><span style="color: #d97706;">⚠️ Some rows had issues:</span><ul>`;
+                            result.errors.forEach(err => {
+                                successMessage += `<li>Row: ${err.row_number || 'N/A'}: ${err.reason}</li>`;
+                            });
+                            successMessage += `</ul>`;
+                            displayStatus(bulkUploadStatus, 'info', successMessage); // Use info for partial success
+                        } else {
+                            displayStatus(bulkUploadStatus, 'success', successMessage);
+                        }
+                        fileInput.value = ''; // Clear the file input
+                    } else {
+                        displayStatus(bulkUploadStatus, 'error', `❌ Upload failed: ${result.message || 'Unknown error'}. Details: ${result.details || 'N/A'}`);
+                        console.error('Bulk upload error details:', result);
+                    }
+                } catch (error) {
+                    console.error('Network or server error during bulk upload:', error);
+                    displayStatus(bulkUploadStatus, 'error', '⛔ Network error or server is unreachable. Please try again.');
+                }
             });
+
+            // Helper function to display status messages
+            function displayStatus(element, type, message) {
+                element.style.display = 'block';
+                element.className = `status-message ${type}`;
+                element.innerHTML = message;
+            }
+
+            // Initialize Lucide icons
+            lucide.createIcons();
         });
     </script>
 </body>
