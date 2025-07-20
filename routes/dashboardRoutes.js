@@ -1,9 +1,9 @@
-// C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity\routes\dashboardRoutes.js
+// C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity-TechArmy\routes\dashboardRoutes.js
 
 const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
-const { IncomingForm } = require('formidable');
+const { IncomingForm } = require('formidable'); // Ensure formidable is imported for file uploads
 const path = require('path');
 
 const { generateProductDescription } = require('../services/geminiAgent');
@@ -12,8 +12,9 @@ const { getGroqChatCompletion } = require('../services/groqAgent');
 const User = require('../models/User');
 const Product = require('../models/Product'); // Mongoose Product model
 
-const admin = require('firebase-admin'); // Firebase Admin SDK
+const admin = require('firebase-admin');
 const { requireAuth } = require('../middleware/authMiddleware');
+
 
 // --- Mock/Placeholder Services for Audio/Image Processing ---
 async function transcribeAudio(audioBuffer) {
@@ -37,16 +38,12 @@ async function analyzeImage(imageBuffer, userId, query) {
 // --- End Mock Services ---
 
 
-// ***************************************************************
-// MODIFIED: API ENDPOINT FOR PRODUCT CATALOG (PAGINATED & FILTERED)
-// NOW FETCHES ONLY FROM MONGODB (Product model)
-// ***************************************************************
 router.get('/api/products', requireAuth, async (req, res) => {
     console.log("[Server] /api/products route accessed.");
-    const user = res.locals.user; // requireAuth ensures user is present
+    const user = res.locals.user;
 
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12; // Default products per page
+    const limit = parseInt(req.query.limit) || 12;
     const searchQuery = req.query.q ? req.query.q.toLowerCase() : '';
     const categoryFilter = req.query.category ? req.query.category.toLowerCase() : '';
 
@@ -59,7 +56,6 @@ router.get('/api/products', requireAuth, async (req, res) => {
                 { name: { $regex: searchQuery, $options: 'i' } },
                 { description: { $regex: searchQuery, $options: 'i' } },
                 { category: { $regex: searchQuery, $options: 'i' } },
-                // Assuming keywords is an array of strings in Product model
                 { keywords: { $elemMatch: { $regex: searchQuery, $options: 'i' } } }
             ];
         }
@@ -73,10 +69,10 @@ router.get('/api/products', requireAuth, async (req, res) => {
 
         const totalProducts = await Product.countDocuments(query);
         const products = await Product.find(query)
-            .sort({ createdAt: -1 }) // Sort by creation date, newest first
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .lean(); // Use .lean() for faster retrieval
+            .lean();
 
         console.log(`[Server] MongoDB products fetched: ${products.length} (Total matching: ${totalProducts}).`);
 
@@ -93,9 +89,6 @@ router.get('/api/products', requireAuth, async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to load products. Please try again.', error: error.message });
     }
 });
-// ***************************************************************
-// END MODIFIED API ENDPOINT
-// ***************************************************************
 
 
 router.get('/dashboard', async (req, res) => {
@@ -226,7 +219,6 @@ router.post('/admin/products', requireAuth, async (req, res) => {
             finalImageUrl = '/images/default_product.png';
         }
 
-        // Save to MONGODB Product collection (as clarified)
         const newProduct = new Product({
             name,
             description,
@@ -293,7 +285,6 @@ router.get('/user/my-catalog/edit/:productId', async (req, res) => {
     }
 
     try {
-        // This route is for editing a user's personal product/listing from Firestore
         const productDocRef = admin.firestore().collection('artifacts').doc(req.app.get('appId')).collection('users').doc(user.uid).collection('products').doc(productId);
         const productDoc = await productDocRef.get();
 
@@ -374,51 +365,90 @@ router.get('/user/listings/add', async (req, res) => {
 });
 
 router.post('/user/listings', requireAuth, async (req, res) => {
-    console.log("[Server] /user/listings POST route accessed.");
-    const user = res.locals.user; // User object available due to requireAuth
-    // This redundant check is now removed as requireAuth handles it
-    // if (!user || user.role !== 'admin') {
-    //     return res.status(403).json({ success: false, error: 'Access Denied: Only administrators can add public listings.' });
-    // }
+    console.log("[Server] /user/listings POST route accessed for image upload.");
+    const user = res.locals.user;
 
-    const { name, description, price, imageUrl, category, contactInfo } = req.body;
-    console.log(`[Server] /user/listings POST: Received listing data: ${name}, ${category}`);
-
-    // Server-side validation
-    if (!name || !description || !price || !category) {
-        return res.status(400).json({ success: false, error: 'Please fill all required fields for public listing.' });
-    }
-    if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-        return res.status(400).json({ success: false, error: 'Price must be a non-negative number for public listing.' });
-    }
+    const form = new IncomingForm({
+        uploadDir: path.join(__dirname, '../public/uploads/temp'),
+        keepExtensions: true,
+        maxFileSize: 10 * 1024 * 1024,
+    });
 
     try {
-        // As per new clarity: "Add Product Listing" from add_listing.ejs should go to MongoDB
+        const [fields, files] = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+                if (err) {
+                    console.error('Formidable parse error in /user/listings:', err);
+                    if (err.code === 1009) {
+                        return reject(new Error('Image file size too large. Max 10MB allowed.'));
+                    }
+                    return reject(err);
+                }
+                resolve([fields, files]);
+            });
+        });
+
+        const name = (fields.name && fields.name[0]) || '';
+        const description = (fields.description && fields.description[0]) || '';
+        const price = (fields.price && fields.price[0]) || '';
+        const category = (fields.category && fields.category[0]) || '';
+        const contactInfo = (fields.contactInfo && fields.contactInfo[0]) || '';
+        const imageFile = files.image && files.image[0];
+
+        if (!name || !description || !price || !category) {
+            console.warn("[Server] /user/listings POST: Missing required fields after parsing.");
+            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
+        }
+        if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+            console.warn("[Server] /user/listings POST: Invalid price after parsing.");
+            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            return res.status(400).json({ success: false, error: 'Price must be a non-negative number.' });
+        }
+
+        let finalImageUrl = '/images/default_product.png';
+
+        if (imageFile) {
+            const uploadDir = path.join(__dirname, '../public/uploads/products');
+            await fs.mkdir(uploadDir, { recursive: true });
+
+            const newFileName = `${Date.now()}-${imageFile.originalFilename}`;
+            const newPath = path.join(uploadDir, newFileName);
+            
+            await fs.rename(imageFile.filepath, newPath);
+
+            finalImageUrl = `/uploads/products/${newFileName}`;
+            console.log(`[Server] Public listing image uploaded: ${finalImageUrl}`);
+        } else if (fields.imageUrl && fields.imageUrl[0]) {
+            finalImageUrl = fields.imageUrl[0];
+            console.log(`[Server] Public listing using provided image URL: ${finalImageUrl}`);
+        }
+
         const newProduct = new Product({
             name,
             description,
             price: parseFloat(price),
-            imageUrl: imageUrl || '/images/default_product.png',
+            imageUrl: finalImageUrl,
             category,
-            // Assuming keywords for public listings might not be directly captured by this form
-            // If keywords are needed, add a field in add_listing.ejs and capture it.
-            keywords: [], // Default to empty array if not provided by form
-            // Add who listed it, if that's relevant to the Product model in MongoDB
-            // listedBy: user._id, // Assuming Product model has a 'listedBy' field referencing User
-            // listedByName: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email,
+            contactInfo: contactInfo,
+            keywords: [],
         });
 
         await newProduct.save();
-        console.log(`[Server] Public listing "${name}" added successfully to MongoDB Product collection.`);
+        console.log(`[Server] Public listing "${newProduct.name}" added successfully to MongoDB Product collection with ID: ${newProduct._id}`);
         res.status(201).json({ success: true, message: 'Product listing added successfully!', listing: newProduct });
 
     } catch (error) {
-        console.error('[Server] Error adding public listing to MongoDB:', error);
-        // Handle MongoDB unique key constraint error if product name must be unique
+        console.error('[Server] Error in /user/listings POST route:', error);
+        if (form.openedFiles && form.openedFiles[0] && form.openedFiles[0].filepath) {
+             await fs.unlink(form.openedFiles[0].filepath).catch(e => console.error("Error deleting temp file on caught error:", e));
+        }
+
         if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
             return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists.` });
         }
-        res.status(500).json({ success: false, error: 'Failed to add public listing due to a server error. Please try again.' });
+        res.status(500).json({ success: false, error: error.message || 'Failed to add product due to a server error. Please try again.' });
+    } finally {
     }
 });
 
@@ -489,7 +519,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
 
             const newFileName = `${user._id}-${Date.now()}${path.extname(profilePictureFile.originalFilename)}`;
             const newPath = path.join(uploadDir, newFileName);
-
+            
             await fs.rename(profilePictureFile.filepath, newPath);
 
             if (user.profilePicture && user.profilePicture !== '/images/default_image.png' && user.profilePicture.startsWith('/uploads/profile_pictures')) {
@@ -543,13 +573,6 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         }
         res.status(500).json({ success: false, error: 'Failed to update profile due to a server error.' });
     } finally {
-        if (form.openedFiles && form.openedFiles[0] && form.openedFiles[0].filepath) {
-            try {
-                await fs.unlink(form.openedFiles[0].filepath);
-            } catch (e) {
-                console.error("Error deleting temp formidable file:", e);
-            }
-        }
     }
 });
 
