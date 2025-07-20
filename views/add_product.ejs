@@ -1,219 +1,377 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add/Update Product • MyGreenHome</title>
+    <title>All Products • MyGreenHome</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <style>
-        :root {
-            --primary: #22c55e;
-            --primary-dark: #16a34a;
-            --secondary: #6366f1;
-            --accent: #f59e0b;
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-        }
+        /* Optimized Font Loading */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-attachment: fixed;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
+            background-color: #f0f2f5;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
         }
 
-        .glass-morphism {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        .main-content-wrapper {
+            flex-grow: 1;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
-        .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px;
+            color: white;
             position: relative;
             overflow: hidden;
-            flex-grow: 1;
         }
 
-        .form-container::before {
+        .hero-section::before {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            animation: shimmer 3s infinite;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>') repeat;
+            opacity: 0.3;
         }
 
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .form-container:hover {
-            box-shadow: 
-                0 35px 70px rgba(0, 0, 0, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        }
-
-        .floating-label {
-            position: relative;
-            margin-bottom: 2rem;
-            group: float;
-        }
-
-        .floating-label input,
-        .floating-label textarea,
-        .floating-label select {
-            width: 100%;
-            padding: 1.25rem 1rem 0.75rem 1rem;
-            border-radius: 16px;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(0, 0, 0, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .hero-content {
             position: relative;
             z-index: 1;
         }
 
-        .floating-label select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.2rem;
-            padding-right: 3rem;
-        }
-
-        .floating-label input:focus,
-        .floating-label textarea:focus,
-        .floating-label select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 
-                0 0 0 4px rgba(34, 197, 94, 0.1),
-                0 8px 25px rgba(34, 197, 94, 0.15);
-        }
-
-        .floating-label label {
-            position: absolute;
-            left: 1rem;
-            top: 1rem;
-            font-size: 1rem;
-            color: #6b7280;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: transparent;
-            padding: 0 0.5rem;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .floating-label input:focus + label,
-        .floating-label textarea:focus + label,
-        .floating-label select:focus + label,
-        .floating-label input:not(:placeholder-shown) + label,
-        .floating-label textarea:not(:placeholder-shown) + label,
-        .floating-label select:not([value=""]) + label,
-        .floating-label.has-value label {
-            top: -0.75rem;
-            left: 0.75rem;
-            font-size: 0.875rem;
-            color: var(--primary);
-            background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
-            font-weight: 600;
-            transform: scale(0.95);
-        }
-
-        .image-upload-area {
-            border: 2px dashed rgba(34, 197, 94, 0.3);
-            border-radius: 16px;
+        .search-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
             padding: 2rem;
-            background: rgba(255, 255, 255, 0.8);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .search-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            gap: 12px;
+            align-items: stretch;
+            flex-wrap: wrap;
         }
 
-        .image-upload-area:hover,
-        .image-upload-area.drag-over {
-            border-color: var(--primary);
-            background: rgba(34, 197, 94, 0.05);
-            transform: scale(1.02);
-        }
-
-        .image-upload-area.has-image {
-            padding: 1rem;
-            border-style: solid;
-            border-color: var(--primary);
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .image-preview:hover {
-            transform: scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-primary,
-        .btn-secondary,
-        .btn-danger {
+        .search-input-container {
             position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            background: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), 0 4px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .search-input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            z-index: 2;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .search-btn {
+            padding: 16px;
+            border-radius: 16px;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
-            padding: 1rem 2rem;
-            border-radius: 16px;
-            text-decoration: none;
-            z-index: 1;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        .search-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .search-btn:hover::before {
+            left: 100%;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-btn.primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
-            box-shadow: 
-                0 4px 15px rgba(34, 197, 94, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
-        .btn-primary::before {
+        .search-btn.secondary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .search-btn.tertiary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-card-image-container {
+            width: 100%;
+            height: 240px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .product-card-image {
+            transform: scale(1.1);
+        }
+
+        .product-card-body {
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-card-description {
+            font-size: 0.95rem;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-card-keywords {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .product-card-footer {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e5e7eb;
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-category {
+            font-size: 0.85rem;
+            color: #6b7280;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 2rem;
+        }
+
+        .loading-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .no-products-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6b7280;
+            font-size: 1.25rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-status {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+        }
+
+        .back-to-dashboard-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 3rem;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+            border-radius: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-to-dashboard-link::before {
             content: '';
             position: absolute;
             top: 0;
@@ -221,788 +379,441 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s ease;
-            z-index: -1;
+            transition: left 0.5s;
         }
 
-        .btn-primary:hover::before {
+        .back-to-dashboard-link:hover::before {
             left: 100%;
         }
 
-        .btn-primary:hover {
-            box-shadow: 
-                0 8px 25px rgba(34, 197, 94, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        .back-to-dashboard-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
         }
 
-        .btn-secondary {
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            color: white;
-            box-shadow: 
-                0 4px 15px rgba(100, 116, 139, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 
-                0 8px 25px rgba(100, 116, 139, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            box-shadow: 
-                0 4px 15px rgba(239, 68, 68, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .btn-danger:hover {
-            box-shadow: 
-                0 8px 25px rgba(239, 68, 68, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .message-success,
-        .message-error {
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .message-success {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: #15803d;
-        }
-
-        .message-error {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #dc2626;
-        }
-
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .header-gradient {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(10deg); }
-        }
-
-        .loading-spinner {
-            display: inline-block;
+        .icon {
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .input-group {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-            margin-left: 1rem;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 34px;
-        }
-
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        .toggle-switch input:checked + .toggle-slider {
-            background-color: var(--primary);
-        }
-
-        .toggle-switch input:checked + .toggle-slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Mobile optimizations */
-        @media (max-width: 768px) {
-            .form-container {
-                margin: 1rem;
-                padding: 2rem;
+            0% {
+                transform: rotate(0deg);
             }
-            
-            .form-grid {
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                margin: 10px;
+                padding: 16px;
+                border-radius: 16px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-input-container {
+                min-width: auto;
+            }
+
+            .product-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+            }
+
+            .hero-section {
+                padding: 1.5rem 1rem;
+                margin-bottom: 2rem;
             }
         }
     </style>
 </head>
 
-<body class="min-h-screen">
-    <nav class="glass-morphism sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-xl flex items-center justify-center">
-                        <i data-lucide="leaf" class="w-6 h-6 text-white"></i>
-                    </div>
-                    <h1 class="text-2xl font-bold text-white">Agent seller</h1>
-                </div>
-                <div class="flex space-x-6">
-                    <a href="/dashboard" class="text-white hover:text-green-300 transition-all duration-300 flex items-center gap-2">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                        Dashboard
-                    </a>
-                    <a href="/products" class="text-white hover:text-green-300 transition-all duration-300 flex items-center gap-2">
-                        <i data-lucide="package" class="w-4 h-4"></i>
-                        Products
-                    </a>
-                </div>
+<body>
+    <%- include('partials/navbar') %>
+
+    <div class="main-content-wrapper">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">
+                    🌱 Product Catalog
+                </h1>
+                <p class="text-xl md:text-2xl opacity-90 font-light">
+                    Discover eco-friendly products for your green lifestyle
+                </p>
             </div>
         </div>
-    </nav>
 
-    <div class="flex-grow p-6 w-full">
-        <div class="form-container max-w-5xl mx-auto mt-8 p-10 rounded-3xl">
-            <div class="text-center mb-12">
-                <div class="relative inline-flex items-center justify-center w-24 h-24 mb-8">
-                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <i data-lucide="package-plus" class="w-10 h-10 text-white"></i>
-                    </div>
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-container">
+                    <input type="text" id="productSearchInput" placeholder="Search for eco-friendly products..."
+                        class="search-input">
+                    <svg class="search-input-icon icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
                 </div>
-                <h2 class="text-5xl font-bold header-gradient mb-6" id="formTitle">Add New Product</h2>
-                <div class="max-w-3xl mx-auto">
-                    <p class="text-xl text-gray-600 leading-relaxed mb-4" id="formSubtitle">
-                        Create a new product entry for your sustainable marketplace
-                    </p>
-                    <div class="flex items-center justify-center gap-6">
-                        <div class="flex items-center gap-2 text-sm text-gray-500">
-                            <i data-lucide="shield-check" class="w-4 h-4"></i>
-                            <span>All fields are validated in real-time</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-600">Update Mode</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="updateModeToggle" onchange="toggleUpdateMode()">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
+                <div class="search-controls">
+                    <button type="button" id="micSearchBtn" class="search-btn primary" title="Voice Search">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" x2="12" y1="19" y2="22" />
+                            <line x1="8" x2="16" y1="22" y2="22" />
+                        </svg>
+                    </button>
+                    <label for="imageSearchInput" class="search-btn secondary" title="Image Search">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                            <circle cx="9" cy="9" r="2" />
+                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                        </svg>
+                        <input type="file" id="imageSearchInput" accept="image/*" class="hidden">
+                    </label>
+                    <button type="button" id="resetSearchBtn" class="search-btn tertiary" title="Reset Search">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                            <path d="M21 3v5h-5" />
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                            <path d="M8 16H3v5" />
+                        </svg>
+                    </button>
                 </div>
             </div>
+            <div class="mt-4">
+                <label for="productCategoryFilter" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+                <select id="productCategoryFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">All Categories</option>
+                    <option value="Home & Garden">Home & Garden</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                    <option value="Food & Beverages">Food & Beverages</option>
+                    <option value="Kids & Baby">Kids & Baby</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Services">Services</option>
+                    </select>
+            </div>
+        </div>
 
-            <div id="messageContainer" class="mb-8">
-                </div>
+        <div id="searchStatus" class="search-status"></div>
 
-            <form id="productForm" class="space-y-8">
-                <input type="hidden" id="productId" name="productId">
-                
-                <div class="form-grid">
-                    <div class="floating-label input-group lg:col-span-2">
-                        <input type="text" id="name" name="name" placeholder=" " required autocomplete="off">
-                        <label for="name">
-                            <i data-lucide="tag" class="w-4 h-4"></i>
-                            Product Name
-                        </label>
-                    </div>
-                </div>
-
-                <div class="floating-label input-group">
-                    <textarea id="description" name="description" rows="4" placeholder=" " required></textarea>
-                    <label for="description">
-                        <i data-lucide="file-text" class="w-4 h-4"></i>
-                        Product Description
-                    </label>
-                </div>
-
-                <div class="form-grid">
-                    <div class="floating-label input-group">
-                        <input type="number" id="price" name="price" step="0.01" min="0" placeholder=" " required>
-                        <label for="price">
-                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
-                            Price (USD)
-                        </label>
-                    </div>
-
-                    <div class="floating-label input-group">
-                        <select id="category" name="category" required>
-                            <option value="">Choose Category</option>
-                            <option value="Agriculture">🌱 Agriculture & Farming</option>
-                            <option value="Handicrafts">🎨 Handicrafts & Arts</option>
-                            <option value="Food & Groceries">🥬 Food & Groceries</option>
-                            <option value="Retail">🏪 Retail & Commerce</option>
-                            <option value="Sustainable Living">♻️ Sustainable Living</option>
-                            <option value="Other">📦 Other</option>
-                        </select>
-                        <label for="category">
-                            <i data-lucide="grid-3x3" class="w-4 h-4"></i>
-                            Product Category
-                        </label>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                        <i data-lucide="image" class="w-5 h-5"></i>
-                        Product Image
-                    </h3>
-                    
-                    <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('imageInput').click()">
-                        <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                        
-                        <div id="uploadPrompt" class="text-center">
-                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i data-lucide="upload" class="w-8 h-8 text-white"></i>
-                            </div>
-                            <h4 class="text-xl font-semibold text-gray-700 mb-2">Upload Product Image</h4>
-                            <p class="text-gray-500 mb-4">Click to browse or drag and drop your image here</p>
-                            <div class="text-sm text-gray-400">
-                                <span>Supports: JPG, PNG, GIF up to 10MB</span>
-                            </div>
-                        </div>
-
-                        <div id="imagePreviewContainer" style="display: none;" class="text-center">
-                            <img id="imagePreview" class="image-preview mx-auto mb-4" alt="Product preview">
-                            <div class="flex justify-center gap-4">
-                                <button type="button" onclick="changeImage()" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
-                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                    Change Image
-                                </button>
-                                <button type="button" onclick="removeImage()" class="btn-danger">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    Remove
-                                </button>
-                            </div>
+        <div class="product-grid" id="dynamicProductGrid">
+            <div class="loading-grid" id="initialLoadingGrid">
+                <% for(let i=0; i < 6; i++) { %>
+                <div class="loading-card">
+                    <div class="skeleton h-60"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-6 mb-3 rounded"></div>
+                        <div class="skeleton h-4 mb-2 rounded"></div>
+                        <div class="skeleton h-4 mb-4 rounded w-3/4"></div>
+                        <div class="flex justify-between items-center">
+                            <div class="skeleton h-8 w-24 rounded"></div>
+                            <div class="skeleton h-6 w-20 rounded-full"></div>
                         </div>
                     </div>
                 </div>
+                <% } %>
+            </div>
+        </div>
 
-                <div class="floating-label input-group">
-                    <input type="text" id="keywords" name="keywords" placeholder=" ">
-                    <label for="keywords">
-                        <i data-lucide="hash" class="w-4 h-4"></i>
-                        Search Keywords (comma-separated, optional)
-                    </label>
-                </div>
+        <div class="flex justify-center mt-8">
+            <button id="loadMoreBtn" class="search-btn primary" style="display: none;">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Load More Products
+            </button>
+        </div>
 
-                <div class="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
-                    <button type="button" onclick="goBack()" class="btn-secondary">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                        <span>Back to Dashboard</span>
-                    </button>
-                    <button type="submit" id="submitBtn" class="btn-primary">
-                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                        <span id="submitBtnText">Add Product</span>
-                    </button>
-                </div>
-            </form>
+        <div class="flex justify-center mt-8">
+            <a href="/user_dashboard" class="back-to-dashboard-link">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="m12 19-7-7 7-7" />
+                    <path d="M19 12H5" />
+                </svg>
+                <span>Back to Dashboard</span>
+            </a>
         </div>
     </div>
 
-    <footer class="glass-morphism mt-20">
-        <div class="container mx-auto px-6 py-8">
-            <div class="text-center">
-                <div class="flex items-center justify-center gap-2 mb-4">
-                    <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
-                        <i data-lucide="leaf" class="w-4 h-4"></i>
-                    </div>
-                    <span class="text-white font-semibold">MyGreenHome</span>
-                </div>
-                <p class="text-gray-300">&copy; 2024 MyGreenHome. Building a sustainable future together.</p>
-            </div>
-        </div>
-    </footer>
+    <%- include('partials/footer') %>
 
     <script>
-        let isUpdateMode = false;
-        let selectedImage = null;
-        let currentProduct = null; // This will hold product data when in update mode
-
-        // Enhanced form handling
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            
-            const form = document.getElementById('productForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const messageContainer = document.getElementById('messageContainer');
-            const productIdInput = document.getElementById('productId');
-            const nameInput = document.getElementById('name');
-            const descriptionInput = document.getElementById('description');
-            const priceInput = document.getElementById('price');
-            const categorySelect = document.getElementById('category');
-            const keywordsInput = document.getElementById('keywords');
-            const imageUrlInput = document.getElementById('imageUrl'); // Not present in HTML, used in update mode logic
+            const productSearchInput = document.getElementById('productSearchInput');
+            const productCategoryFilter = document.getElementById('productCategoryFilter'); // New category filter
+            const micSearchBtn = document.getElementById('micSearchBtn');
+            const imageSearchInput = document.getElementById('imageSearchInput');
+            const resetSearchBtn = document.getElementById('resetSearchBtn');
+            const searchStatus = document.getElementById('searchStatus');
+            const dynamicProductGrid = document.getElementById('dynamicProductGrid');
+            const initialLoadingGridHtml = dynamicProductGrid.innerHTML; // Store skeleton HTML
+            const loadMoreBtn = document.getElementById('loadMoreBtn'); // Get the load more button
 
-            // Setup floating labels with enhanced validation
-            setupFloatingLabels();
-            setupFormValidation();
-            setupDragAndDrop(); // Setup drag and drop for image upload
-            
-            form.addEventListener('submit', handleFormSubmit);
+            let allLoadedProducts = []; // Stores all products currently loaded
+            const productsPerPage = 12; // Number of products to load per request
+            let currentPage = 1;
+            let currentSearchQuery = '';
+            let currentCategoryFilter = '';
+            let totalProductsCount = 0; // To store the total count from the API
 
-            // Check if we're in update mode based on URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const productIdFromUrl = urlParams.get('id'); // Get 'id' from URL for update mode
-            if (productIdFromUrl) {
-                // Manually set updateModeToggle state and call toggleUpdateMode
-                // as there is no physical checkbox in the HTML for it.
-                isUpdateMode = true; // Set global flag
-                toggleUpdateMode(); // Call function to switch UI
-                loadProductForUpdate(productIdFromUrl);
-            } else {
-                 isUpdateMode = false; // Ensure it's explicitly false when adding a new product
-                 toggleUpdateMode(); // Set initial UI for 'Add Product'
-            }
-        });
+            // Event listener for Load More button
+            loadMoreBtn.addEventListener('click', () => {
+                currentPage++;
+                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, true); // Append
+            });
 
-        // Function to toggle between Add and Update mode UI
-        function toggleUpdateMode() {
-            const formTitle = document.getElementById('formTitle');
-            const formSubtitle = document.getElementById('formSubtitle');
-            const submitBtnText = document.getElementById('submitBtnText');
-            const submitBtn = document.getElementById('submitBtn');
-            const productIdInput = document.getElementById('productId'); // Ensure productId is always hidden
+            // Event listener for category filter
+            productCategoryFilter.addEventListener('change', () => {
+                currentCategoryFilter = productCategoryFilter.value;
+                currentPage = 1; // Reset to first page for new filter
+                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+            });
 
-            // Note: The toggle switch for `updateModeToggle` from original code
-            // seems to be for a different UI (Add/Edit) than this form is.
-            // This form is loaded directly as 'Add Product', or for 'Update Product' via URL param.
-            // So, `isUpdateMode` is set by URL param, not a UI toggle on this page.
-            
-            if (isUpdateMode) {
-                formTitle.textContent = 'Update Product';
-                formSubtitle.textContent = 'Modify existing product information in your sustainable marketplace.';
-                submitBtnText.textContent = 'Update Product';
-                submitBtn.innerHTML = '<i data-lucide="edit" class="w-5 h-5"></i><span id="submitBtnText">Update Product</span>';
-                lucide.createIcons();
-                productIdInput.type = 'hidden'; // Ensure product ID field is hidden if update mode
-            } else {
-                formTitle.textContent = 'Add New Product';
-                formSubtitle.textContent = 'Create a new product entry for your sustainable marketplace.';
-                submitBtnText.textContent = 'Add Product';
-                submitBtn.innerHTML = '<i data-lucide="plus-circle" class="w-5 h-5"></i><span id="submitBtnText">Add Product</span>';
-                lucide.createIcons();
-                productIdInput.value = ''; // Clear ID if switching to Add mode
-                document.getElementById('productForm').reset(); // Clear form
-                removeImage(); // Clear image preview
-                clearFloatingLabels(); // Reset floating labels
-            }
-        }
-
-        // Function to load product data into the form for update mode
-        async function loadProductForUpdate(productId) {
-            try {
-                // In a real application, you would fetch this from your backend API
-                // Example: const response = await fetch(`/api/products/${productId}`);
-                // const data = await response.json();
-                
-                // For now, using a placeholder for fetched product data
-                // This would be replaced by actual data from your MongoDB Product model
-                // fetched from the server by a dedicated API route.
-                const response = await fetch(`/api/admin/products/${productId}`); // Assuming you create this API route
-                const data = await response.json(); // Assuming API returns JSON
-
-                if (!response.ok) {
-                    throw new Error(data.message || 'Failed to load product data.');
+            // Function to render products in the grid
+            function renderProducts(productsToRender, append = false) {
+                if (!append) {
+                    dynamicProductGrid.innerHTML = ''; // Clear existing content unless appending
                 }
 
-                currentProduct = data.product; // Set currentProduct from fetched data
-                
-                document.getElementById('productId').value = currentProduct.id || currentProduct._id;
-                document.getElementById('name').value = currentProduct.name;
-                document.getElementById('description').value = currentProduct.description;
-                document.getElementById('price').value = currentProduct.price;
-                document.getElementById('category').value = currentProduct.category;
-                document.getElementById('keywords').value = Array.isArray(currentProduct.keywords) ? currentProduct.keywords.join(', ') : currentProduct.keywords || '';
-                
-                if (currentProduct.imageUrl) {
-                    loadExistingImage(currentProduct.imageUrl);
+                if (productsToRender.length === 0 && allLoadedProducts.length === 0 && !append) {
+                    dynamicProductGrid.innerHTML = '<div class="no-products-message">🔍 No products found matching your criteria.<br><span style="font-size: 1rem; margin-top: 1rem; display: block; opacity: 0.7;">Try adjusting your search terms.</span></div>';
+                    loadMoreBtn.style.display = 'none';
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment(); // Use a document fragment for efficient DOM updates
+
+                productsToRender.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.classList.add('product-card');
+                    // Ensure all product properties are safely accessed with || defaults
+                    productCard.innerHTML = `
+                        <div class="product-card-image-container">
+                            <img src="${product.imageUrl || '/images/default_product.png'}"
+                                 alt="${product.name || 'Product Image'}"
+                                 class="product-card-image"
+                                 onerror="this.src='/images/default_product.png'"
+                                 loading="lazy">
+                        </div>
+                        <div class="product-card-body">
+                            <h3 class="product-card-title">${product.name || 'Untitled Product'}</h3>
+                            <p class="product-card-description">${product.description || 'No description available.'}</p>
+                            ${product.keywords && Array.isArray(product.keywords) && product.keywords.length > 0 ?
+                                `<div class="product-card-keywords">🏷️ ${product.keywords.join(', ')}</div>` :
+                                ''}
+                        </div>
+                        <div class="product-card-footer">
+                            <span class="product-price">$${(parseFloat(product.price) || 0).toFixed(2)}</span>
+                            <span class="product-category">${product.category || 'Uncategorized'}</span>
+                        </div>
+                    `;
+                    fragment.appendChild(productCard);
+                });
+                dynamicProductGrid.appendChild(fragment); // Append all at once
+
+                // Show/hide load more button based on total products and currently loaded count
+                if (allLoadedProducts.length < totalProductsCount) {
+                    loadMoreBtn.style.display = 'block';
                 } else {
-                    removeImage(); // Ensure no old image is shown if no URL
+                    loadMoreBtn.style.display = 'none';
                 }
-                
-                updateAllFloatingLabels(); // Ensure labels are correctly positioned
-                showMessage('Product loaded for editing. Make your changes and click Update Product.', 'success');
-            } catch (error) {
-                console.error("Error loading product for update:", error);
-                showMessage(`Failed to load product for editing: ${error.message}.`, 'error');
-                // Fallback to add mode if product loading fails
-                isUpdateMode = false;
-                toggleUpdateMode();
+
+                // If Lucide icons are in dynamically added content, re-render them
+                lucide.createIcons();
             }
-        }
-        
-        function loadExistingImage(imageUrl) {
-            const imagePreview = document.getElementById('imagePreview');
-            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-            const uploadPrompt = document.getElementById('uploadPrompt');
-            const uploadArea = document.getElementById('imageUploadArea');
-            
-            imagePreview.src = imageUrl;
-            imagePreviewContainer.style.display = 'block';
-            uploadPrompt.style.display = 'none';
-            uploadArea.classList.add('has-image');
-        }
 
-        function setupDragAndDrop() {
-            const uploadArea = document.getElementById('imageUploadArea');
-            
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
-            });
-            
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => uploadArea.classList.add('drag-over'), false);
-            });
-            
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('drag-over'), false);
-            });
-            
-            uploadArea.addEventListener('drop', handleDrop, false);
-        }
+            // Function to fetch products from the API
+            async function fetchProducts(query = '', category = '', page = 1, limit = productsPerPage, append = false) {
+                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading products...';
+                loadMoreBtn.disabled = true; // Disable load more during fetch
+                loadMoreBtn.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Loading...'; // Update button text with spinner
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+                if (!append) { // Show skeletons only for initial load or new search
+                    dynamicProductGrid.innerHTML = initialLoadingGridHtml;
+                }
 
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            if (files.length > 0) {
-                handleImageFile(files[0]);
-            }
-        }
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                handleImageFile(file);
-            }
-        }
-
-        function handleImageFile(file) {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showMessage('Please select a valid image file (JPG, PNG, GIF)', 'error');
-                return;
-            }
-            
-            // Validate file size (10MB limit)
-            if (file.size > 10 * 1024 * 1024) {
-                showMessage('File size must be less than 10MB', 'error');
-                return;
-            }
-            
-            selectedImage = file;
-            
-            // Create preview
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const imagePreview = document.getElementById('imagePreview');
-                const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-                const uploadPrompt = document.getElementById('uploadPrompt');
-                const uploadArea = document.getElementById('imageUploadArea');
-                
-                imagePreview.src = e.target.result;
-                imagePreviewContainer.style.display = 'block';
-                uploadPrompt.style.display = 'none';
-                uploadArea.classList.add('has-image');
-                
-                showMessage(`Image "${file.name}" ready for upload.`, 'success');
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        function changeImage() {
-            document.getElementById('imageInput').click();
-        }
-
-        function removeImage() {
-            selectedImage = null;
-            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-            const uploadPrompt = document.getElementById('uploadPrompt');
-            const uploadArea = document.getElementById('imageUploadArea');
-            const imageInput = document.getElementById('imageInput');
-            
-            imagePreviewContainer.style.display = 'none';
-            uploadPrompt.style.display = 'flex'; // Changed to flex for proper centering
-            uploadArea.classList.remove('has-image');
-            imageInput.value = ''; // Clear file input element
-            
-            showMessage('Image removed successfully', 'success');
-        }
-
-        function setupFloatingLabels() {
-            const floatingInputs = document.querySelectorAll('.floating-label input, .floating-label textarea, .floating-label select');
-            
-            floatingInputs.forEach(input => {
-                input.addEventListener('input', updateFloatingLabel);
-                input.addEventListener('blur', updateFloatingLabel);
-                input.addEventListener('focus', updateFloatingLabel);
-                
-                updateFloatingLabel.call(input); // Call on initial load
-                
-                function updateFloatingLabel() {
-                    const parent = this.closest('.floating-label');
-                    if (this.value !== '' || this.matches(':focus')) {
-                        parent.classList.add('has-value');
-                    } else {
-                        parent.classList.remove('has-value');
+                try {
+                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&page=${page}&limit=${limit}`);
+                    if (!response.ok) {
+                        // If response is not OK, try to read error as JSON, then fallback to text
+                        let errorData;
+                        try {
+                            errorData = await response.json();
+                        } catch (e) {
+                            errorData = { message: await response.text() || 'Unknown error occurred.' };
+                        }
+                        throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorData.message || errorData.error}`);
                     }
-                }
-            });
-        }
+                    const data = await response.json();
 
-        function updateAllFloatingLabels() {
-            document.querySelectorAll('.floating-label input, .floating-label textarea, .floating-label select').forEach(input => {
-                const parent = input.closest('.floating-label');
-                if (input.value !== '') {
-                    parent.classList.add('has-value');
-                } else {
-                    parent.classList.remove('has-value');
-                }
-            });
-        }
+                    totalProductsCount = data.totalProducts; // Update total count
 
-        function clearFloatingLabels() {
-            document.querySelectorAll('.floating-label').forEach(label => {
-                label.classList.remove('has-value');
-            });
-        }
-
-        function setupFormValidation() {
-            const inputs = document.querySelectorAll('input[required], textarea[required], select[required]');
-            
-            inputs.forEach(input => {
-                input.addEventListener('blur', validateField);
-                input.addEventListener('input', clearValidation); // Clear validation feedback on input
-                
-                function validateField() {
-                    const parent = this.closest('.floating-label') || this.closest('.input-group'); // Check closest parent for styling
-                    if (!this.validity.valid) {
-                        this.style.borderColor = '#ef4444'; // Red border on invalid
-                        if(parent) parent.classList.add('invalid'); // Add class for more complex styling
+                    if (append) {
+                        allLoadedProducts = allLoadedProducts.concat(data.products);
                     } else {
-                        this.style.borderColor = ''; // Reset border
-                        if(parent) parent.classList.remove('invalid');
+                        allLoadedProducts = data.products; // For new search/initial load, replace
                     }
+
+                    renderProducts(data.products, append); // Pass only the new products to render if appending
+                    searchStatus.textContent = `Displaying ${allLoadedProducts.length} of ${totalProductsCount} products.`;
+
+                } catch (error) {
+                    console.error("Failed to fetch products:", error);
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Failed to load products: ${error.message}. Please try again.</span>`;
+                    dynamicProductGrid.innerHTML = '<div class="no-products-message">Failed to load products. Network error or server issue.</div>';
+                    loadMoreBtn.style.display = 'none';
+                } finally {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Load More Products';
                 }
-                
-                function clearValidation() {
-                    const parent = this.closest('.floating-label') || this.closest('.input-group');
-                    this.style.borderColor = '';
-                    if(parent) parent.classList.remove('invalid');
-                }
+            }
+
+            // Initial load of products when the page is ready
+            fetchProducts();
+
+            // --- Text Search ---
+            let searchTimeout;
+            productSearchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchStatus.textContent = ''; // Clear status on new input
+                searchTimeout = setTimeout(() => {
+                    currentSearchQuery = productSearchInput.value.trim();
+                    currentPage = 1; // Reset to first page for new search
+                    allLoadedProducts = []; // Clear current products for a new search
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+                }, 300); // Debounce search
             });
-        }
 
-        async function handleFormSubmit(e) { // Changed to async
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const form = document.getElementById('productForm');
-            
-            // Client-side validation before sending
-            if (!form.checkValidity()) {
-                showMessage('Please fill in all required fields correctly.', 'error');
-                form.reportValidity(); // Show native browser validation messages
-                return;
-            }
+            // --- Voice Search (Web Speech API) ---
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
 
-            // Set loading state
-            const originalContent = submitBtn.innerHTML;
-            const actionText = isUpdateMode ? 'Updating' : 'Adding';
-            submitBtn.innerHTML = `<div class="loading-spinner"></div><span>${actionText} Product...</span>`;
-            submitBtn.disabled = true;
-            submitBtn.style.pointerEvents = 'none'; // Prevent re-clicks
-
-            const formData = new FormData(form); // Use FormData for both text and files
-            
-            // If in update mode, ensure productId is sent
-            if (isUpdateMode && currentProduct) {
-                formData.set('productId', currentProduct.id || currentProduct._id);
-            }
-
-            // Append selectedImage manually, if any. FormData from form already includes file input,
-            // but if you have a custom file input and 'selectedImage' is used, explicitly append.
-            if (selectedImage) {
-                 formData.set('image', selectedImage); // 'image' is the field name backend expects
-            } else if (isUpdateMode && currentProduct && currentProduct.imageUrl && !document.getElementById('imageInput').value) {
-                // If in update mode, no new image selected, and there was an existing image,
-                // you might want to send a flag or the old URL.
-                // For simplicity, if selectedImage is null, backend should understand to keep existing.
-                // Or you could send `formData.append('currentImageUrl', currentProduct.imageUrl);`
-            }
-
-            try {
-                // Determine the correct backend endpoint based on mode
-                // IMPORTANT: The `method` here determines which backend route (POST or PUT) is hit.
-                // You only have a POST /admin/products. For PUT, you need a new route.
-                const url = isUpdateMode ? `/admin/products/${currentProduct.id || currentProduct._id}` : '/admin/products';
-                const method = isUpdateMode ? 'PUT' : 'POST'; // Backend needs a PUT route for update
-
-                console.log(`[Client] Sending product data: URL=${url}, Method=${method}`); // Debug log
-
-                const response = await fetch(url, {
-                    method: method,
-                    body: formData // FormData automatically sets 'Content-Type: multipart/form-data'
+                micSearchBtn.addEventListener('click', () => {
+                    micSearchBtn.innerHTML = '<svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
+                    searchStatus.innerHTML = '🎤 Listening... Speak now.';
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Speech recognition start error:", e);
+                        searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Microphone error. Please allow access.</span>';
+                        resetMicButton();
+                    }
                 });
 
-                const result = await response.json(); // Expect JSON response from backend
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    productSearchInput.value = transcript;
+                    searchStatus.innerHTML = `✨ Transcribed: "${transcript}"`;
+                    currentSearchQuery = transcript;
+                    currentPage = 1;
+                    allLoadedProducts = []; // Clear for new search
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+                };
 
-                if (response.ok) { // Check if HTTP status is 2xx
-                    const successMessage = isUpdateMode 
-                        ? '🎉 Product updated successfully! Changes have been saved.'
-                        : '🎉 Product added successfully! It will appear in the catalog shortly.';
-                    showMessage(result.message || successMessage, 'success');
-                    
-                    if (!isUpdateMode) {
-                        form.reset(); // Clear form fields after successful add
-                        removeImage(); // Clear image preview if adding
-                        clearFloatingLabels(); // Reset floating labels
+                recognition.onerror = (event) => {
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Voice search error: ${event.error}</span>`;
+                    console.error('Speech recognition error:', event.error);
+                    resetMicButton();
+                };
+
+                recognition.onend = () => {
+                    resetMicButton();
+                    if (searchStatus.textContent.includes('Listening')) {
+                        searchStatus.innerHTML = '🔇 No speech detected. Please try again.';
                     }
-                    // For update mode, keep data in form, or reload if needed.
-                    // If you want the list to auto-update, you would navigate back to /user/all-products
-                    // or trigger a reload of the product list there.
+                };
 
-                } else {
-                    // Server-side validation or other errors (e.g., 400, 409, 500)
-                    const errorMessage = result.error || 'An unexpected error occurred.';
-                    showMessage(`❌ ${errorMessage}`, 'error');
-                    console.error("[Client] Server response error:", result); // Log full error from server
+                function resetMicButton() {
+                    micSearchBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="8" x2="16" y1="22" y2="22"/></svg>';
                 }
-            } catch (networkError) {
-                console.error('Network Error during product submission:', networkError);
-                showMessage('❌ Network error. Could not connect to the server. Please check your internet connection.', 'error');
-            } finally {
-                // Reset button state
-                submitBtn.innerHTML = originalContent;
-                submitBtn.disabled = false;
-                submitBtn.style.pointerEvents = '';
-                lucide.createIcons();
+            } else {
+                micSearchBtn.disabled = true;
+                micSearchBtn.style.opacity = '0.5';
+                searchStatus.innerHTML = '⚠️ Voice search not supported in this browser.';
             }
-        }
 
-        // Message display function
-        function showMessage(text, type) {
-            const container = document.getElementById('messageContainer');
-            const messageClass = type === 'success' ? 'message-success' : 'message-error';
-            const icon = type === 'success' ? 'check-circle' : 'alert-circle';
-            
-            container.innerHTML = `
-                <div class="${messageClass} p-6 rounded-xl mb-6 text-center font-medium text-lg">
-                    <i data-lucide="${icon}" class="w-6 h-6 inline mr-3"></i>
-                    ${text}
-                </div>
-            `;
-            
-            lucide.createIcons(); // Ensure icons within message are rendered
-            
-            // Auto-hide after 6 seconds
-            setTimeout(() => {
-                const messageEl = container.firstElementChild;
-                if (messageEl) {
-                    messageEl.style.opacity = '0';
-                    messageEl.style.transform = 'translateY(-20px) scale(0.95)';
-                    setTimeout(() => {
-                        container.innerHTML = '';
-                    }, 300);
+            // --- Image Search ---
+            imageSearchInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    searchStatus.textContent = '';
+                    return;
                 }
-            }, 6000);
-        }
 
-        function goBack() {
-            window.history.back(); // Simple back navigation
-        }
-
-        // Sample function to demonstrate product loading in update mode (should be replaced by API call)
-        // This function is currently NOT used directly by the fixed loadProductForUpdate above,
-        // but it's part of the provided original code.
-        function loadSampleProducts() {
-            const products = [
-                {
-                    id: '1',
-                    name: 'Organic Bamboo Toothbrush',
-                    description: 'Eco-friendly bamboo toothbrush with soft bristles. Biodegradable handle made from sustainable bamboo.',
-                    price: 8.99,
-                    category: 'Sustainable Living',
-                    keywords: 'bamboo, toothbrush, eco-friendly, biodegradable, organic'
-                },
-                {
-                    id: '2',
-                    name: 'Handwoven Cotton Tote Bag',
-                    description: 'Beautiful handwoven cotton tote bag made by local artisans. Perfect for shopping and daily use.',
-                    price: 15.50,
-                    category: 'Handicrafts',
-                    keywords: 'cotton, tote bag, handwoven, artisan, sustainable'
+                if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/i) || file.size > 5 * 1024 * 1024) {
+                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Invalid image format or size (JPG/PNG/GIF, max 5MB).</span>';
+                    event.target.value = '';
+                    return;
                 }
-            ];
-            
-            return products;
-        }
+
+                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 🔍 Analyzing image...';
+
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('query', productSearchInput.value.trim()); // Send current text query too
+
+                try {
+                    // This fetches from the new /api/search-by-image endpoint
+                    const response = await fetch('/api/search-by-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        let errorData;
+                        try {
+                            errorData = await response.json();
+                        } catch (e) {
+                            errorData = { message: await response.text() || 'Unknown error occurred during image analysis.' };
+                        }
+                        throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorData.message || errorData.error}`);
+                    }
+                    const result = await response.json();
+
+                    const searchKeywords = Array.isArray(result.keywords) ? result.keywords.join(', ') : result.query || '';
+                    productSearchInput.value = searchKeywords; // Update search input with AI-generated keywords
+                    searchStatus.innerHTML = `✨ Image analysis complete. Searching for: "${searchKeywords}"`;
+                    currentSearchQuery = searchKeywords; // Update state
+                    currentPage = 1;
+                    allLoadedProducts = []; // Clear for new search
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage); // Fetch using AI keywords
+
+                } catch (error) {
+                    console.error('Image search API error:', error);
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Error analyzing image: ${error.message || 'Network error analyzing image'}.</span>`;
+                } finally {
+                    event.target.value = '';
+                }
+            });
+
+            // --- Reset Search ---
+            resetSearchBtn.addEventListener('click', () => {
+                productSearchInput.value = '';
+                productCategoryFilter.value = ''; // Reset category filter too
+                searchStatus.textContent = '';
+                currentSearchQuery = '';
+                currentCategoryFilter = '';
+                currentPage = 1;
+                allLoadedProducts = []; // Clear loaded products to start fresh
+                fetchProducts(); // Re-fetch initial set
+            });
+        });
     </script>
 </body>
+
 </html>

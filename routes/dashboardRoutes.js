@@ -1,18 +1,18 @@
-// C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity-TechArmy\routes\dashboardRoutes.js
+// C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity\routes\dashboardRoutes.js
 
 const express = require('express');
 const router = express.Router();
 const fs = require('fs').promises;
 const { IncomingForm } = require('formidable');
-const path = require('path'); // ADDED: Ensure path is imported for file operations
+const path = require('path');
 
 const { generateProductDescription } = require('../services/geminiAgent');
 const { getGroqChatCompletion } = require('../services/groqAgent');
 
 const User = require('../models/User');
-const Product = require('../models/Product');
+const Product = require('../models/Product'); // Mongoose Product model
 
-const admin = require('firebase-admin');
+const admin = require('firebase-admin'); // Firebase Admin SDK
 const { requireAuth } = require('../middleware/authMiddleware');
 
 // --- Mock/Placeholder Services for Audio/Image Processing ---
@@ -27,7 +27,7 @@ async function analyzeImage(imageBuffer, userId, query) {
     console.log(`[Server Mock Image Analysis] Received image buffer of size ${imageBuffer.length} bytes for user ${userId}. Optional Query: "${query}"`);
     await new Promise(resolve => setTimeout(resolve, 2500));
     console.log("[Server Mock Image Analysis] Simulating image analysis complete.");
-    const mockKeywords = ["eco-friendly", "handmade", "sustainable", "organic"];
+    const mockKeywords = ["eco-friendly", "handmade", "sustainable", "organic", "apple"];
     return {
         description: `This is a mock analysis of the image provided. It looks like a product related to natural living.`,
         keywords: mockKeywords,
@@ -35,6 +35,67 @@ async function analyzeImage(imageBuffer, userId, query) {
     };
 }
 // --- End Mock Services ---
+
+
+// ***************************************************************
+// MODIFIED: API ENDPOINT FOR PRODUCT CATALOG (PAGINATED & FILTERED)
+// NOW FETCHES ONLY FROM MONGODB (Product model)
+// ***************************************************************
+router.get('/api/products', requireAuth, async (req, res) => {
+    console.log("[Server] /api/products route accessed.");
+    const user = res.locals.user; // requireAuth ensures user is present
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12; // Default products per page
+    const searchQuery = req.query.q ? req.query.q.toLowerCase() : '';
+    const categoryFilter = req.query.category ? req.query.category.toLowerCase() : '';
+
+    const skip = (page - 1) * limit;
+
+    try {
+        let query = {};
+        if (searchQuery) {
+            query.$or = [
+                { name: { $regex: searchQuery, $options: 'i' } },
+                { description: { $regex: searchQuery, $options: 'i' } },
+                { category: { $regex: searchQuery, $options: 'i' } },
+                // Assuming keywords is an array of strings in Product model
+                { keywords: { $elemMatch: { $regex: searchQuery, $options: 'i' } } }
+            ];
+        }
+        if (categoryFilter && categoryFilter !== 'all') {
+            if (query.$or) {
+                query = { $and: [ query, { category: { $regex: categoryFilter, $options: 'i' } } ] };
+            } else {
+                query.category = { $regex: categoryFilter, $options: 'i' };
+            }
+        }
+
+        const totalProducts = await Product.countDocuments(query);
+        const products = await Product.find(query)
+            .sort({ createdAt: -1 }) // Sort by creation date, newest first
+            .skip(skip)
+            .limit(limit)
+            .lean(); // Use .lean() for faster retrieval
+
+        console.log(`[Server] MongoDB products fetched: ${products.length} (Total matching: ${totalProducts}).`);
+
+        res.json({
+            products: products,
+            totalProducts: totalProducts,
+            currentPage: page,
+            totalPages: Math.ceil(totalProducts / limit),
+            limit
+        });
+
+    } catch (error) {
+        console.error('[Server] Error fetching products for API:', error);
+        res.status(500).json({ success: false, message: 'Failed to load products. Please try again.', error: error.message });
+    }
+});
+// ***************************************************************
+// END MODIFIED API ENDPOINT
+// ***************************************************************
 
 
 router.get('/dashboard', async (req, res) => {
@@ -52,8 +113,8 @@ router.get('/dashboard', async (req, res) => {
             const totalUsers = await User.countDocuments({});
             const adminUsers = await User.countDocuments({ role: 'admin' });
             const recentSignups = await User.find({})
-                                            .sort({ createdAt: -1 })
-                                            .limit(5);
+                                        .sort({ createdAt: -1 })
+                                        .limit(5);
             console.log("[Server] /dashboard: Admin data fetched. Rendering admin_dashboard.");
             res.render('admin_dashboard', {
                 user: user,
@@ -100,48 +161,95 @@ router.get('/admin/products/add', async (req, res) => {
     res.render('add_product', { error: null, message: null });
 });
 
-// Admin POST Product Route (Returns JSON response for client-side fetch)
-router.post('/admin/products', requireAuth, async (req, res) => { // Added requireAuth for consistency
+router.post('/admin/products', requireAuth, async (req, res) => {
     console.log("[Server] /admin/products POST route accessed.");
-    const user = res.locals.user; // User from requireAuth
+    const user = res.locals.user;
     if (!user || user.role !== 'admin') {
         return res.status(403).json({ success: false, error: 'Access Denied: Only administrators can add products.' });
     }
 
-    const { name, description, price, imageUrl, category, keywords } = req.body;
-    console.log(`[Server] /admin/products POST: Attempting to add product: ${name}`);
-
-    // Basic server-side validation
-    if (!name || !description || !price || !category) {
-        console.warn("[Server] /admin/products POST: Missing required fields.");
-        return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
-    }
-    if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-        console.warn("[Server] /admin/products POST: Invalid price.");
-        return res.status(400).json({ success: false, error: 'Price must be a non-negative number.' });
-    }
+    const form = new IncomingForm({
+        uploadDir: path.join(__dirname, '../public/uploads/temp'),
+        keepExtensions: true,
+        maxFileSize: 10 * 1024 * 1024
+    });
 
     try {
+        const [fields, files] = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+                if (err) {
+                    console.error('Formidable parse error:', err);
+                    if (err.code === 1009) {
+                        return reject(new Error('File size too large. Max 10MB allowed.'));
+                    }
+                    return reject(err);
+                }
+                resolve([fields, files]);
+            });
+        });
+
+        const name = (fields.name && fields.name[0]) || '';
+        const description = (fields.description && fields.description[0]) || '';
+        const price = (fields.price && fields.price[0]) || '';
+        const imageUrl = (fields.imageUrl && fields.imageUrl[0]) || '';
+        const category = (fields.category && fields.category[0]) || '';
+        const keywords = (fields.keywords && fields.keywords[0]) || '';
+        const imageFile = files.image && files.image[0];
+
+        console.log(`[Server] /admin/products POST: Attempting to add product: ${name}`);
+
+        if (!name || !description || !price || !category) {
+            console.warn("[Server] /admin/products POST: Missing required fields.");
+            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
+        }
+        if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+            console.warn("[Server] /admin/products POST: Invalid price.");
+            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            return res.status(400).json({ success: false, error: 'Price must be a non-negative number.' });
+        }
+
+        let finalImageUrl = imageUrl;
+
+        if (imageFile) {
+            const uploadDir = path.join(__dirname, '../public/uploads/products');
+            await fs.mkdir(uploadDir, { recursive: true });
+
+            const newFileName = `${Date.now()}-${imageFile.originalFilename}`;
+            const newPath = path.join(uploadDir, newFileName);
+
+            await fs.rename(imageFile.filepath, newPath);
+
+            finalImageUrl = `/uploads/products/${newFileName}`;
+            console.log(`[Server] Product image uploaded: ${finalImageUrl}`);
+        } else if (!finalImageUrl) {
+            finalImageUrl = '/images/default_product.png';
+        }
+
+        // Save to MONGODB Product collection (as clarified)
         const newProduct = new Product({
             name,
             description,
             price: parseFloat(price),
-            imageUrl: imageUrl || '/images/default_product.png',
+            imageUrl: finalImageUrl,
             category,
-            keywords: keywords ? String(keywords).split(',').map(k => k.trim()).filter(k => k.length > 0) : [] // Ensure keywords is string before split
+            keywords: keywords ? String(keywords).split(',').map(k => k.trim()).filter(k => k.length > 0) : []
         });
 
         await newProduct.save();
-        console.log(`[Server] /admin/products POST: Product "${newProduct.name}" added successfully with ID: ${newProduct._id}`);
-        // Send JSON success response
+        console.log(`[Server] /admin/products POST: Product "${newProduct.name}" added successfully to MongoDB with ID: ${newProduct._id}`);
         res.status(201).json({ success: true, message: 'Product added successfully!', product: newProduct });
 
     } catch (error) {
-        console.error('[Server] Error adding product:', error);
+        console.error('[Server] Error in /admin/products POST route:', error);
+        if (form.openedFiles && form.openedFiles[0] && form.openedFiles[0].filepath) {
+            await fs.unlink(form.openedFiles[0].filepath).catch(e => console.error("Error deleting temp file:", e));
+        }
+
         if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
             return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists. Please choose a different name.` });
         }
-        res.status(500).json({ success: false, error: 'Failed to add product due to a server error. Please try again.' });
+        res.status(500).json({ success: false, error: error.message || 'Failed to add product due to a server error. Please try again.' });
     }
 });
 
@@ -185,6 +293,7 @@ router.get('/user/my-catalog/edit/:productId', async (req, res) => {
     }
 
     try {
+        // This route is for editing a user's personal product/listing from Firestore
         const productDocRef = admin.firestore().collection('artifacts').doc(req.app.get('appId')).collection('users').doc(user.uid).collection('products').doc(productId);
         const productDoc = await productDocRef.get();
 
@@ -211,7 +320,7 @@ router.post('/user/my-catalog/edit/:productId', async (req, res) => {
     }
 
     const { name, description, keywords } = req.body;
-    const productId = req.params.productId; // Make sure productId is extracted
+    const productId = req.params.productId;
 
     console.log(`[Server] Attempting to update product ${productId} with new data: ${name}`);
 
@@ -264,16 +373,18 @@ router.get('/user/listings/add', async (req, res) => {
     res.render('add_listing', { user: user, error: null, message: null });
 });
 
-router.post('/user/listings', async (req, res) => {
+router.post('/user/listings', requireAuth, async (req, res) => {
     console.log("[Server] /user/listings POST route accessed.");
-    const user = res.locals.user;
-    if (!user || user.role !== 'admin') {
-        return res.status(403).json({ success: false, error: 'Access Denied: Only administrators can add public listings.' });
-    }
+    const user = res.locals.user; // User object available due to requireAuth
+    // This redundant check is now removed as requireAuth handles it
+    // if (!user || user.role !== 'admin') {
+    //     return res.status(403).json({ success: false, error: 'Access Denied: Only administrators can add public listings.' });
+    // }
 
     const { name, description, price, imageUrl, category, contactInfo } = req.body;
     console.log(`[Server] /user/listings POST: Received listing data: ${name}, ${category}`);
 
+    // Server-side validation
     if (!name || !description || !price || !category) {
         return res.status(400).json({ success: false, error: 'Please fill all required fields for public listing.' });
     }
@@ -282,78 +393,49 @@ router.post('/user/listings', async (req, res) => {
     }
 
     try {
-        const appId = req.app.get('appId');
-        const publicListingsCollectionRef = admin.firestore()
-                                                .collection('artifacts')
-                                                .doc(appId)
-                                                .collection('publicListings');
-
-        const newListing = {
+        // As per new clarity: "Add Product Listing" from add_listing.ejs should go to MongoDB
+        const newProduct = new Product({
             name,
             description,
             price: parseFloat(price),
-            category,
             imageUrl: imageUrl || '/images/default_product.png',
-            contactInfo,
-            listedBy: user.uid,
-            listedByName: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email,
-            listedAt: admin.firestore.FieldValue.serverTimestamp()
-        };
+            category,
+            // Assuming keywords for public listings might not be directly captured by this form
+            // If keywords are needed, add a field in add_listing.ejs and capture it.
+            keywords: [], // Default to empty array if not provided by form
+            // Add who listed it, if that's relevant to the Product model in MongoDB
+            // listedBy: user._id, // Assuming Product model has a 'listedBy' field referencing User
+            // listedByName: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email,
+        });
 
-        await publicListingsCollectionRef.add(newListing);
-        console.log(`[Server] Public listing "${name}" added successfully to Firestore.`);
-        res.status(201).json({ success: true, message: 'Product listing added successfully!', listing: newListing });
+        await newProduct.save();
+        console.log(`[Server] Public listing "${name}" added successfully to MongoDB Product collection.`);
+        res.status(201).json({ success: true, message: 'Product listing added successfully!', listing: newProduct });
 
     } catch (error) {
-        console.error('[Server] Error adding public listing:', error);
+        console.error('[Server] Error adding public listing to MongoDB:', error);
+        // Handle MongoDB unique key constraint error if product name must be unique
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
+            return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists.` });
+        }
         res.status(500).json({ success: false, error: 'Failed to add public listing due to a server error. Please try again.' });
     }
 });
 
-router.get('/user/all-products', async (req, res) => {
+router.get('/user/all-products', requireAuth, async (req, res) => {
     console.log("[Server] /user/all-products route accessed.");
     const user = res.locals.user;
     if (!user) {
         console.log("[Server] /user/all-products: No user, redirecting to login.");
         return res.redirect('/auth/login');
     }
-    console.log(`[Server] /user/all-products: Authenticated user ${user.email}. Fetching products.`);
+    console.log(`[Server] /user/all-products: Authenticated user ${user.email}. Rendering template.`);
 
     try {
-        console.log("[Server] Fetching Mongoose products...");
-        const mongooseProducts = await Product.find({}).lean();
-        console.log(`[Server] Mongoose products fetched: ${mongooseProducts.length}`);
-
-        console.log("[Server] Fetching Firestore public listings...");
-        const appId = req.app.get('appId');
-        const publicListingsCollectionRef = admin.firestore()
-                                                .collection('artifacts')
-                                                .doc(appId)
-                                                .collection('publicListings');
-        const firestoreSnapshot = await publicListingsCollectionRef.get();
-        const firestoreProducts = firestoreSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-        }));
-        console.log(`[Server] Firestore public listings fetched: ${firestoreProducts.length}`);
-
-        const allCombinedProducts = [
-            ...mongooseProducts.map(p => ({ ...p, source: 'admin-product', id: p._id.toString() })),
-            ...firestoreProducts.map(p => ({ ...p, source: 'user-listing', id: p.id }))
-        ].sort((a, b) => {
-            const dateA = a.listedAt ? a.listedAt.toDate() : a.createdAt;
-            const dateB = b.listedAt ? b.listedAt.toDate() : b.createdAt;
-            if (!dateA && !dateB) return 0;
-            if (!dateA) return 1;
-            if (!dateB) return -1;
-            return dateB.getTime() - dateA.getTime();
-        });
-        console.log(`[Server] Total combined products: ${allCombinedProducts.length}`);
-
-        res.render('all_products', { user: user, products: allCombinedProducts, error: null, message: null });
+        res.render('all_products', { user: user, error: null, message: null });
     } catch (error) {
-        console.error('[Server] Error fetching all products for display:', error);
-        res.status(500).render('500', { title: 'Server Error', user: res.locals.user, error: 'Failed to load all products. Please try again.' });
+        console.error('[Server] Error rendering all products page (template):', error);
+        res.status(500).render('500', { title: 'Server Error', user: res.locals.user, error: 'Failed to load product page.' });
     }
 });
 
@@ -377,14 +459,16 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
     const form = new IncomingForm({
         uploadDir: path.join(__dirname, '../public/uploads/temp'),
         keepExtensions: true,
-        maxFileSize: 5 * 1024 * 1024
+        maxFileSize: 5 * 1024 * 1024,
     });
 
-    form.parse(req, async (err, fields, files) => {
-        if (err) {
-            console.error('Error parsing profile update form:', err);
-            return res.status(400).json({ success: false, error: 'Failed to process form data.' });
-        }
+    try {
+        const [fields, files] = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+                if (err) return reject(err);
+                resolve([fields, files]);
+            });
+        });
 
         let firstName = (fields.firstName && fields.firstName[0]) || '';
         let lastName = (fields.lastName && fields.lastName[0]) || '';
@@ -393,80 +477,81 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         const profilePictureFile = files.profilePicture && files.profilePicture[0];
 
         if (!firstName || firstName.length < 2 || !lastName || lastName.length < 2 || !mobile || !/^\d{10}$/.test(mobile) || !gender) {
+            if (profilePictureFile && profilePictureFile.filepath) await fs.unlink(profilePictureFile.filepath).catch(e => console.error("Error deleting temp file:", e));
             return res.status(400).json({ success: false, error: 'Validation failed: Please fill all required fields correctly.' });
         }
 
-        try {
-            let profilePictureUrl = user.profilePicture;
+        let profilePictureUrl = user.profilePicture;
 
-            if (profilePictureFile) {
-                const uploadDir = path.join(__dirname, '../public/uploads/profile_pictures');
-                await fs.mkdir(uploadDir, { recursive: true });
+        if (profilePictureFile) {
+            const uploadDir = path.join(__dirname, '../public/uploads/profile_pictures');
+            await fs.mkdir(uploadDir, { recursive: true });
 
-                const newFileName = `${user._id}-${Date.now()}${path.extname(profilePictureFile.originalFilename)}`;
-                const newPath = path.join(uploadDir, newFileName);
-                const publicUrl = `/uploads/profile_pictures/${newFileName}`;
+            const newFileName = `${user._id}-${Date.now()}${path.extname(profilePictureFile.originalFilename)}`;
+            const newPath = path.join(uploadDir, newFileName);
 
-                await fs.rename(profilePictureFile.filepath, newPath);
+            await fs.rename(profilePictureFile.filepath, newPath);
 
-                if (user.profilePicture && user.profilePicture !== '/images/default_image.png' && user.profilePicture.startsWith('/uploads/profile_pictures')) {
-                    const oldFilePath = path.join(__dirname, '../public', user.profilePicture);
-                    try {
-                        await fs.access(oldFilePath, fs.constants.F_OK);
-                        await fs.unlink(oldFilePath);
-                        console.log(`Deleted old profile picture: ${oldFilePath}`);
-                    } catch (deleteErr) {
-                        console.warn(`Could not delete old profile picture ${oldFilePath}:`, deleteErr.message);
-                    }
-                }
-                profilePictureUrl = publicUrl;
-            }
-
-            const updatedUser = await User.findByIdAndUpdate(user._id, {
-                firstName: firstName,
-                lastName: lastName,
-                mobile: mobile,
-                gender: gender,
-                profilePicture: profilePictureUrl
-            }, { new: true, runValidators: true });
-
-            if (!updatedUser) {
-                return res.status(404).json({ success: false, error: 'User not found for update.' });
-            }
-
-            res.json({
-                success: true,
-                message: 'Profile updated successfully!',
-                data: {
-                    firstName: updatedUser.firstName,
-                    lastName: updatedUser.lastName,
-                    email: updatedUser.email,
-                    mobile: updatedUser.mobile,
-                    gender: updatedUser.gender,
-                    profilePicture: updatedUser.profilePicture
-                },
-                profilePictureUrl: updatedUser.profilePicture
-            });
-
-        } catch (dbError) {
-            console.error('Error updating user profile in DB:', dbError);
-            if (dbError.code === 11000) {
-                const field = Object.keys(dbError.keyValue)[0];
-                return res.status(400).json({ success: false, error: `This ${field} "${dbError.keyValue[field]}" is already in use.` });
-            }
-            res.status(500).json({ success: false, error: 'Failed to update profile due to a server error.' });
-        } finally {
-            if (profilePictureFile && profilePictureFile.filepath) {
+            if (user.profilePicture && user.profilePicture !== '/images/default_image.png' && user.profilePicture.startsWith('/uploads/profile_pictures')) {
+                const oldFilePath = path.join(__dirname, '../public', user.profilePicture);
                 try {
-                    await fs.unlink(profilePictureFile.filepath);
-                } catch (e) {
-                    console.error("Error deleting temp formidable file:", e);
+                    await fs.access(oldFilePath, fs.constants.F_OK);
+                    await fs.unlink(oldFilePath);
+                    console.log(`Deleted old profile picture: ${oldFilePath}`);
+                } catch (deleteErr) {
+                    console.warn(`Could not delete old profile picture ${oldFilePath}:`, deleteErr.message);
                 }
+            }
+            profilePictureUrl = `/uploads/profile_pictures/${newFileName}`;
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(user._id, {
+            firstName: firstName,
+            lastName: lastName,
+            mobile: mobile,
+            gender: gender,
+            profilePicture: profilePictureUrl
+        }, { new: true, runValidators: true });
+
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, error: 'User not found for update.' });
+        }
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully!',
+            data: {
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                email: updatedUser.email,
+                mobile: updatedUser.mobile,
+                gender: updatedUser.gender,
+                profilePicture: updatedUser.profilePicture
+            },
+            profilePictureUrl: updatedUser.profilePicture
+        });
+
+    } catch (error) {
+        console.error('Error updating user profile in DB:', error);
+        if (form.openedFiles && form.openedFiles[0] && form.openedFiles[0].filepath) {
+            await fs.unlink(form.openedFiles[0].filepath).catch(e => console.error("Error deleting temp file:", e));
+        }
+
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            return res.status(400).json({ success: false, error: `This ${field} "${error.keyValue[field]}" is already in use.` });
+        }
+        res.status(500).json({ success: false, error: 'Failed to update profile due to a server error.' });
+    } finally {
+        if (form.openedFiles && form.openedFiles[0] && form.openedFiles[0].filepath) {
+            try {
+                await fs.unlink(form.openedFiles[0].filepath);
+            } catch (e) {
+                console.error("Error deleting temp formidable file:", e);
             }
         }
-    });
+    }
 });
-
 
 router.post('/api/generate-description', async (req, res) => {
     console.log("[Server] /api/generate-description POST route accessed.");
@@ -488,7 +573,6 @@ router.post('/api/generate-description', async (req, res) => {
     res.json({ description: description });
 });
 
-
 router.get('/ai-chat', (req, res) => {
     console.log("[Server] /ai-chat route accessed.");
     const user = res.locals.user;
@@ -499,13 +583,14 @@ router.get('/ai-chat', (req, res) => {
     res.render('ai_chat', { user: user });
 });
 
-router.post('/api/grok-chat', async (req, res) => {
+router.post('/api/grok-chat', requireAuth, async (req, res) => {
     console.log("[Server] /api/grok-chat POST route accessed (Text Chat).");
-    const { userId, message } = req.body;
+    const message = req.body.message;
+    const userId = res.locals.user.uid;
     console.log(`[Server] Grok Chat: User ID: ${userId}, Message: "${message}"`);
 
-    if (!userId || !message) {
-        return res.status(400).json({ error: 'User ID and message are required.' });
+    if (!message) {
+        return res.status(400).json({ error: 'Message is required.' });
     }
     try {
         console.log("[Server] Grok Chat: Calling getGroqChatCompletion...");
@@ -518,8 +603,10 @@ router.post('/api/grok-chat', async (req, res) => {
     }
 });
 
-router.post('/api/grok-chat-audio', async (req, res) => {
+router.post('/api/grok-chat-audio', requireAuth, async (req, res) => {
     console.log("[Server] /api/grok-chat-audio POST route accessed (Audio Chat).");
+    const user = res.locals.user;
+
     const form = new IncomingForm();
     form.parse(req, async (err, fields, files) => {
         if (err) {
@@ -529,14 +616,13 @@ router.post('/api/grok-chat-audio', async (req, res) => {
         console.log("[Server] formidable parsing complete for audio.");
 
         const audioFile = files.audio && files.audio[0];
-        const userId = fields.userId && fields.userId[0];
+        const userId = user.uid;
 
-        if (!audioFile || !userId) {
-            return res.status(400).json({ error: 'Audio file and User ID are required.' });
+        if (!audioFile) {
+            return res.status(400).json({ error: 'Audio file is required.' });
         }
 
         try {
-            console.log(`[Server] Audio Chat: Reading temporary audio file from ${audioFile.filepath}`);
             const audioBuffer = await fs.readFile(audioFile.filepath);
             console.log(`[Server] Audio Chat: Audio buffer size: ${audioBuffer.length} bytes.`);
 
@@ -576,26 +662,29 @@ router.post('/api/grok-chat-photo', requireAuth, async (req, res) => {
         maxFileSize: 5 * 1024 * 1024,
     });
 
-    form.parse(req, async (err, fields, files) => {
-        if (err) {
-            console.error('Error parsing form data for image:', err);
-            return res.status(500).json({ error: 'Failed to process image upload.' });
-        }
+    try {
+        const [fields, files] = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+                if (err) return reject(err);
+                resolve([fields, files]);
+            });
+        });
 
         const imageFile = files.image && files.image[0];
-        const userId = fields.userId && fields.userId[0];
+        const userId = user.uid;
         const query = fields.query && fields.query[0] || "";
 
-        if (!imageFile || !userId) {
-            return res.status(400).json({ error: 'Image file and User ID are required.' });
+        if (!imageFile) {
+            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            return res.status(400).json({ error: 'Image file is required for search.' });
         }
 
         try {
             const imageBuffer = await fs.readFile(imageFile.filepath);
             const aiAnalysis = await analyzeImage(imageBuffer, userId, query);
-            
+
             const finalMessage = query ? `User provided an image. Analysis: "${aiAnalysis.description}". Original Query: "${query}"` : `User provided an image. Analysis: "${aiAnalysis.description}"`;
-            
+
             const grokReply = await getGroqChatCompletion(finalMessage);
 
             res.json({ reply: grokReply, keywords: aiAnalysis.keywords });
@@ -611,7 +700,11 @@ router.post('/api/grok-chat-photo', requireAuth, async (req, res) => {
                 }
             }
         }
-    });
+    } catch (parseError) {
+        console.error('[Server] Error during form parsing or initial setup in /api/grok-chat-photo:', parseError);
+        res.status(500).json({ error: 'Failed to process image upload due to an internal server error.' });
+    }
 });
+
 
 module.exports = router;

@@ -5,9 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Products • MyGreenHome</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Optimized Font Loading */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
         body {
@@ -482,27 +492,47 @@
                     </button>
                 </div>
             </div>
+            <div class="mt-4">
+                <label for="productCategoryFilter" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+                <select id="productCategoryFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">All Categories</option>
+                    <option value="Home & Garden">Home & Garden</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                    <option value="Food & Beverages">Food & Beverages</option>
+                    <option value="Kids & Baby">Kids & Baby</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Services">Services</option>
+                    </select>
+            </div>
         </div>
 
         <div id="searchStatus" class="search-status"></div>
 
         <div class="product-grid" id="dynamicProductGrid">
-            <div class="loading-grid">
+            <div class="loading-grid" id="initialLoadingGrid">
                 <% for(let i=0; i < 6; i++) { %>
-                    <div class="loading-card">
-                        <div class="skeleton h-60"></div>
-                        <div class="p-6">
-                            <div class="skeleton h-6 mb-3 rounded"></div>
-                            <div class="skeleton h-4 mb-2 rounded"></div>
-                            <div class="skeleton h-4 mb-4 rounded w-3/4"></div>
-                            <div class="flex justify-between items-center">
-                                <div class="skeleton h-8 w-24 rounded"></div>
-                                <div class="skeleton h-6 w-20 rounded-full"></div>
-                            </div>
+                <div class="loading-card">
+                    <div class="skeleton h-60"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-6 mb-3 rounded"></div>
+                        <div class="skeleton h-4 mb-2 rounded"></div>
+                        <div class="skeleton h-4 mb-4 rounded w-3/4"></div>
+                        <div class="flex justify-between items-center">
+                            <div class="skeleton h-8 w-24 rounded"></div>
+                            <div class="skeleton h-6 w-20 rounded-full"></div>
                         </div>
                     </div>
-                    <% } %>
+                </div>
+                <% } %>
             </div>
+        </div>
+
+        <div class="flex justify-center mt-8">
+            <button id="loadMoreBtn" class="search-btn primary" style="display: none;">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                Load More Products
+            </button>
         </div>
 
         <div class="flex justify-center mt-8">
@@ -521,42 +551,66 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const productSearchInput = document.getElementById('productSearchInput');
+            const productCategoryFilter = document.getElementById('productCategoryFilter'); // New category filter
             const micSearchBtn = document.getElementById('micSearchBtn');
             const imageSearchInput = document.getElementById('imageSearchInput');
             const resetSearchBtn = document.getElementById('resetSearchBtn');
             const searchStatus = document.getElementById('searchStatus');
             const dynamicProductGrid = document.getElementById('dynamicProductGrid');
+            const initialLoadingGridHtml = dynamicProductGrid.innerHTML; // Store skeleton HTML
+            const loadMoreBtn = document.getElementById('loadMoreBtn'); // Get the load more button
 
-            // Store all products initially fetched from the server via EJS
-            let allProducts = <%- JSON.stringify(products || []) %>; 
-            
-            // Debugging: Log the contents of allProducts on client-side
-            console.log("[Client] allProducts received:", allProducts); 
-            console.log("[Client] Number of products received:", allProducts.length); 
+            let allLoadedProducts = []; // Stores all products currently loaded
+            const productsPerPage = 12; // Number of products to load per request
+            let currentPage = 1;
+            let currentSearchQuery = '';
+            let currentCategoryFilter = '';
+            let totalProductsCount = 0; // To store the total count from the API
+
+            // Event listener for Load More button
+            loadMoreBtn.addEventListener('click', () => {
+                currentPage++;
+                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, true); // Append
+            });
+
+            // Event listener for category filter
+            productCategoryFilter.addEventListener('change', () => {
+                currentCategoryFilter = productCategoryFilter.value;
+                currentPage = 1; // Reset to first page for new filter
+                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+            });
 
             // Function to render products in the grid
-            function renderProducts(productsToRender) {
-                console.log("[Client] renderProducts called with:", productsToRender);
-                dynamicProductGrid.innerHTML = ''; // Clear existing content (including skeleton)
-                
-                if (productsToRender.length === 0) {
+            function renderProducts(productsToRender, append = false) {
+                if (!append) {
+                    dynamicProductGrid.innerHTML = ''; // Clear existing content unless appending
+                }
+
+                if (productsToRender.length === 0 && allLoadedProducts.length === 0 && !append) {
                     dynamicProductGrid.innerHTML = '<div class="no-products-message">🔍 No products found matching your criteria.<br><span style="font-size: 1rem; margin-top: 1rem; display: block; opacity: 0.7;">Try adjusting your search terms.</span></div>';
+                    loadMoreBtn.style.display = 'none';
                     return;
                 }
-                
+
+                const fragment = document.createDocumentFragment(); // Use a document fragment for efficient DOM updates
+
                 productsToRender.forEach(product => {
                     const productCard = document.createElement('div');
                     productCard.classList.add('product-card');
                     // Ensure all product properties are safely accessed with || defaults
                     productCard.innerHTML = `
                         <div class="product-card-image-container">
-                            <img src="${product.imageUrl || '/images/default_product.png'}" alt="${product.name || 'Product Image'}" class="product-card-image" onerror="this.src='/images/default_product.png'">
+                            <img src="${product.imageUrl || '/images/default_product.png'}" 
+                                 alt="${product.name || 'Product Image'}" 
+                                 class="product-card-image" 
+                                 onerror="this.src='/images/default_product.png'"
+                                 loading="lazy">
                         </div>
                         <div class="product-card-body">
                             <h3 class="product-card-title">${product.name || 'Untitled Product'}</h3>
                             <p class="product-card-description">${product.description || 'No description available.'}</p>
-                            ${product.keywords && Array.isArray(product.keywords) && product.keywords.length > 0 ? 
-                                `<div class="product-card-keywords">🏷️ ${product.keywords.join(', ')}</div>` : 
+                            ${product.keywords && Array.isArray(product.keywords) && product.keywords.length > 0 ?
+                                `<div class="product-card-keywords">🏷️ ${product.keywords.join(', ')}</div>` :
                                 ''}
                         </div>
                         <div class="product-card-footer">
@@ -564,12 +618,62 @@
                             <span class="product-category">${product.category || 'Uncategorized'}</span>
                         </div>
                     `;
-                    dynamicProductGrid.appendChild(productCard);
+                    fragment.appendChild(productCard);
                 });
+                dynamicProductGrid.appendChild(fragment); // Append all at once
+
+                // Show/hide load more button based on total products and currently loaded count
+                if (allLoadedProducts.length < totalProductsCount) {
+                    loadMoreBtn.style.display = 'block';
+                } else {
+                    loadMoreBtn.style.display = 'none';
+                }
+
+                // If Lucide icons are in dynamically added content, re-render them
+                lucide.createIcons();
             }
 
-            // Initial render of all products using the data passed from the server
-            renderProducts(allProducts);
+            // Function to fetch products from the API
+            async function fetchProducts(query = '', category = '', page = 1, limit = productsPerPage, append = false) {
+                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading products...';
+                loadMoreBtn.disabled = true; // Disable load more during fetch
+                loadMoreBtn.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading...';
+
+                if (!append) { // Show skeletons only for initial load or new search
+                    dynamicProductGrid.innerHTML = initialLoadingGridHtml;
+                }
+
+                try {
+                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&page=${page}&limit=${limit}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    totalProductsCount = data.totalProducts; // Update total count
+
+                    if (append) {
+                        allLoadedProducts = allLoadedProducts.concat(data.products);
+                    } else {
+                        allLoadedProducts = data.products; // For new search/initial load, replace
+                    }
+
+                    renderProducts(data.products, append); // Pass only the new products to render if appending
+                    searchStatus.textContent = `Displaying ${allLoadedProducts.length} of ${totalProductsCount} products.`;
+
+                } catch (error) {
+                    console.error("Failed to fetch products:", error);
+                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Failed to load products. Please try again.</span>';
+                    dynamicProductGrid.innerHTML = '<div class="no-products-message">Failed to load products. Network error or server issue.</div>';
+                    loadMoreBtn.style.display = 'none';
+                } finally {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Load More Products';
+                }
+            }
+
+            // Initial load of products when the page is ready
+            fetchProducts();
 
             // --- Text Search ---
             let searchTimeout;
@@ -577,7 +681,9 @@
                 clearTimeout(searchTimeout);
                 searchStatus.textContent = ''; // Clear status on new input
                 searchTimeout = setTimeout(() => {
-                    performClientSideSearch(productSearchInput.value.trim());
+                    currentSearchQuery = productSearchInput.value.trim();
+                    currentPage = 1; // Reset to first page for new search
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
                 }, 300); // Debounce search
             });
 
@@ -605,7 +711,9 @@
                     const transcript = event.results[0][0].transcript;
                     productSearchInput.value = transcript;
                     searchStatus.innerHTML = `✨ Transcribed: "${transcript}"`;
-                    performClientSideSearch(transcript);
+                    currentSearchQuery = transcript;
+                    currentPage = 1;
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
                 };
 
                 recognition.onerror = (event) => {
@@ -631,6 +739,9 @@
             }
 
             // --- Image Search ---
+            // Note: Your /api/search-by-image endpoint is not defined in dashboardRoutes.js.
+            // You'll need to add a POST route for this, similar to /api/grok-chat-photo,
+            // but returning keywords/query for product search instead of a chat reply.
             imageSearchInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (!file) {
@@ -648,9 +759,12 @@
 
                 const formData = new FormData();
                 formData.append('image', file);
-                
+                formData.append('query', productSearchInput.value.trim()); // Send current text query too
+
                 try {
-                    const response = await fetch('/api/search-by-image', { 
+                    // *** You need to add a new route in dashboardRoutes.js for this: /api/search-by-image ***
+                    // This route should accept an image, process it, and return relevant keywords/query for product search.
+                    const response = await fetch('/api/search-by-image', {
                         method: 'POST',
                         body: formData
                     });
@@ -658,9 +772,11 @@
 
                     if (response.ok) {
                         const searchKeywords = Array.isArray(result.keywords) ? result.keywords.join(', ') : result.query || '';
-                        productSearchInput.value = searchKeywords;
+                        productSearchInput.value = searchKeywords; // Update search input with AI-generated keywords
                         searchStatus.innerHTML = `✨ Image analysis complete. Searching for: "${searchKeywords}"`;
-                        performClientSideSearch(searchKeywords);
+                        currentSearchQuery = searchKeywords; // Update state
+                        currentPage = 1;
+                        fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage); // Fetch using AI keywords
                     } else {
                         searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Error analyzing image: ${result.message || 'Unknown error'}.</span>`;
                     }
@@ -675,38 +791,14 @@
             // --- Reset Search ---
             resetSearchBtn.addEventListener('click', () => {
                 productSearchInput.value = '';
+                productCategoryFilter.value = ''; // Reset category filter too
                 searchStatus.textContent = '';
-                renderProducts(allProducts);
+                currentSearchQuery = '';
+                currentCategoryFilter = '';
+                currentPage = 1;
+                allLoadedProducts = []; // Clear loaded products to start fresh
+                fetchProducts(); // Re-fetch initial set
             });
-
-            // --- Core Client-Side Search Logic ---
-            function performClientSideSearch(query) {
-                if (!query) {
-                    renderProducts(allProducts);
-                    searchStatus.textContent = '';
-                    return;
-                }
-
-                const lowerCaseQuery = query.toLowerCase();
-                const filteredProducts = allProducts.filter(product => {
-                    if (product.name && product.name.toLowerCase().includes(lowerCaseQuery)) return true;
-                    if (product.description && product.description.toLowerCase().includes(lowerCaseQuery)) return true;
-                    if (product.category && product.category.toLowerCase().includes(lowerCaseQuery)) return true;
-                    
-                    if (product.keywords) {
-                        if (Array.isArray(product.keywords)) {
-                            return product.keywords.some(keyword => typeof keyword === 'string' && keyword.toLowerCase().includes(lowerCaseQuery));
-                        } else if (typeof product.keywords === 'string') {
-                            return product.keywords.toLowerCase().includes(lowerCaseQuery);
-                        }
-                    }
-                    
-                    return false;
-                });
-
-                renderProducts(filteredProducts);
-                searchStatus.innerHTML = `📊 Found ${filteredProducts.length} product${filteredProducts.length !== 1 ? 's' : ''} for "${query}".`;
-            }
         });
     </script>
 </body>
