@@ -31,28 +31,27 @@
 
         .main-content-wrapper {
             flex-grow: 1;
-            /* Further increased max-width for a very large container */
-            max-width: 1500px; /* Increased from 1400px */
-            margin: 35px auto; /* Adjusted margin */
-            padding: 35px; /* Increased padding */
+            max-width: 1500px;
+            margin: 35px auto;
+            padding: 35px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 25px; /* Slightly larger border-radius */
-            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+            border-radius: 25px;
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2);
         }
 
         .search-section {
             background: #ffffff;
-            border-radius: 20px; /* Adjusted border-radius */
-            padding: 2rem; /* Increased padding */
-            margin-bottom: 2rem; /* Increased margin-bottom */
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12); /* Stronger shadow */
-            border: 1px solid #c0c0c0; /* Slightly darker border */
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+            border: 1px solid #c0c0c0;
         }
 
         .search-container {
             display: flex;
-            gap: 18px; /* Increased gap */
+            gap: 18px;
             align-items: stretch;
             flex-wrap: wrap;
         }
@@ -60,15 +59,15 @@
         .search-input-container {
             position: relative;
             flex: 1;
-            min-width: 350px; /* Increased min-width */
+            min-width: 350px;
         }
 
         .search-input {
             width: 100%;
-            padding: 16px 22px 16px 55px; /* Adjusted padding */
-            font-size: 18px; /* Increased font-size */
-            border: 1px solid #a0a0a0; /* Stronger border */
-            border-radius: 16px; /* Adjusted border-radius */
+            padding: 16px 22px 16px 55px;
+            font-size: 18px;
+            border: 1px solid #a0a0a0;
+            border-radius: 16px;
             background: white;
             transition: all 0.3s ease;
             box-shadow: none;
@@ -77,29 +76,29 @@
         .search-input:focus {
             outline: none;
             border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4); /* Stronger focus shadow */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4);
         }
 
         .search-input-icon {
             position: absolute;
-            left: 20px; /* Adjusted icon position */
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: #333; /* Darker color */
+            color: #333;
             z-index: 2;
-            width: 24px; /* Increased icon size */
-            height: 24px; /* Increased icon size */
+            width: 24px;
+            height: 24px;
         }
 
         .search-controls {
             display: flex;
-            gap: 12px; /* Increased gap */
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .search-btn {
-            padding: 16px; /* Increased padding */
-            border-radius: 16px; /* Adjusted border-radius */
+            padding: 12px 20px;
+            border-radius: 14px;
             border: none;
             cursor: pointer;
             display: flex;
@@ -107,9 +106,10 @@
             justify-content: center;
             transition: all 0.2s ease;
             font-weight: 600;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Added subtle shadow */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
             position: relative;
             overflow: hidden;
+            font-size: 1rem;
         }
 
         .search-btn::before {
@@ -119,7 +119,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent); /* Stronger shimmer */
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
             transition: left 0.4s;
         }
 
@@ -128,8 +128,8 @@
         }
 
         .search-btn:hover {
-            transform: translateY(-2px); /* Slight hover lift */
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2); /* Increased hover shadow */
+            transform: translateY(-1.5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.18);
         }
 
         .search-btn.primary {
@@ -147,73 +147,67 @@
             color: white;
         }
 
-        /* Product Grid Changes - Main focus for 3 items per row */
+        /* Product Grid Changes - Decreased size, fixed 3 items per row on large screens */
         .product-grid {
-            /* Exactly 3 products per row on larger screens */
-            grid-template-columns: repeat(3, 1fr); /* Explicitly 3 columns */
-            gap: 30px; /* Increased gap for more spacing */
-            margin-top: 3rem; /* Increased margin-top */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 2rem;
             display: grid;
         }
 
         .product-card {
             background: white;
-            border-radius: 16px; /* Increased border-radius */
+            border-radius: 14px;
             overflow: hidden;
             transition: all 0.2s ease;
-            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow */
-            border: 1px solid #c0c0c0; /* Slightly darker border */
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            border: 1px solid #d0d0d0;
             position: relative;
             cursor: pointer;
         }
 
-        .product-card::before {
-            display: none;
-        }
-
         .product-card:hover {
-            transform: translateY(-5px); /* More pronounced hover lift */
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25); /* Stronger hover shadow */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .product-card-image-container {
             width: 100%;
-            /* Maintain a square-like aspect ratio for the image container */
-            padding-bottom: 100%; /* Makes the height equal to the width */
+            padding-bottom: 100%;
             position: relative;
             overflow: hidden;
             background: #f3f4f6;
-            display: flex; /* Use flexbox to center the image */
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .product-card-image {
-            position: absolute; /* Position absolutely within the padded container */
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Ensures the image fits within the box without cropping, preserving aspect ratio */
+            object-fit: contain;
             transition: transform 0.2s ease;
         }
 
         .product-card:hover .product-card-image {
-            transform: scale(1.02); /* Slight hover scale */
+            transform: scale(1.01);
         }
 
         .product-card-body {
-            padding: 25px; /* Increased padding */
+            padding: 20px;
             position: relative;
             z-index: 2;
         }
 
         .product-card-title {
-            font-size: 1.3rem; /* Increased font size */
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 600;
             color: #1f2937;
-            margin-bottom: 12px; /* Increased margin */
-            line-height: 1.5;
+            margin-bottom: 10px;
+            line-height: 1.4;
             background: none;
             -webkit-background-clip: unset;
             -webkit-text-fill-color: initial;
@@ -229,73 +223,87 @@
         }
 
         .product-card-footer {
-            padding: 18px 25px; /* Increased padding */
+            padding: 15px 20px;
             background: #f9fafb;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #e0e0e0; /* Slightly darker border */
+            border-top: 1px solid #f0f0f0;
             position: relative;
             z-index: 2;
         }
 
         .product-price {
-            font-size: 1.4rem; /* Increased font size */
-            font-weight: 800;
-            background: #059669;
+            color: #228B22; /* Forest Green */
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: none;
             -webkit-background-clip: unset;
             -webkit-text-fill-color: initial;
             background-clip: unset;
-            color: #059669;
         }
 
         .product-category {
-            font-size: 0.85rem; /* Slightly increased font size */
+            font-size: 0.75rem;
             color: #555;
             background: #e5e7eb;
-            padding: 6px 12px; /* Increased padding */
-            border-radius: 16px; /* Increased border-radius */
-            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 1.2px; /* Increased letter spacing */
+            letter-spacing: 1px;
         }
 
         .loading-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Matched product grid */
-            gap: 30px; /* Matched product grid */
-            margin-top: 3rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 2rem;
         }
 
         .loading-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 14px;
             overflow: hidden;
-            /* Adjusted height to match new, larger product card size with image padding-bottom trick */
-            height: 480px; /* (220px image height + ~100% padding-bottom) + body padding + footer padding */
-            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.1);
+            height: 360px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
         }
 
-        /* Adjust skeleton heights for larger cards */
-        .loading-card .skeleton.h-44 { /* For image area */
-            height: 220px; /* Match product-card-image-container height */
-            padding-bottom: 0; /* Remove padding-bottom from skeleton itself */
+        .loading-card .skeleton.h-44 {
+            padding-bottom: 100%;
+            position: relative;
         }
-        .loading-card .skeleton.h-6 { /* For title */
-            height: 1.3rem; /* Match product-card-title */
-            margin-bottom: 12px;
+        .loading-card .skeleton.h-44::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
         }
-        .loading-card .skeleton.h-4 { /* For description/text lines */
-            height: 1rem;
-            margin-bottom: 8px;
-        }
-        .loading-card .skeleton.h-7 { /* For price */
-            height: 1.4rem;
-        }
-        .loading-card .skeleton.h-6 { /* For category */
-            height: 1.1rem;
-        }
+        .loading-card .p-5 { padding: 20px; }
 
+        .loading-card .skeleton.h-6 { height: 1.1rem; }
+        .loading-card .skeleton.mb-2 { margin-bottom: 10px; }
+        .loading-card .skeleton.h-4 { height: 0.9rem; }
+        .loading-card .skeleton.mb-1 { margin-bottom: 6px; }
+        .loading-card .skeleton.mb-3 { margin-bottom: 10px; }
+        .loading-card .skeleton.h-7 { height: 1.2rem; }
+        .loading-card .skeleton.h-6 { height: 1rem; }
+
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
 
         .no-products-message {
             grid-column: 1 / -1;
@@ -323,18 +331,19 @@
         .back-to-dashboard-link {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            margin-top: 3rem;
-            padding: 14px 30px;
+            gap: 10px;
+            margin-top: 2.5rem;
+            padding: 10px 20px;
             background: #6b7280;
             color: white;
-            border-radius: 14px;
-            font-weight: 700;
+            border-radius: 12px;
+            font-weight: 600;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             position: relative;
             overflow: hidden;
+            font-size: 0.95rem;
         }
 
         .back-to-dashboard-link::before {
@@ -344,7 +353,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.4s;
         }
 
@@ -353,13 +362,13 @@
         }
 
         .back-to-dashboard-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
         .icon {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
@@ -382,7 +391,7 @@
         /* Responsive Adjustments */
         @media (max-width: 1400px) {
             .product-grid {
-                grid-template-columns: repeat(3, 1fr); /* Maintain 3 columns as long as possible */
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -393,21 +402,22 @@
                 border-radius: 20px;
             }
             .product-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+                grid-template-columns: repeat(2, 1fr);
                 gap: 25px;
             }
             .product-card-image-container {
-                height: 180px; /* Adjust image height for 2 columns */
-                padding-bottom: 0; /* Override padding-bottom on smaller screens for fixed height */
+                height: 180px;
+                padding-bottom: 0;
             }
             .product-card-image {
-                position: static; /* Adjust positioning */
+                position: static;
             }
             .loading-card {
-                height: auto; /* Allow height to adjust for 2 columns */
+                height: auto;
             }
             .loading-card .skeleton.h-44 {
                 height: 180px;
+                padding-bottom: 0;
             }
         }
 
@@ -432,23 +442,24 @@
                 height: 20px;
             }
             .search-btn {
-                padding: 12px;
-                font-size: 0.95rem;
+                padding: 10px 15px;
+                font-size: 0.9rem;
             }
             .product-grid {
-                grid-template-columns: 1fr; /* Single column on mobile */
+                grid-template-columns: 1fr;
                 gap: 20px;
                 margin-top: 2rem;
             }
             .product-card-image-container {
-                height: 200px; /* Make image taller on single column mobile view */
-                padding-bottom: 0; /* Ensure fixed height */
+                height: 200px;
+                padding-bottom: 0;
             }
             .loading-card {
                 height: auto;
             }
             .loading-card .skeleton.h-44 {
                 height: 200px;
+                padding-bottom: 0;
             }
             .product-card-body {
                 padding: 20px;
@@ -471,8 +482,8 @@
                 padding: 1rem;
             }
             .back-to-dashboard-link {
-                padding: 10px 20px;
-                font-size: 0.9rem;
+                padding: 8px 15px;
+                font-size: 0.85rem;
             }
         }
 
@@ -481,11 +492,11 @@
                 min-width: unset;
             }
             .search-controls {
-                justify-content: center; /* Center buttons if they wrap */
+                justify-content: center;
                 width: 100%;
             }
             .product-card-image-container {
-                height: 160px; /* Slightly smaller image on very small screens */
+                height: 160px;
             }
             .loading-card .skeleton.h-44 {
                 height: 160px;
@@ -545,8 +556,22 @@
                     </button>
                 </div>
             </div>
-            <div>
-                <label for="productCategoryFilter" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+            <div class="mt-4">
+                <label for="ttsLanguageFilter" class="block text-gray-700 text-sm font-bold mb-2">Voice Language:</label>
+                <select id="ttsLanguageFilter"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="en-US">English (US)</option>
+                    <option value="en-GB">English (UK)</option>
+                    <option value="hi-IN">Hindi (India)</option>
+                    <option value="te-IN">Telugu (India)</option>
+                    <option value="es-ES">Spanish (Spain)</option>
+                    <option value="fr-FR">French (France)</option>
+                    <option value="de-DE">German (Germany)</option>
+                    </select>
+            </div>
+
+            <div class=""> <label for="productCategoryFilter"
+                    class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
                 <select id="productCategoryFilter"
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     <option value="">All Categories</option>
@@ -609,6 +634,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const productSearchInput = document.getElementById('productSearchInput');
             const productCategoryFilter = document.getElementById('productCategoryFilter');
+            const ttsLanguageFilter = document.getElementById('ttsLanguageFilter');
             const micSearchBtn = document.getElementById('micSearchBtn');
             const imageSearchInput = document.getElementById('imageSearchInput');
             const resetSearchBtn = document.getElementById('resetSearchBtn');
@@ -618,11 +644,34 @@
             const loadMoreBtn = document.getElementById('loadMoreBtn');
 
             let allLoadedProducts = [];
-            const productsPerPage = 12; // Number of products to load per page/request
+            const productsPerPage = 12;
             let currentPage = 1;
             let currentSearchQuery = '';
             let currentCategoryFilter = '';
-            let totalProductsCount = 0; // Total number of products available on the server
+            let totalProductsCount = 0;
+
+            // --- Text-to-Speech (TTS) Setup ---
+            const synth = window.speechSynthesis;
+            const utterThis = new SpeechSynthesisUtterance();
+            utterThis.lang = ttsLanguageFilter.value; // Initialize with default selected language
+            utterThis.volume = 1;
+            utterThis.rate = 1;
+            utterThis.pitch = 1;
+
+            // Update language when dropdown changes
+            ttsLanguageFilter.addEventListener('change', () => {
+                utterThis.lang = ttsLanguageFilter.value;
+                speakMessage("Voice language changed to " + ttsLanguageFilter.options[ttsLanguageFilter.selectedIndex].text);
+            });
+
+            // Function to speak a message
+            function speakMessage(message) {
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+                utterThis.text = message;
+                synth.speak(utterThis);
+            }
 
             // Event listener for "Load More" button
             loadMoreBtn.addEventListener('click', () => {
@@ -633,7 +682,7 @@
             // Event listener for category filter change
             productCategoryFilter.addEventListener('change', () => {
                 currentCategoryFilter = productCategoryFilter.value;
-                currentPage = 1; // Reset to first page when filter changes
+                currentPage = 1;
                 fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
             });
 
@@ -644,13 +693,14 @@
              */
             function renderProducts(productsToRender, append = false) {
                 if (!append) {
-                    dynamicProductGrid.innerHTML = ''; // Clear grid if not appending
+                    dynamicProductGrid.innerHTML = '';
                 }
 
                 if (productsToRender.length === 0 && allLoadedProducts.length === 0 && !append) {
-                    // Display message if no products found after a search/filter, and no products were previously loaded
-                    dynamicProductGrid.innerHTML = '<div class="no-products-message">🔍 No products found matching your criteria.<br><span style="font-size: 0.9rem; margin-top: 0.8rem; display: block; opacity: 0.7;">Try adjusting your search terms or filters.</span></div>';
-                    loadMoreBtn.style.display = 'none'; // Hide load more button
+                    const message = '🔍 No products found matching your criteria. Try adjusting your search terms or filters.';
+                    dynamicProductGrid.innerHTML = `<div class="no-products-message">${message}<br><span style="font-size: 0.9rem; margin-top: 0.8rem; display: block; opacity: 0.7;"></span></div>`;
+                    loadMoreBtn.style.display = 'none';
+                    speakMessage(message);
                     return;
                 }
 
@@ -680,6 +730,22 @@
                 });
                 dynamicProductGrid.appendChild(fragment);
 
+                // --- Automatic Voice Output for Products ---
+                // This logic is re-enabled to speak product names automatically after rendering.
+                if (productsToRender.length > 0 && !append) { // Only speak on initial render after a search/filter, not on 'Load More'
+                    let productNamesToSpeak = productsToRender.slice(0, 3).map(p => p.name).join(', '); // Get names of first 3 products
+                    if (productsToRender.length > 3) {
+                        productNamesToSpeak += `, and ${productsToRender.length - 3} more.`;
+                    } else {
+                        productNamesToSpeak += '.';
+                    }
+                    // IMPORTANT: The voice will be in the selected language, but it will pronounce
+                    // English product names (unless your backend provides localized names).
+                    speakMessage(`Found products: ${productNamesToSpeak}`);
+                }
+                // --- End Automatic Voice Output ---
+
+
                 // Show/hide load more button based on total products and loaded products
                 if (allLoadedProducts.length < totalProductsCount) {
                     loadMoreBtn.style.display = 'block';
@@ -700,12 +766,13 @@
              * @param {boolean} append - If true, appends fetched products to existing ones.
              */
             async function fetchProducts(query = '', category = '', page = 1, limit = productsPerPage, append = false) {
-                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading products...';
+                const loadingMessage = 'Loading products...';
+                searchStatus.innerHTML = `<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ${loadingMessage}`;
                 loadMoreBtn.disabled = true;
                 loadMoreBtn.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading...';
 
                 if (!append) {
-                    dynamicProductGrid.innerHTML = initialLoadingGridHtml; // Show skeleton loaders
+                    dynamicProductGrid.innerHTML = initialLoadingGridHtml;
                 }
 
                 try {
@@ -723,14 +790,18 @@
                         allLoadedProducts = data.products;
                     }
 
-                    renderProducts(data.products, append);
-                    searchStatus.textContent = `Displaying ${allLoadedProducts.length} of ${totalProductsCount} products.`;
+                    renderProducts(data.products, append); // Call renderProducts here to display and speak
+                    const statusText = `Displaying ${allLoadedProducts.length} of ${totalProductsCount} products.`;
+                    searchStatus.textContent = statusText;
+                    // Product names are now spoken within renderProducts itself.
 
                 } catch (error) {
                     console.error("Failed to fetch products:", error);
-                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Failed to load products. Please try again.</span>';
+                    const errorMessage = 'Failed to load products. Please try again.';
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${errorMessage}</span>`;
                     dynamicProductGrid.innerHTML = '<div class="no-products-message">Failed to load products. Network error or server issue.</div>';
                     loadMoreBtn.style.display = 'none';
+                    speakMessage(errorMessage);
                 } finally {
                     loadMoreBtn.disabled = false;
                     loadMoreBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Load More Products';
@@ -743,30 +814,46 @@
             let searchTimeout;
             productSearchInput.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
-                searchStatus.textContent = ''; // Clear status while typing
+                searchStatus.textContent = '';
+                if (synth.speaking) {
+                    synth.cancel();
+                }
                 searchTimeout = setTimeout(() => {
                     currentSearchQuery = productSearchInput.value.trim();
-                    currentPage = 1; // Reset to first page for new search
+                    currentPage = 1;
                     fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
-                }, 300); // Debounce search input for performance
+                }, 300);
             });
 
             // Speech Recognition (Voice Search)
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
-                recognition.continuous = false; // Capture a single phrase
-                recognition.lang = 'en-US';
-                recognition.interimResults = false; // Only return final results
+                recognition.continuous = false;
+                recognition.lang = ttsLanguageFilter.value; // Use the selected language for input recognition as well
+                recognition.interimResults = false;
+
+                // Update recognition language when TTS language changes (if applicable)
+                ttsLanguageFilter.addEventListener('change', () => {
+                    recognition.lang = ttsLanguageFilter.value;
+                });
+
 
                 micSearchBtn.addEventListener('click', () => {
+                    if (synth.speaking) {
+                        synth.cancel();
+                    }
                     micSearchBtn.innerHTML = '<svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
-                    searchStatus.innerHTML = '🎤 Listening... Speak now.';
+                    const listeningMessage = 'Listening... Speak now.';
+                    searchStatus.innerHTML = `🎤 ${listeningMessage}`;
+                    speakMessage(listeningMessage);
                     try {
                         recognition.start();
                     } catch (e) {
                         console.error("Speech recognition start error:", e);
-                        searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Microphone error. Please allow access.</span>';
+                        const errorMessage = 'Microphone error. Please allow access.';
+                        searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${errorMessage}</span>`;
+                        speakMessage(errorMessage);
                         resetMicButton();
                     }
                 });
@@ -774,23 +861,28 @@
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
                     productSearchInput.value = transcript;
-                    searchStatus.innerHTML = `✨ Transcribed: "${transcript}"`;
+                    const transcribedMessage = `Transcribed: "${transcript}"`;
+                    searchStatus.innerHTML = `✨ ${transcribedMessage}`;
+                    speakMessage(transcribedMessage);
                     currentSearchQuery = transcript;
                     currentPage = 1;
                     fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
                 };
 
                 recognition.onerror = (event) => {
-                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Voice search error: ${event.error}</span>`;
+                    const errorMessage = `Voice search error: ${event.error}`;
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${errorMessage}</span>`;
                     console.error('Speech recognition error:', event.error);
+                    speakMessage(errorMessage);
                     resetMicButton();
                 };
 
                 recognition.onend = () => {
                     resetMicButton();
-                    // If no speech was detected but the listener ended
                     if (searchStatus.textContent.includes('Listening')) {
-                        searchStatus.innerHTML = '🔇 No speech detected. Please try again.';
+                        const noSpeechMessage = 'No speech detected. Please try again.';
+                        searchStatus.innerHTML = `🔇 ${noSpeechMessage}`;
+                        speakMessage(noSpeechMessage);
                     }
                 };
 
@@ -798,10 +890,10 @@
                     micSearchBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="8" x2="16" y1="22" y2="22"/></svg>';
                 }
             } else {
-                // Disable mic button if API is not supported
                 micSearchBtn.disabled = true;
                 micSearchBtn.style.opacity = '0.5';
-                searchStatus.innerHTML = '⚠️ Voice search not supported in this browser.';
+                const notSupportedMessage = 'Voice search not supported in this browser.';
+                searchStatus.innerHTML = `⚠️ ${notSupportedMessage}`;
             }
 
             // Image Search
@@ -812,21 +904,28 @@
                     return;
                 }
 
-                // Basic file validation (image type and size)
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                 const maxSize = 5 * 1024 * 1024; // 5MB
 
                 if (!allowedTypes.includes(file.type) || file.size > maxSize) {
-                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Invalid image format or size (JPG/PNG/GIF, max 5MB).</span>';
-                    event.target.value = ''; // Clear file input
+                    const validationError = 'Invalid image format or size (JPG/PNG/GIF, max 5MB).';
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${validationError}</span>`;
+                    speakMessage(validationError);
+                    event.target.value = '';
                     return;
                 }
 
-                searchStatus.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 🔍 Analyzing image...';
+                const analyzingMessage = 'Analyzing image...';
+                searchStatus.innerHTML = `<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 🔍 ${analyzingMessage}`;
+                speakMessage(analyzingMessage);
 
                 const formData = new FormData();
                 formData.append('image', file);
-                formData.append('query', productSearchInput.value.trim()); // Send current text query as well if any
+                formData.append('query', productSearchInput.value.trim());
 
                 try {
                     const response = await fetch('/api/search-by-image', {
@@ -837,32 +936,42 @@
 
                     if (response.ok) {
                         const searchKeywords = Array.isArray(result.keywords) ? result.keywords.join(', ') : result.query || '';
-                        productSearchInput.value = searchKeywords; // Populate search input with analyzed keywords
-                        searchStatus.innerHTML = `✨ Image analysis complete. Searching for: "${searchKeywords}"`;
+                        productSearchInput.value = searchKeywords;
+                        const imageAnalysisMessage = `Image analysis complete. Searching for: "${searchKeywords}"`;
+                        searchStatus.innerHTML = `✨ ${imageAnalysisMessage}`;
+                        speakMessage(imageAnalysisMessage);
                         currentSearchQuery = searchKeywords;
                         currentPage = 1;
                         fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
                     } else {
-                        searchStatus.innerHTML = `<span style="color: #ef4444;">❌ Error analyzing image: ${result.message || 'Unknown error'}.</span>`;
+                        const errorMessage = `Error analyzing image: ${result.message || 'Unknown error'}.`;
+                        searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${errorMessage}</span>`;
+                        speakMessage(errorMessage);
                     }
                 } catch (error) {
                     console.error('Image search API error:', error);
-                    searchStatus.innerHTML = '<span style="color: #ef4444;">❌ Network error analyzing image</span>';
+                    const networkError = 'Network error analyzing image';
+                    searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${networkError}</span>`;
+                    speakMessage(networkError);
                 } finally {
-                    event.target.value = ''; // Clear file input after upload/analysis
+                    event.target.value = '';
                 }
             });
 
             // Reset Search Button
             resetSearchBtn.addEventListener('click', () => {
+                if (synth.speaking) {
+                    synth.cancel();
+                }
                 productSearchInput.value = '';
                 productCategoryFilter.value = '';
                 searchStatus.textContent = '';
                 currentSearchQuery = '';
                 currentCategoryFilter = '';
                 currentPage = 1;
-                allLoadedProducts = []; // Clear loaded products to force a fresh fetch
-                fetchProducts(); // Fetch all products again
+                allLoadedProducts = [];
+                fetchProducts();
+                speakMessage("Search reset.");
             });
         });
     </script>
