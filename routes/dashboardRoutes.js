@@ -7,7 +7,7 @@ const path = require('path');
 const Product = require('../models/Product'); // Mongoose Product model
 const User = require('../models/User'); // Mongoose User model
 const { requireAuth } = require('../middleware/authMiddleware');
-const admin = require('firebase-admin'); // Already imported in app.js, ensuring it's available if needed in other routes
+const admin = require('firebase-admin');
 
 // --- For Excel Upload ---
 const multer = require('multer');
@@ -26,7 +26,6 @@ const uploadExcel = multer({
     },
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit for Excel files
 });
-// --- End Multer setup ---
 
 
 // --- Mock/Placeholder Services for Audio/Image Processing (keeping your existing mocks) ---
@@ -49,6 +48,28 @@ async function analyzeImage(imageBuffer, userId, query) {
     };
 }
 // --- End Mock Services ---
+
+// Groq and Gemini imports
+let getGroqChatCompletion;
+let generateProductDescription;
+
+try {
+    const groqAgent = require('../services/groqAgent');
+    getGroqChatCompletion = groqAgent.getGroqChatCompletion;
+    console.log("[dashboardRoutes] getGroqChatCompletion imported successfully.");
+} catch (error) {
+    console.error("[dashboardRoutes] Error importing groqAgent:", error.message);
+    getGroqChatCompletion = () => "Groq AI service not available due to import error.";
+}
+
+try {
+    const geminiAgent = require('../services/geminiAgent');
+    generateProductDescription = geminiAgent.generateProductDescription;
+    console.log("[dashboardRoutes] generateProductDescription imported successfully.");
+} catch (error) {
+    console.error("[dashboardRoutes] Error importing geminiAgent:", error.message);
+    generateProductDescription = () => "Gemini AI service not available due to import error.";
+}
 
 
 router.get('/api/products', requireAuth, async (req, res) => {
@@ -174,7 +195,6 @@ router.post('/admin/products', requireAuth, async (req, res) => {
         return res.status(403).json({ success: false, error: 'Access Denied: Only administrators can add products.' });
     }
 
-    // Using multer for handling single product image upload
     const uploadSingleProductImage = multer({
         storage: multer.diskStorage({
             destination: (req, file, cb) => {
@@ -184,7 +204,7 @@ router.post('/admin/products', requireAuth, async (req, res) => {
                 cb(null, `${Date.now()}-${file.originalname}`);
             }
         }),
-        limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+        limits: { fileSize: 10 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
             if (file.mimetype.startsWith('image/')) {
                 cb(null, true);
@@ -192,7 +212,7 @@ router.post('/admin/products', requireAuth, async (req, res) => {
                 cb(new Error('Only image files are allowed!'), false);
             }
         }
-    }).single('image'); // 'image' is the name of the input field for the file
+    }).single('image');
 
     uploadSingleProductImage(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
@@ -206,8 +226,6 @@ router.post('/admin/products', requireAuth, async (req, res) => {
         const { name, description, price, imageUrl, category, keywords } = req.body;
         let finalImageUrl = imageUrl;
 
-        // If a file was uploaded, use its path. Otherwise, if an imageUrl was provided, use that.
-        // If neither, use default.
         if (req.file) {
             finalImageUrl = `/uploads/products/${req.file.filename}`;
             console.log(`[Server] Single product image uploaded: ${finalImageUrl}`);
@@ -219,7 +237,6 @@ router.post('/admin/products', requireAuth, async (req, res) => {
 
         if (!name || !description || !price || !category) {
             console.warn("[Server] /admin/products POST: Missing required fields.");
-            // If an image was uploaded but other fields are missing, delete the uploaded image
             if (req.file && req.file.path) {
                 await fs.unlink(req.file.path).catch(e => console.error("Error deleting temp file on validation fail:", e));
             }
@@ -249,7 +266,7 @@ router.post('/admin/products', requireAuth, async (req, res) => {
 
         } catch (error) {
             console.error('[Server] Error in /admin/products POST route:', error);
-            if (req.file && req.file.path) { // If an image was processed by multer, delete it on DB error
+            if (req.file && req.file.path) {
                 await fs.unlink(req.file.path).catch(e => console.error("Error deleting uploaded file on DB error:", e));
             }
 
@@ -261,7 +278,6 @@ router.post('/admin/products', requireAuth, async (req, res) => {
     });
 });
 
-// NEW BULK UPLOAD ENDPOINT
 router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('excelFile'), async (req, res) => {
     console.log("[Server] /api/admin/products/bulk-upload POST route accessed.");
     const user = res.locals.user;
@@ -276,29 +292,22 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
 
     try {
         const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-        const sheetName = workbook.SheetNames[0]; // Assume data is in the first sheet
+        const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
 
-        // Convert sheet to JSON array, starting from the first row as headers
         const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
-        if (rawData.length < 2) { // Need at least header row and one data row
+        if (rawData.length < 2) {
             return res.status(400).json({ message: 'Excel sheet is empty or only contains headers.' });
         }
 
-        const headers = rawData[0].map(h => String(h).trim().toLowerCase().replace(/ /g, '_')); // Normalize headers
-        const rows = rawData.slice(1); // Get data rows
+        const headers = rawData[0].map(h => String(h).trim().toLowerCase().replace(/ /g, '_'));
+        const rows = rawData.slice(1);
 
         let insertedCount = 0;
         let updatedCount = 0;
         const errors = [];
 
-        // Define expected headers for clarity and mapping
-        const expectedHeaders = [
-            'product_name', 'description', 'price', 'category', 'keywords', 'image_url'
-        ];
-
-        // Validate if all crucial headers are present
         const missingHeaders = ['product_name', 'price', 'category'].filter(
             header => !headers.includes(header)
         );
@@ -312,14 +321,13 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
 
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            const rowNumber = i + 2; // +1 for 0-indexed array, +1 for header row
+            const rowNumber = i + 2;
 
             const productData = {};
             headers.forEach((header, colIndex) => {
                 productData[header] = row[colIndex];
             });
 
-            // Basic validation
             let hasError = false;
             const currentErrors = [];
 
@@ -353,15 +361,13 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
 
             if (hasError) {
                 errors.push({ row_number: rowNumber, reason: currentErrors.join(', ') });
-                continue; // Skip to next row
+                continue;
             }
 
             try {
-                // Try to find an existing product by name (as `name` is unique in your schema)
                 const existingProduct = await Product.findOne({ name: name });
 
                 if (existingProduct) {
-                    // Update existing product
                     await Product.updateOne(
                         { name: name },
                         {
@@ -370,13 +376,11 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
                             category: category,
                             imageUrl: imageUrl,
                             keywords: keywords,
-                            // Add other fields you want to update
-                            updatedAt: new Date() // Add an update timestamp
+                            updatedAt: new Date()
                         }
                     );
                     updatedCount++;
                 } else {
-                    // Create new product
                     const newProduct = new Product({
                         name: name,
                         description: description,
@@ -390,7 +394,6 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
                 }
             } catch (dbError) {
                 if (dbError.code === 11000 && dbError.keyPattern && dbError.keyPattern.name) {
-                    // This case should ideally be caught by `Product.findOne` but as a fallback
                     errors.push({ row_number: rowNumber, reason: `Duplicate Product Name: "${name}".` });
                 } else {
                     console.error(`Database operation error for row ${rowNumber} (${name}):`, dbError);
@@ -403,7 +406,7 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
             message: 'Bulk upload processed successfully.',
             insertedCount,
             updatedCount,
-            errors, // Array of errors for rows that failed
+            errors,
         });
 
     } catch (parseError) {
@@ -453,9 +456,6 @@ router.get('/user/my-catalog/edit/:productId', async (req, res) => {
     }
 
     try {
-        // This part seems to be referencing Firestore, but Product model is Mongoose.
-        // If Product editing is still Firebase-based, keep this. If it's MongoDB, change it.
-        // For consistency with Product.js, I'm assuming you'll want to use MongoDB here.
         const product = await Product.findById(productId).lean();
 
         if (!product) {
@@ -479,12 +479,12 @@ router.post('/user/my-catalog/edit/:productId', async (req, res) => {
         return res.redirect('/auth/login');
     }
 
-    const { name, description, price, category, keywords, imageUrl } = req.body; // Added price, category, imageUrl for full edit
+    const { name, description, price, category, keywords, imageUrl } = req.body;
     const productId = req.params.productId;
 
     console.log(`[Server] Attempting to update product ${productId} with new data: ${name}`);
 
-    if (!name || !description || !price || !category) { // Added price, category to validation
+    if (!name || !description || !price || !category) {
         console.warn("[Server] /user/my-catalog/edit POST: Missing required fields for update.");
         try {
             const product = await Product.findById(productId).lean();
@@ -509,12 +509,12 @@ router.post('/user/my-catalog/edit/:productId', async (req, res) => {
         const updatedProduct = await Product.findByIdAndUpdate(productId, {
             name: name,
             description: description,
-            price: parseFloat(price), // Ensure price is number
+            price: parseFloat(price),
             category: category,
-            imageUrl: imageUrl || '/images/default_product.png', // Allow updating image URL
+            imageUrl: imageUrl || '/images/default_product.png',
             keywords: keywords ? String(keywords).split(',').map(k => k.trim()).filter(k => k.length > 0) : [],
             updatedAt: new Date()
-        }, { new: true, runValidators: true }); // `new: true` returns the updated document
+        }, { new: true, runValidators: true });
 
         if (!updatedProduct) {
             console.warn(`[Server] Product ${productId} not found for update.`);
@@ -526,7 +526,6 @@ router.post('/user/my-catalog/edit/:productId', async (req, res) => {
 
     } catch (error) {
         console.error('[Server] Error updating product:', error);
-        // Handle unique name error for update
         if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
              try {
                 const product = await Product.findById(productId).lean();
@@ -540,10 +539,6 @@ router.post('/user/my-catalog/edit/:productId', async (req, res) => {
 });
 
 
-// This route uses formidable, as it seems to be set up for it.
-// I'm keeping it as is, but if it's meant to add products to the 'Product' model,
-// you should reconsider using `Product` model instead of `User` specific collections
-// if 'public listings' are indeed products for everyone.
 router.get('/user/listings/add', async (req, res) => {
     console.log("[Server] /user/listings/add route accessed.");
     const user = res.locals.user;
@@ -555,7 +550,7 @@ router.get('/user/listings/add', async (req, res) => {
     res.render('add_listing', { user: user, error: null, message: null });
 });
 
-const { IncomingForm } = require('formidable'); // Ensure formidable is imported here if used for file uploads in this route
+const { IncomingForm } = require('formidable');
 router.post('/user/listings', requireAuth, async (req, res) => {
     console.log("[Server] /user/listings POST route accessed for image upload.");
     const user = res.locals.user;
@@ -622,7 +617,7 @@ router.post('/user/listings', requireAuth, async (req, res) => {
             price: parseFloat(price),
             imageUrl: finalImageUrl,
             category,
-            contactInfo: contactInfo, // Note: Your Product model does not have contactInfo field
+            contactInfo: contactInfo,
             keywords: [],
         });
 
@@ -678,7 +673,6 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         return res.status(401).json({ success: false, error: 'User not authenticated.' });
     }
 
-    // Using multer for handling profile picture upload
     const uploadProfilePicture = multer({
         storage: multer.diskStorage({
             destination: (req, file, cb) => {
@@ -688,7 +682,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
                 cb(null, `${user._id}-${Date.now()}${path.extname(file.originalname)}`);
             }
         }),
-        limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+        limits: { fileSize: 5 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
             if (file.mimetype.startsWith('image/')) {
                 cb(null, true);
@@ -696,7 +690,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
                 cb(new Error('Only image files are allowed!'), false);
             }
         }
-    }).single('profilePicture'); // 'profilePicture' is the name of the input field
+    }).single('profilePicture');
 
     uploadProfilePicture(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
@@ -714,13 +708,12 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         
         let profilePictureUrl = user.profilePicture;
 
-        if (req.file) { // If a new profile picture was uploaded
-            // Delete old profile picture if it's not the default and was an uploaded one
+        if (req.file) {
             if (user.profilePicture && user.profilePicture !== '/images/default_image.png' && user.profilePicture.startsWith('/uploads/profile_pictures')) {
                 const oldFilePath = path.join(__dirname, '../public', user.profilePicture);
                 try {
-                    await fs.access(oldFilePath, fs.constants.F_OK); // Check if file exists
-                    await fs.unlink(oldFilePath); // Delete it
+                    await fs.access(oldFilePath, fs.constants.F_OK);
+                    await fs.unlink(oldFilePath);
                     console.log(`Deleted old profile picture: ${oldFilePath}`);
                 } catch (deleteErr) {
                     console.warn(`Could not delete old profile picture ${oldFilePath}:`, deleteErr.message);
@@ -730,7 +723,6 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         }
 
         if (!firstName || firstName.length < 2 || !lastName || lastName.length < 2 || !mobile || !/^\d{10}$/.test(mobile) || !gender) {
-            // If validation fails after multer processed the file, delete the new file
             if (req.file && req.file.path) await fs.unlink(req.file.path).catch(e => console.error("Error deleting temp profile file on validation fail:", e));
             return res.status(400).json({ success: false, error: 'Validation failed: Please fill all required fields correctly.' });
         }
@@ -764,7 +756,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
 
         } catch (error) {
             console.error('Error updating user profile in DB:', error);
-            if (req.file && req.file.path) { // If an image was processed by multer, delete it on DB error
+            if (req.file && req.file.path) {
                 await fs.unlink(req.file.path).catch(e => console.error("Error deleting uploaded profile file on DB error:", e));
             }
             if (error.code === 11000) {
@@ -817,10 +809,63 @@ router.post('/api/grok-chat', requireAuth, async (req, res) => {
         return res.status(400).json({ error: 'Message is required.' });
     }
     try {
-        console.log("[Server] Grok Chat: Calling getGroqChatCompletion...");
-        const reply = await getGroqChatCompletion(message);
-        console.log(`[Server] Grok Chat: Received reply (first 50 chars): "${reply.substring(0, Math.min(reply.length, 50))}..."`);
-        res.json({ reply });
+        const lowerCaseMessage = message.toLowerCase();
+        // Check for weather query for Chennai or Porumamilla
+        const isWeatherQuery = (lowerCaseMessage.includes("weather") || lowerCaseMessage.includes("forecast")) &&
+                               (lowerCaseMessage.includes("chennai") || lowerCaseMessage.includes("porumamilla") || lowerCaseMessage.includes("today") || lowerCaseMessage.includes("tomorrow"));
+
+        if (isWeatherQuery) {
+            console.log("[Server] Grok Chat: Detected weather query. Requesting JSON from Groq.");
+            const systemPrompt = `You are a helpful AI assistant specialized in providing weather information.
+            When asked about weather (especially for Chennai or Porumamilla), respond ONLY with a JSON object.
+            The JSON object should have the following structure. Fill with realistic, but synthetic/placeholder, data if real-time data is not available.
+            Assume the current date is Wednesday, July 23, 2025.
+            
+            Example JSON Structure:
+            {
+              "location": "City, Country",
+              "current_weather": {
+                "temperature": { "celsius": 0, "fahrenheit": 0 },
+                "humidity": 0,
+                "wind_speed": { "kph": 0, "mph": 0 },
+                "cloud_cover": "Description",
+                "as_of": "Date and Time (e.g., Wednesday, July 23, 2025 at 1:09:10 PM IST)"
+              },
+              "forecast": [
+                {
+                  "day": "Today",
+                  "date_description": "Friday",
+                  "conditions": "Description",
+                  "high_temperature": { "celsius": 0, "fahrenheit": 0 },
+                  "low_temperature": { "celsius": 0, "fahrenheit": 0 }
+                },
+                { /* Saturday's forecast */ },
+                { /* Sunday's forecast */ }
+              ],
+              "rainfall": { "chance_in_24_hours": "No chance" },
+              "other_notes": {
+                "sea_condition": { "description": "moderate", "wave_height": { "meters": "0-0", "feet": "0-0" } },
+                "visibility": { "description": "good", "minimum": { "kilometers": 0, "miles": 0 } }
+              },
+              "disclaimer": "Weather conditions can change rapidly, and this information is subject to change. This data is illustrative."
+            }
+            `;
+            
+            const groqResponse = await getGroqChatCompletion(message, true, systemPrompt); // Pass true for returnJson
+
+            if (typeof groqResponse === 'object') {
+                console.log("[Server] Grok Chat: Received valid JSON response for weather.");
+                return res.json({ reply: groqResponse }); // Send the JSON object directly
+            } else {
+                console.warn("[Server] Grok Chat: Groq failed to return valid JSON for weather, sending raw text.");
+                return res.json({ reply: groqResponse }); // Send raw text if parsing failed
+            }
+
+        } else {
+            console.log("[Server] Grok Chat: Calling getGroqChatCompletion for general message...");
+            const reply = await getGroqChatCompletion(message); // Standard text response
+            res.json({ reply });
+        }
     } catch (error) {
         console.error('[Server] Error in /api/grok-chat (Text Chat):', error);
         res.status(500).json({ error: 'Failed to get Grok AI response.' });
@@ -831,7 +876,7 @@ router.post('/api/grok-chat-audio', requireAuth, async (req, res) => {
     console.log("[Server] /api/grok-chat-audio POST route accessed (Audio Chat).");
     const user = res.locals.user;
 
-    const form = new IncomingForm(); // Keep formidable for this route if it's the intended parser
+    const form = new IncomingForm();
     form.parse(req, async (err, fields, files) => {
         if (err) {
             console.error('[Server] Error parsing form data for audio:', err);
@@ -855,10 +900,14 @@ router.post('/api/grok-chat-audio', requireAuth, async (req, res) => {
             console.log(`[Server] Audio Chat: Mock transcribed text (first 50 chars): "${transcribedText.substring(0, Math.min(transcribedText.length, 50))}..."`);
             
             console.log("[Server] Audio Chat: Calling getGroqChatCompletion with transcribed text...");
-            const grokReply = await getGroqChatCompletion(transcribedText);
-            console.log(`[Server] Grok Chat: Received Groq reply (first 50 chars): "${grokReply.substring(0, Math.min(grokReply.length, 50))}..."`);
+            // For audio, we typically want text reply for a chat interface
+            const grokReply = await getGroqChatCompletion(transcribedText, false); 
+            console.log(`[Server] Grok Chat: Received Groq reply (first 50 chars): "${String(grokReply).substring(0, Math.min(String(grokReply).length, 50))}..."`);
 
-            res.json({ reply: grokReply });
+            // If grokReply is an object (due to a weather-like query from audio), convert to string
+            const finalReply = typeof grokReply === 'object' ? JSON.stringify(grokReply, null, 2) : grokReply;
+
+            res.json({ reply: finalReply });
         } catch (error) {
             console.error('[Server] Error in /api/grok-chat-audio:', error);
             res.status(500).json({ error: 'Failed to process audio or get Grok AI response.' });
@@ -880,7 +929,7 @@ router.post('/api/grok-chat-photo', requireAuth, async (req, res) => {
         return res.status(401).json({ success: false, error: 'User not authenticated.' });
     }
 
-    const form = new IncomingForm({ // Keep formidable for this route
+    const form = new IncomingForm({
         uploadDir: path.join(__dirname, '../public/uploads/temp'),
         keepExtensions: true,
         maxFileSize: 5 * 1024 * 1024,
@@ -909,9 +958,12 @@ router.post('/api/grok-chat-photo', requireAuth, async (req, res) => {
 
             const finalMessage = query ? `User provided an image. Analysis: "${aiAnalysis.description}". Original Query: "${query}"` : `User provided an image. Analysis: "${aiAnalysis.description}"`;
 
-            const grokReply = await getGroqChatCompletion(finalMessage);
+            // For photo queries, typically you'd want a text reply describing the image or performing a search based on it.
+            // If you wanted JSON here, you'd add the `true` flag and a system prompt similar to weather.
+            const grokReply = await getGroqChatCompletion(finalMessage, false); // Assuming text reply for photo chat
+            const finalGrokReply = typeof grokReply === 'object' ? JSON.stringify(grokReply, null, 2) : grokReply;
 
-            res.json({ reply: grokReply, keywords: aiAnalysis.keywords });
+            res.json({ reply: finalGrokReply, keywords: aiAnalysis.keywords });
         } catch (error) {
             console.error('[Server] Error in /api/grok-chat-photo:', error);
             res.status(500).json({ error: 'Failed to process image or get Grok AI response.' });

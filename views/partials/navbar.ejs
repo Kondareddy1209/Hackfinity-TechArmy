@@ -12,20 +12,20 @@
         --darker-bg: #2e2e2e;
         --border-dark: #444;
         --login-blue: #007bff;
-  
+
         --table-header-bg: #f2f2f2;
         --table-border-color: #ddd;
         --button-update-bg: #5cb85c;
         --button-delete-bg: #d9534f;
     }
-  
+
     /* General body/page styling for consistent padding */
     body {
         margin: 0;
         font-family: Arial, sans-serif;
         background-color: #f4f7f6; /* Light gray background for the page content */
     }
-  
+
     .navbar {
         background-color: var(--primary-green);
         padding: 12px 20px;
@@ -40,7 +40,7 @@
         font-size: 1em;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
-  
+
     .menu-toggle {
         display: none;
         font-size: 1.8em;
@@ -48,14 +48,14 @@
         color: var(--text-white);
         margin-right: 15px;
     }
-  
+
     .navbar-brand-area {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         margin-right: 20px;
     }
-  
+
     .navbar .logo {
         font-size: 1.5em;
         font-weight: bold;
@@ -64,7 +64,7 @@
         margin-bottom: 2px;
         white-space: nowrap;
     }
-  
+
     .home-brand-link {
         color: var(--text-white);
         text-decoration: none;
@@ -73,7 +73,7 @@
         border-radius: 2px;
         opacity: 0.9;
     }
-  
+
     .navbar-links {
         display: flex;
         align-items: center;
@@ -82,7 +82,7 @@
         overflow-x: visible;
         gap: 12px;
     }
-  
+
     .navbar-links a {
         color: var(--text-white);
         text-decoration: none;
@@ -92,18 +92,36 @@
         white-space: nowrap;
         transition: background-color 0.2s ease;
     }
-  
+
     .navbar-links a:hover {
         background-color: var(--hover-green);
     }
-  
+
     .navbar-user-info {
         display: flex;
         align-items: center;
         gap: 15px;
         margin-left: 15px;
     }
-  
+
+    /* New style for clickable profile link in navbar */
+    .profile-link-container {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between image and text */
+        text-decoration: none;
+        color: var(--text-white);
+        padding: 5px 10px; /* Padding for the clickable area */
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+        white-space: nowrap; /* Keep name and image on one line */
+    }
+
+    .profile-link-container:hover {
+        background-color: var(--hover-green);
+    }
+
     .navbar-user-info img {
         width: 36px;
         height: 36px;
@@ -111,13 +129,13 @@
         object-fit: cover;
         border: 2px solid var(--text-white);
     }
-  
+
     .navbar-user-info span {
         font-weight: bold;
         font-size: 0.9em;
         white-space: nowrap;
     }
-  
+
     .navbar-points {
         background-color: var(--points-orange);
         padding: 4px 10px;
@@ -129,7 +147,7 @@
         gap: 4px;
         white-space: nowrap;
     }
-  
+
     .navbar-logout {
         background-color: var(--logout-red);
         color: var(--text-white);
@@ -142,11 +160,11 @@
         transition: background-color 0.2s ease;
         white-space: nowrap;
     }
-  
+
     .navbar-logout:hover {
         background-color: var(--logout-red-hover);
     }
-  
+
     .navbar-logout.login-btn {
         background-color: var(--login-blue);
     }
@@ -159,7 +177,7 @@
     .navbar-logout.admin-login-btn:hover {
         background-color: var(--admin-blue-hover);
     }
-  
+
     .admin-link-btn {
         background-color: var(--admin-blue);
         color: var(--text-white);
@@ -172,11 +190,11 @@
         align-items: center;
         justify-content: center;
     }
-  
+
     .admin-link-btn:hover {
         background-color: var(--admin-blue-hover);
     }
-  
+
     .side-menu {
         height: 100%;
         width: 0;
@@ -192,7 +210,7 @@
         display: flex;
         flex-direction: column;
     }
-  
+
     .side-menu a {
         padding: 12px 20px;
         font-size: 1.2em;
@@ -202,12 +220,12 @@
         transition: background-color 0.2s ease, color 0.2s ease;
         display: block;
     }
-  
+
     .side-menu a:hover {
         color: var(--primary-green);
         background-color: #555;
     }
-  
+
     .side-menu .close-btn {
         position: absolute;
         top: 0;
@@ -220,9 +238,10 @@
         padding: 0;
         line-height: 1;
     }
-  
+
+    /* Mobile view for user info in side menu */
     .navbar-user-info.mobile-view {
-        display: none;
+        display: flex; /* Always display as flex here when active */
         flex-direction: column;
         align-items: center;
         padding: 20px;
@@ -230,26 +249,40 @@
         border-bottom: 1px solid var(--border-dark);
         text-align: center;
     }
-  
+
+    /* New style for clickable profile link in mobile side menu */
+    .mobile-profile-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text-white);
+        transition: background-color 0.2s ease;
+        padding-bottom: 10px; /* Space below content */
+    }
+    .mobile-profile-link:hover {
+        background-color: #555; /* Darker hover for mobile */
+    }
+
     .navbar-user-info.mobile-view img {
         width: 70px;
         height: 70px;
         margin-bottom: 10px;
         border: 3px solid var(--text-white);
     }
-  
+
     .navbar-user-info.mobile-view span {
         font-size: 1.2em;
         color: var(--text-white);
         margin-bottom: 8px;
     }
-  
+
     .navbar-user-info.mobile-view .navbar-points {
         margin-top: 5px;
         font-size: 0.95em;
         padding: 5px 12px;
     }
-  
+
     .side-menu .mobile-action-btn {
         display: block;
         width: calc(100% - 40px);
@@ -265,28 +298,28 @@
         transition: background-color 0.2s ease;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
-  
+
     .side-menu .mobile-logout-btn {
         background-color: var(--logout-red);
     }
     .side-menu .mobile-logout-btn:hover {
         background-color: var(--logout-red-hover);
     }
-  
+
     .side-menu .mobile-login-btn {
         background-color: var(--login-blue);
     }
     .side-menu .mobile-login-btn:hover {
         background-color: #0056b3;
     }
-  
+
     .side-menu .mobile-admin-login-btn {
         background-color: var(--admin-blue);
     }
     .side-menu .mobile-admin-login-btn:hover {
         background-color: var(--admin-blue-hover);
     }
-  
+
     .side-menu .mobile-admin-link {
         display: flex;
         align-items: center;
@@ -302,44 +335,44 @@
         background-color: #555;
         color: var(--primary-green);
     }
-  
+
     /* Admin Page Specific Styles - General Layout */
     .admin-page-container {
-        max-width: 1200px; /* Max width for content on large screens */
-        margin: 20px auto; /* Center content and add vertical margin */
-        padding: 0 15px; /* Horizontal padding for the page content itself */
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 15px;
     }
-  
+
     .admin-heading {
         text-align: center;
-        margin-top: 25px; /* Adjusted margin for heading */
-        margin-bottom: 25px; /* Adjusted margin for heading */
+        margin-top: 25px;
+        margin-bottom: 25px;
         font-size: 1.8em;
         color: #333;
     }
-  
+
     .admin-heading i {
         margin-right: 10px;
-        color: #666; /* Slightly darker icon color */
+        color: #666;
     }
-  
+
     .table-responsive-wrapper {
         overflow-x: auto;
-        margin: 20px 0; /* Margin only vertical, horizontal handled by page container */
+        margin: 20px 0;
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        background-color: white; /* Ensure wrapper background is white */
-        border: 1px solid var(--table-border-color); /* Added subtle border to wrapper */
+        background-color: white;
+        border: 1px solid var(--table-border-color);
     }
-  
+
     .admin-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 650px; /* Slightly increased min-width for better spacing */
-        border-radius: 8px; /* Apply border-radius here as well for consistency */
-        overflow: hidden; /* Ensures child borders/shadows conform to border-radius */
+        min-width: 650px;
+        border-radius: 8px;
+        overflow: hidden;
     }
-  
+
     .admin-table th,
     .admin-table td {
         padding: 12px 15px;
@@ -347,7 +380,7 @@
         text-align: left;
         vertical-align: middle;
     }
-  
+
     .admin-table th {
         background-color: var(--table-header-bg);
         font-weight: bold;
@@ -355,15 +388,15 @@
         text-transform: uppercase;
         font-size: 0.9em;
     }
-  
+
     .admin-table tbody tr:nth-child(even) {
         background-color: #f9f9f9;
     }
-  
+
     .admin-table tbody tr:hover {
         background-color: #f1f1f1;
     }
-  
+
     .admin-table .profile-icon {
         width: 30px;
         height: 30px;
@@ -372,22 +405,22 @@
         vertical-align: middle;
         margin-right: 5px;
     }
-  
+
     .admin-table select {
         padding: 6px 8px;
         border-radius: 4px;
         border: 1px solid #ccc;
         font-size: 0.9em;
-        min-width: 80px; /* Ensure dropdown has enough width */
+        min-width: 80px;
     }
-  
+
     .admin-table .action-buttons {
         display: flex;
         flex-wrap: nowrap;
-        gap: 8px; /* Increased gap between buttons */
+        gap: 8px;
         justify-content: flex-start;
     }
-  
+
     .admin-table .action-buttons .btn {
         padding: 8px 12px;
         border-radius: 5px;
@@ -396,39 +429,39 @@
         font-size: 0.85em;
         cursor: pointer;
         white-space: nowrap;
-        transition: background-color 0.2s ease, transform 0.1s ease; /* Added transform */
+        transition: background-color 0.2s ease, transform 0.1s ease;
     }
-  
+
     .admin-table .action-buttons .btn:active {
-        transform: translateY(1px); /* Simple click effect */
+        transform: translateY(1px);
     }
-  
-  
+
+
     .admin-table .action-buttons .btn-update {
         background-color: var(--button-update-bg);
     }
     .admin-table .action-buttons .btn-update:hover {
         background-color: #4CAF50;
     }
-  
+
     .admin-table .action-buttons .btn-delete {
         background-color: var(--button-delete-bg);
     }
     .admin-table .action-buttons .btn-delete:hover {
         background-color: #c9302c;
     }
-  
+
     .back-to-dashboard-btn {
         display: block;
         width: fit-content;
-        margin: 30px auto 40px auto; /* Increased vertical margins, centered */
-        padding: 12px 25px; /* Larger padding for better tap target and appearance */
+        margin: 30px auto 40px auto;
+        padding: 12px 25px;
         background-color: #6c757d;
         color: white;
         border: none;
         border-radius: 5px;
         text-decoration: none;
-        font-size: 1.05em; /* Slightly larger font */
+        font-size: 1.05em;
         cursor: pointer;
         transition: background-color 0.2s ease, transform 0.1s ease;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -439,100 +472,102 @@
     .back-to-dashboard-btn:active {
         transform: translateY(1px);
     }
-  
+
     @media screen and (max-width: 768px) {
         .navbar {
             padding: 6px 10px;
             font-size: 0.75em;
         }
-  
+
         .navbar .logo {
             font-size: 1.1em;
         }
-  
+
         .navbar-links,
-        .navbar-user-info {
+        .navbar-user-info { /* Hide desktop user info and links */
             display: none;
         }
-  
+
         .menu-toggle {
             display: block;
             font-size: 1.5em;
         }
-  
+
         .navbar-brand-area {
             margin-right: 0;
         }
         .home-brand-link {
             display: none;
         }
-  
+
         .side-menu {
             padding-top: 20px;
         }
-  
+
         /* Admin Page Mobile Specific Styles */
         .admin-page-container {
-            margin: 10px auto; /* Reduced margin for mobile */
-            padding: 0 10px; /* Reduced padding for mobile */
+            margin: 10px auto;
+            padding: 0 10px;
         }
-  
+
         .admin-heading {
             margin-top: 15px;
             margin-bottom: 15px;
-            font-size: 1.5em; /* Smaller heading for mobile */
+            font-size: 1.5em;
         }
-  
+
         .table-responsive-wrapper {
-            margin: 10px 0; /* Adjusted margin within wrapper */
-            border-radius: 5px; /* Smaller border-radius for mobile table */
+            margin: 10px 0;
+            border-radius: 5px;
         }
-  
+
         .admin-table {
-            min-width: 550px; /* Adjusted minimum width to balance scrollability and readability */
+            min-width: 550px;
         }
-  
+
         .admin-table th,
         .admin-table td {
-            padding: 8px 10px; /* Reduced padding for mobile table cells */
-            font-size: 0.8em; /* Even smaller font for mobile table text */
+            padding: 8px 10px;
+            font-size: 0.8em;
         }
-  
+
         .admin-table .profile-icon {
             width: 25px;
             height: 25px;
         }
-  
+
         .admin-table select {
             font-size: 0.8em;
             padding: 4px 6px;
-            min-width: 70px; /* Adjusted min-width for mobile dropdown */
+            min-width: 70px;
         }
-  
+
         .admin-table .action-buttons .btn {
             padding: 5px 8px;
-            font-size: 0.75em; /* Slightly larger buttons for better tap targets on mobile */
+            font-size: 0.75em;
             gap: 3px;
         }
-  
+
         .back-to-dashboard-btn {
             font-size: 0.9em;
             padding: 10px 20px;
             margin: 20px auto;
         }
     }
-  </style>
-  
-  <nav class="navbar">
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<nav class="navbar">
     <div class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
     </div>
-  
+
     <div class="navbar-brand-area">
         <a href="/dashboard/home" class="logo">Agent Seller</a>
         <a href="/dashboard/home" class="home-brand-link">Home</a>
     </div>
-  
+
     <div class="navbar-links" id="mainNavbarLinks">
         <% if (typeof user !== 'undefined' && user) { %>
             <% if (user.role === 'admin') { %>
@@ -554,7 +589,7 @@
             <a href="/admin/login">Admin Login</a>
         <% } %>
     </div>
-  
+
     <div class="navbar-user-info" id="mainNavbarUserInfo">
         <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
             <a href="/admin" class="admin-link-btn" title="Admin Panel">
@@ -565,20 +600,32 @@
             <div class="navbar-points">
                 <i class="fas fa-star"></i> <%= user.points || 0 %>
             </div>
-            <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
-            <span><%= user.firstName || user.username %></span>
-            <a href="/auth/logout" class="navbar-logout">Logout</a> <% // FIXED: Ensure this is /auth/logout %>
+            <a href="/dashboard/profile" class="profile-link-container">
+                <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
+                <span><%= user.firstName || user.username %></span>
+            </a>
+            <a href="/auth/logout" class="navbar-logout">Logout</a>
         <% } else { %>
             <a href="/auth" class="navbar-logout login-btn">Login</a>
             <a href="/admin/login" class="navbar-logout admin-login-btn">Admin</a>
         <% } %>
     </div>
-  </nav>
-  
-  <div id="mySideMenu" class="side-menu">
+</nav>
+
+<div id="mySideMenu" class="side-menu">
     <a href="javascript:void(0)" class="close-btn" id="closeMenu">&times;</a>
-  
+
     <% if (typeof user !== 'undefined' && user) { %>
+        <div class="navbar-user-info mobile-view">
+            <a href="/dashboard/profile" class="mobile-profile-link">
+                <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
+                <span><%= user.firstName || user.username %></span>
+            </a>
+            <div class="navbar-points">
+                <i class="fas fa-star"></i> <%= user.points || 0 %>
+            </div>
+        </div>
+
         <% if (user.role === 'admin') { %>
             <a href="/dashboard">Admin Dashboard</a>
             <a href="/admin/users">Manage Users</a>
@@ -592,30 +639,35 @@
         <% } %>
         <a href="/dashboard/profile">Profile</a>
         <a href="/ai-chat">AI Chat</a>
-        <a href="/auth/logout" class="mobile-action-btn mobile-logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</a> <% // FIXED: Ensure this is /auth/logout %>
+        <a href="/auth/logout" class="mobile-action-btn mobile-logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</a>
     <% } else { %>
         <a href="/auth" class="mobile-action-btn mobile-login-btn">Login</a>
         <a href="/auth/signup" class="mobile-action-btn">Sign Up</a>
         <a href="/admin/login" class="mobile-action-btn mobile-admin-login-btn">Admin Login</a>
     <% } %>
-  </div>
-  <script>
+</div>
+<script>
     document.getElementById("menuToggle").addEventListener("click", function () {
         document.getElementById("mySideMenu").style.width = "250px";
         document.body.classList.add('no-scroll');
     });
-  
+
     document.getElementById("closeMenu").addEventListener("click", function () {
         document.getElementById("mySideMenu").style.width = "0";
         document.body.classList.remove('no-scroll');
     });
-  
+
     document.querySelectorAll("#mySideMenu a").forEach(link => {
         link.addEventListener("click", function() {
+            // Only close menu if not the close button itself and not an external link
             if (!link.classList.contains('close-btn') && !link.hasAttribute('target')) {
                 document.getElementById("mySideMenu").style.width = "0";
                 document.body.classList.remove('no-scroll');
             }
         });
     });
-  </script>
+
+    // You might need to re-initialize Font Awesome icons if they are added dynamically after page load,
+    // though the CDN link usually handles static content well.
+    // FontAwesome might have its own method like FontAwesome.dom.i2svg(); for dynamic content.
+</script>

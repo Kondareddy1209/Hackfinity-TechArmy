@@ -21,26 +21,107 @@
         .bottom-nav-button {
             transition: background-color 0.2s ease-in-out;
         }
+
+        /* --- Voice Search Specific Styles (copied from all-products for consistency) --- */
+        .search-controls-dashboard {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Adjusted gap */
+            margin-bottom: 2rem; /* Space below the search controls */
+            justify-content: center; /* Center the controls */
+        }
+
+        .mic-search-btn-dashboard {
+            padding: 14px; /* Adjusted padding */
+            border-radius: 16px; /* Adjusted border-radius */
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Added subtle shadow */
+            position: relative;
+            overflow: hidden;
+            background: #3b82f6; /* Primary color */
+            color: white;
+        }
+        .mic-search-btn-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.4s;
+        }
+        .mic-search-btn-dashboard:hover::before {
+            left: 100%;
+        }
+        .mic-search-btn-dashboard:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon { /* Generic icon style, used by Lucide */
+            width: 24px; /* Larger icon for dashboard */
+            height: 24px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .voice-search-status-dashboard {
+            text-align: center;
+            margin-top: 1rem; /* Space above status message */
+            padding: 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #4a5568;
+            max-width: 400px; /* Limit width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* --- End Voice Search Specific Styles --- */
+
     </style>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- Include the navbar partial -->
     <%- include('partials/navbar') %>
 
-    <!-- Main Content Area -->
     <div class="flex-grow p-6 max-w-6xl mx-auto w-full">
         <% if (typeof user !== 'undefined' && user) { %>
-            <h2 class="text-3xl font-bold text-center text-green-700 mb-8 mt-4">Welcome, <%= user.firstName || user.email %>!</h2>
-            <p class="text-center text-lg text-gray-600 mb-10">Manage your digital product catalogs with ease.</p>
+            <h2 class="text-3xl font-bold text-center text-green-700 mb-4 mt-4">Welcome, <%= user.firstName || user.email %>!</h2>
+            <p class="text-center text-lg text-gray-600 mb-6">Manage your digital product catalogs with ease.</p>
         <% } else { %>
-            <h2 class="text-3xl font-bold text-center text-green-700 mb-8 mt-4">Welcome to Digital Catalog Agent!</h2>
-            <p class="text-center text-lg text-gray-600 mb-10">Log in or sign up to create and manage your product listings.</p>
+            <h2 class="text-3xl font-bold text-center text-green-700 mb-4 mt-4">Welcome to Digital Catalog Agent!</h2>
+            <p class="text-center text-lg text-gray-600 mb-6">Log in or sign up to create and manage your product listings.</p>
         <% } %>
 
-        <!-- Core Features Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-
+        <div class="flex flex-col items-center">
+            <div class="search-controls-dashboard">
+                <button type="button" id="micSearchBtnDashboard" class="mic-search-btn-dashboard"
+                    title="Voice Search for Products">
+                    <i data-lucide="mic" class="icon"></i>
+                    <span class="ml-2">Voice Search Products</span>
+                </button>
+            </div>
+            <div id="voiceSearchStatus" class="voice-search-status-dashboard" style="display: none;"></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-8">
             <a href="/user/product-generator" class="feature-button bg-white shadow-lg rounded-xl p-6 text-center text-lg font-semibold hover:bg-green-50 flex flex-col items-center space-y-3">
                 <i data-lucide="sparkles" class="w-10 h-10 text-indigo-500"></i>
                 <span>AI Product Desc. Generator</span>
@@ -70,24 +151,83 @@
                 <span>Edit Profile</span>
                 <p class="text-sm text-gray-500 mt-2">Update your personal information.</p>
             </a>
-
         </div>
     </div>
 
-    <!-- Bottom Navigation (keeping it simple as per new focus) -->
     <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg flex justify-around text-center p-2 sm:p-4">
         <span class="w-1/2 py-2 sm:py-3 text-green-700 font-medium rounded-lg flex items-center justify-center gap-2">
             <i data-lucide="store" class="w-6 h-6"></i> Your Digital Store
         </span>
     </div>
 
-    <!-- Include the footer partial -->
     <%- include('partials/footer') %>
 
     <script>
-        // Initialize Lucide icons after the DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+            lucide.createIcons(); // Initialize Lucide icons
+
+            const micSearchBtnDashboard = document.getElementById('micSearchBtnDashboard');
+            const voiceSearchStatus = document.getElementById('voiceSearchStatus');
+
+            // --- Speech Recognition (Voice Search) ---
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'en-US'; // Default to English for dashboard voice search
+                recognition.interimResults = false;
+
+                micSearchBtnDashboard.addEventListener('click', () => {
+                    voiceSearchStatus.style.display = 'block';
+                    voiceSearchStatus.innerHTML = '<i data-lucide="mic" class="icon spinner inline-block mr-2"></i> Listening... Speak now.';
+                    lucide.createIcons(); // Re-render icon
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Speech recognition start error:", e);
+                        voiceSearchStatus.innerHTML = '<span style="color: #ef4444;">❌ Microphone error. Please allow access.</span>';
+                        resetMicButton();
+                    }
+                });
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    voiceSearchStatus.innerHTML = `✨ Transcribed: "${transcript}". Redirecting...`;
+                    // Redirect to all-products page with the search query
+                    window.location.href = `/user/all-products?q=${encodeURIComponent(transcript)}`;
+                };
+
+                recognition.onerror = (event) => {
+                    voiceSearchStatus.innerHTML = `<span style="color: #ef4444;">❌ Voice search error: ${event.error}</span>`;
+                    console.error('Speech recognition error:', event.error);
+                    resetMicButton();
+                };
+
+                recognition.onend = () => {
+                    resetMicButton();
+                    if (voiceSearchStatus.innerHTML.includes('Listening')) {
+                        voiceSearchStatus.innerHTML = '🔇 No speech detected. Please try again.';
+                    }
+                    setTimeout(() => { // Hide status after a short delay if no redirection happened
+                        if (!voiceSearchStatus.innerHTML.includes('Redirecting')) {
+                            voiceSearchStatus.style.display = 'none';
+                        }
+                    }, 3000); // Hide after 3 seconds
+                };
+
+                function resetMicButton() {
+                    micSearchBtnDashboard.innerHTML = '<i data-lucide="mic" class="icon"></i> <span class="ml-2">Voice Search Products</span>';
+                    lucide.createIcons(); // Re-render icon
+                }
+            } else {
+                micSearchBtnDashboard.disabled = true;
+                micSearchBtnDashboard.style.opacity = '0.5';
+                micSearchBtnDashboard.innerHTML = '<i data-lucide="mic-off" class="icon"></i> <span class="ml-2">Voice Search Disabled</span>';
+                voiceSearchStatus.style.display = 'block';
+                voiceSearchStatus.innerHTML = '⚠️ Voice search not supported in this browser.';
+                lucide.createIcons(); // Re-render icon
+            }
         });
     </script>
 </body>

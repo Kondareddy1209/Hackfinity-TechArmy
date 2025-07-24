@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -295,29 +296,33 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-800 min-h-screen">
-    <!-- Navigation would be included here -->
-    <!-- <%- include('partials/navbar') %> -->
-
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-800 min-h-screen flex flex-col items-center justify-center">
     <div class="container mx-auto px-4 py-8">
         <div class="form-container max-w-4xl mx-auto rounded-3xl shadow-2xl p-8">
-            <!-- Header -->
             <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-                    <i data-lucide="user-circle" class="w-8 h-8 text-blue-600"></i>
+                <div class="flex items-center justify-center mb-4">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mr-3">Edit Your Profile</h2>
+                    <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                        <i data-lucide="edit" class="w-6 h-6 text-blue-600"></i>
+                    </div>
                 </div>
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Edit Your Profile</h2>
                 <p class="text-gray-600 text-lg">Update your personal information</p>
             </div>
 
-            <!-- Messages -->
             <div id="messageContainer">
-                <!-- Messages will be inserted here dynamically -->
+                <% if (locals.message) { %>
+                <div class="message message-success">
+                    <%= message %>
+                </div>
+                <% } %>
+                <% if (locals.error) { %>
+                <div class="message message-error">
+                    <%= error %>
+                </div>
+                <% } %>
             </div>
 
-            <!-- Form -->
             <form id="profileForm" class="space-y-8" enctype="multipart/form-data" novalidate>
-                <!-- Profile Picture Section -->
                 <div class="flex flex-col items-center mb-8">
                     <div class="profile-picture-container mb-4">
                         <img 
@@ -344,7 +349,6 @@
                     <div id="uploadStatus" class="text-xs text-center mt-2 min-h-[16px]"></div>
                 </div>
 
-                <!-- Name Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="form-group">
                         <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-3">
@@ -387,7 +391,6 @@
                     </div>
                 </div>
 
-                <!-- Email Field -->
                 <div class="form-group">
                     <label for="email" class="block text-sm font-semibold text-gray-700 mb-3">
                         Email Address <span class="text-red-500">*</span>
@@ -414,7 +417,6 @@
                     </p>
                 </div>
 
-                <!-- Mobile Number Field -->
                 <div class="form-group">
                     <label for="mobile" class="block text-sm font-semibold text-gray-700 mb-3">
                         Mobile Number <span class="text-red-500">*</span>
@@ -439,7 +441,6 @@
                     <div id="mobileValidation" class="text-xs mt-1 min-h-[16px]"></div>
                 </div>
 
-                <!-- Gender Field -->
                 <div class="form-group">
                     <label for="gender" class="block text-sm font-semibold text-gray-700 mb-3">
                         Gender <span class="text-red-500">*</span>
@@ -460,7 +461,6 @@
                     </div>
                 </div>
 
-                <!-- Form Buttons -->
                 <div class="form-buttons flex flex-col-reverse md:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
                     <a 
                         href="/user_dashboard" 
@@ -481,13 +481,25 @@
         </div>
     </div>
 
-    <!-- Footer would be included here -->
-    <!-- <%- include('partials/footer') %> -->
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize Lucide icons
             lucide.createIcons();
+
+            // Check if user object is available (simulated as it was removed from template in this file)
+            // In a real EJS app, 'user' object is passed from server.
+            // For this specific HTML, we'll create a mock user object if not provided by EJS,
+            // otherwise, assume it comes from EJS.
+            const userExists = typeof user !== 'undefined' && user;
+            const serverUserData = userExists ? user : { // Mock user data if not passed by EJS for local testing
+                firstName: 'Test',
+                lastName: 'User',
+                email: 'test.user@example.com',
+                mobile: '9876543210',
+                gender: 'Female',
+                profilePicture: '/images/default_image.png'
+            };
+
 
             // Form elements
             const form = document.getElementById('profileForm');
@@ -495,8 +507,11 @@
             const profilePreview = document.getElementById('profilePreview');
             const uploadStatus = document.getElementById('uploadStatus');
             const messageContainer = document.getElementById('messageContainer');
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
             const mobileInput = document.getElementById('mobile');
             const mobileValidation = document.getElementById('mobileValidation');
+            const genderSelect = document.getElementById('gender');
 
             // Form state
             let isSubmitting = false;
@@ -516,7 +531,6 @@
                 messageContainer.appendChild(messageDiv);
                 lucide.createIcons();
                 
-                // Auto-hide success messages
                 if (type === 'success') {
                     setTimeout(() => {
                         messageDiv.style.opacity = '0';
@@ -524,7 +538,6 @@
                     }, 5000);
                 }
 
-                // Scroll to message
                 messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
 
@@ -546,11 +559,24 @@
 
             function addValidationStyling(input, isValid) {
                 const parent = input.parentElement;
-                parent.classList.remove('field-valid', 'field-invalid');
-                
-                if (input.value.trim()) {
-                    parent.classList.add(isValid ? 'field-valid' : 'field-invalid');
+                // Check if the input is one of the direct form-inputs, not related to the absolute icon
+                if (input.classList.contains('form-input')) {
+                    input.classList.remove('field-valid', 'field-invalid'); // Clear existing on the input itself
+                    if (input.value.trim()) { // Only add if not empty
+                         input.classList.add(isValid ? 'field-valid' : 'field-invalid');
+                    }
                 }
+                // For the validation checkmark next to the input (if you had such an element)
+                // const validationIcon = parent.querySelector('.field-validation-icon');
+                // if (validationIcon) {
+                //     validationIcon.classList.remove('text-green-600', 'text-red-500');
+                //     if (input.value.trim()) {
+                //         validationIcon.classList.add(isValid ? 'text-green-600' : 'text-red-500');
+                //         validationIcon.textContent = isValid ? '✓' : '✗';
+                //     } else {
+                //         validationIcon.textContent = '';
+                //     }
+                // }
             }
 
             // Profile Picture Upload
@@ -559,6 +585,7 @@
                 
                 if (!file) {
                     uploadStatus.textContent = '';
+                    profilePreview.src = serverUserData.profilePicture || '/images/default_image.png';
                     return;
                 }
 
@@ -566,6 +593,7 @@
                 if (!file.type.match(/^image\/(jpeg|jpg|png|gif)$/i)) {
                     uploadStatus.innerHTML = '<span class="text-red-500">❌ Please select a valid image file (JPG, PNG, GIF)</span>';
                     this.value = '';
+                    profilePreview.src = serverUserData.profilePicture || '/images/default_image.png';
                     return;
                 }
 
@@ -573,6 +601,7 @@
                 if (file.size > 5 * 1024 * 1024) {
                     uploadStatus.innerHTML = '<span class="text-red-500">❌ File size must be less than 5MB</span>';
                     this.value = '';
+                    profilePreview.src = serverUserData.profilePicture || '/images/default_image.png';
                     return;
                 }
 
@@ -593,11 +622,10 @@
 
             // Mobile Number Validation
             mobileInput.addEventListener('input', function(e) {
-                // Remove non-numeric characters
                 this.value = this.value.replace(/[^0-9]/g, '');
                 
                 const isValid = /^[0-9]{10}$/.test(this.value);
-                addValidationStyling(this, isValid);
+                addValidationStyling(this, isValid); // Apply to the input itself
 
                 if (this.value.length === 0) {
                     mobileValidation.textContent = '';
@@ -605,6 +633,12 @@
                     mobileValidation.innerHTML = '<span class="text-amber-600">⚠️ Enter 10 digits</span>';
                 } else if (this.value.length === 10) {
                     mobileValidation.innerHTML = '<span class="text-green-600">✅ Valid mobile number</span>';
+                }
+            });
+            mobileInput.addEventListener('blur', function (e) {
+                if (this.value.length === 0) {
+                    mobileValidation.textContent = '';
+                    addValidationStyling(this, false); // Clear styling on blur if empty
                 }
             });
 
@@ -618,9 +652,9 @@
 
                 field.addEventListener('blur', function() {
                     if (this.value.trim().length < 2 && this.value.length > 0) {
-                        this.setCustomValidity('Name must be at least 2 characters long');
-                    } else {
-                        this.setCustomValidity('');
+                        // Not strictly necessary to setCustomValidity as we have messages
+                    } else if (this.value.trim().length === 0) {
+                        addValidationStyling(this, false); // Clear styling on blur if empty
                     }
                 });
             });
@@ -629,39 +663,116 @@
             document.getElementById('gender').addEventListener('change', function() {
                 addValidationStyling(this, this.value !== '');
             });
+            document.getElementById('gender').addEventListener('blur', function() {
+                if (this.value === '') {
+                    addValidationStyling(this, false); // Clear styling on blur if empty
+                }
+            });
 
-            // Form Validation
-            function validateForm() {
-                const firstName = document.getElementById('firstName').value.trim();
-                const lastName = document.getElementById('lastName').value.trim();
-                const mobile = document.getElementById('mobile').value.trim();
-                const gender = document.getElementById('gender').value;
+            // --- Password Validation (New) ---
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const passwordMatchValidation = document.getElementById('passwordMatchValidation');
 
+            passwordInput.addEventListener('input', validatePasswordFields);
+            confirmPasswordInput.addEventListener('input', validatePasswordFields);
+            passwordInput.addEventListener('blur', validatePasswordFields);
+            confirmPasswordInput.addEventListener('blur', validatePasswordFields);
+
+            function validatePasswordFields() {
+                const p1 = passwordInput.value;
+                const p2 = confirmPasswordInput.value;
+                let isValid = true;
+                let message = '';
+
+                if (p1.length === 0 && p2.length === 0) { // Both empty, clear validation
+                    message = '';
+                    addValidationStyling(passwordInput, true);
+                    addValidationStyling(confirmPasswordInput, true);
+                } else if (p1.length > 0 && p1.length < 8) {
+                    message = 'New password needs at least 8 characters.';
+                    isValid = false;
+                    addValidationStyling(passwordInput, false);
+                    addValidationStyling(confirmPasswordInput, true); // Keep green if p2 matches p1 length for visual
+                } else if (p1 !== p2) {
+                    message = 'Passwords do not match.';
+                    isValid = false;
+                    addValidationStyling(passwordInput, true); // Valid if has 8+ chars
+                    addValidationStyling(confirmPasswordInput, false);
+                } else { // Passwords match and P1 is valid length (implicitly)
+                    message = 'Passwords match. ✅';
+                    isValid = true;
+                    addValidationStyling(passwordInput, true);
+                    addValidationStyling(confirmPasswordInput, true);
+                }
+
+                passwordMatchValidation.innerHTML = message ? `<span class="${isValid ? 'text-green-600' : 'text-red-500'}">${message}</span>` : '';
+                return isValid;
+            }
+            // --- End Password Validation ---
+
+
+            // Form Validation on Submission
+            function validateFormOnSubmit() {
+                let isValid = true;
+                messageContainer.innerHTML = ''; // Clear previous messages
+
+                const firstName = firstNameInput.value.trim();
+                const lastName = lastNameInput.value.trim();
+                const mobile = mobileInput.value.trim();
+                const gender = genderSelect.value;
+                
+                // Validate required fields
                 if (!firstName || firstName.length < 2) {
                     showMessage('First name must be at least 2 characters long.', 'error');
-                    document.getElementById('firstName').focus();
-                    return false;
+                    addValidationStyling(firstNameInput, false);
+                    firstNameInput.focus();
+                    isValid = false;
+                } else {
+                    addValidationStyling(firstNameInput, true);
                 }
 
-                if (!lastName || lastName.length < 2) {
+                if (isValid && (!lastName || lastName.length < 2)) {
                     showMessage('Last name must be at least 2 characters long.', 'error');
-                    document.getElementById('lastName').focus();
-                    return false;
+                    addValidationStyling(lastNameInput, false);
+                    lastNameInput.focus();
+                    isValid = false;
+                } else if (isValid) {
+                    addValidationStyling(lastNameInput, true);
                 }
 
-                if (!mobile || !/^[0-9]{10}$/.test(mobile)) {
+                if (isValid && (!mobile || !/^[0-9]{10}$/.test(mobile))) {
                     showMessage('Please enter a valid 10-digit mobile number.', 'error');
-                    document.getElementById('mobile').focus();
-                    return false;
+                    addValidationStyling(mobileInput, false);
+                    mobileInput.focus();
+                    isValid = false;
+                } else if (isValid) {
+                    addValidationStyling(mobileInput, true);
                 }
 
-                if (!gender) {
+                if (isValid && !gender) {
                     showMessage('Please select your gender.', 'error');
-                    document.getElementById('gender').focus();
-                    return false;
+                    addValidationStyling(genderSelect, false);
+                    genderSelect.focus();
+                    isValid = false;
+                } else if (isValid) {
+                    addValidationStyling(genderSelect, true);
                 }
 
-                return true;
+                // Validate passwords if either is provided
+                if (isValid && (passwordInput.value || confirmPasswordInput.value)) {
+                    if (!validatePasswordFields()) { // Use the real-time validation function
+                        showMessage('Please fix password errors before saving.', 'error');
+                        passwordInput.focus();
+                        isValid = false;
+                    }
+                }
+                
+                if (!isValid) {
+                    messageContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                return isValid;
             }
 
             // Form Submission
@@ -670,76 +781,113 @@
 
                 if (isSubmitting) return;
 
-                if (!validateForm()) return;
+                if (!validateFormOnSubmit()) {
+                    return;
+                }
 
                 setLoading(true);
 
+                const formData = new FormData();
+                formData.append('firstName', firstNameInput.value.trim());
+                formData.append('lastName', lastNameInput.value.trim());
+                formData.append('mobile', mobileInput.value.trim());
+                formData.append('gender', genderSelect.value);
+
+                if (passwordInput.value) { // Only append passwords if new one is provided
+                    formData.append('password', passwordInput.value);
+                    formData.append('confirmPassword', confirmPasswordInput.value); // Backend needs to validate this too
+                }
+
+                if (profilePictureInput.files.length > 0) {
+                    formData.append('profilePicture', profilePictureInput.files[0]);
+                }
+                
                 try {
-                    // Simulate form submission
-                    const formData = new FormData(form);
-                    
-                    // Add the image file if selected
-                    if (currentImageFile) {
-                        formData.set('profilePicture', currentImageFile);
+                    const response = await fetch('/dashboard/profile', { 
+                        method: 'POST', // Your backend route is POST
+                        body: formData // FormData automatically sets Content-Type to multipart/form-data
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        showMessage(result.message || 'Profile updated successfully!', 'success');
+                        
+                        // Update local user data from backend response
+                        if (result.data) {
+                            // Update serverUserData object with the new values
+                            serverUserData.firstName = result.data.firstName;
+                            serverUserData.lastName = result.data.lastName;
+                            serverUserData.mobile = result.data.mobile;
+                            serverUserData.gender = result.data.gender;
+                            serverUserData.profilePicture = result.data.profilePicture;
+                        }
+
+                        // Update displayed name/avatar in view mode and navbar
+                        updateViewProfileData(); // This function uses serverUserData
+                        
+                        // Clear password fields and file input
+                        passwordInput.value = '';
+                        confirmPasswordInput.value = '';
+                        profilePictureInput.value = '';
+                        uploadStatus.textContent = ''; // Clear image upload status
+                        clearAllValidation(); // Clear validation styling
+
+                        setTimeout(() => {
+                            showViewProfile(); // Switch back to view mode
+                        }, 1500);
+                    } else {
+                        // Display error from backend
+                        showMessage(result.error || result.message || 'Failed to update profile. Please try again.', 'error');
                     }
 
-                    // Simulate API call
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-
-                    showMessage('🎉 Profile updated successfully!');
-                    
-                    // Reset upload status
-                    uploadStatus.textContent = '';
-                    currentImageFile = null;
-
                 } catch (error) {
-                    console.error('Error updating profile:', error);
-                    showMessage('Failed to update profile. Please try again.', 'error');
+                    console.error('Network error during profile update:', error);
+                    showMessage('Network error: Could not connect to the server. ' + error.message, 'error');
                 } finally {
                     setLoading(false);
                 }
             });
 
-            // Keyboard navigation improvements
+            // Keyboard navigation improvements (your original logic, ensuring it targets current active page)
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit') {
+                if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit' && e.target.type !== 'file') {
                     e.preventDefault();
-                    const inputs = Array.from(form.querySelectorAll('input:not([readonly]), select'));
-                    const currentIndex = inputs.indexOf(e.target);
-                    const nextInput = inputs[currentIndex + 1];
+                    const currentActivePage = document.querySelector('.page.active');
+                    if (!currentActivePage) return;
+
+                    const formElements = Array.from(currentActivePage.querySelectorAll(
+                        'input:not([readonly]):not([type="hidden"]):not([type="file"]):not(:disabled), select:not(:disabled), button[type="button"]:not(:disabled)'
+                    ));
+                    const currentIndex = formElements.indexOf(document.activeElement);
+                    const nextInput = formElements[currentIndex + 1];
                     if (nextInput) {
                         nextInput.focus();
+                    } else {
+                        const submitButton = currentActivePage.querySelector('button[type="submit"]');
+                        if (submitButton && !submitButton.disabled) {
+                            submitButton.focus();
+                        }
                     }
                 }
             });
 
-            // Initialize form with placeholder data (in real app, this would come from server)
-            function initializeForm() {
-                // This would typically be populated from server-side template
-                // For demo purposes, using placeholder data
-                document.getElementById('firstName').value = 'John';
-                document.getElementById('lastName').value = 'Doe';
-                document.getElementById('email').value = 'john.doe@example.com';
-                document.getElementById('mobile').value = '1234567890';
-                document.getElementById('gender').value = 'Male';
-                
-                // Update validation styling for pre-filled fields
-                nameFields.forEach(field => {
-                    if (field.value) addValidationStyling(field, field.value.length >= 2);
-                });
-                
-                if (mobileInput.value) {
-                    addValidationStyling(mobileInput, /^[0-9]{10}$/.test(mobileInput.value));
-                }
-                
-                if (document.getElementById('gender').value) {
-                    addValidationStyling(document.getElementById('gender'), true);
-                }
+            // Initial form population and view update when the page loads
+            // This is crucial for pre-filling the form and displaying view data
+            // (Assumes 'user' object is available from EJS backend)
+            if (userExists) { // Only attempt to populate if user data is available
+                populateEditForm(); // Populates edit form on load initially to set default values
+                updateViewProfileData(); // Populates view profile data on load
             }
-
-            // Initialize the form
-            initializeForm();
+            // Check URL parameters to decide which page is active on load
+            if (urlError) {
+                showEditProfile(); // Stay on edit page if an error occurred during submission
+            } else {
+                showViewProfile(); // Default to view profile
+            }
+            
         });
     </script>
 </body>
+
 </html>
