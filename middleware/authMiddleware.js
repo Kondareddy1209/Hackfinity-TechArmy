@@ -1,7 +1,7 @@
 // C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity-TechArmy\middleware\authMiddleware.js
 
 const jwt = require('jsonwebtoken');
-const User = require('../Models/User');
+const User = require('../models/User');
 
 const jwtSecret = process.env.JWT_SECRET || 'your_super_secret_jwt_key_fallback';
 
