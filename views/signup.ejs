@@ -7,8 +7,7 @@
   <title>Sign Up • agent Seller</title>
   <style>
     * {
-      box-sizing: border-box;
-      /* Prevent text selection zoom on mobile */
+      box-sizing: border-box; /* Prevent text selection zoom on mobile */
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -53,8 +52,7 @@
       width: 100%;
       height: 100%;
       perspective: 1000px;
-      z-index: -1;
-      /* Prevent interaction */
+      z-index: -1; /* Prevent interaction */
       pointer-events: none;
       touch-action: none;
     }
@@ -753,7 +751,6 @@
 </head>
 
 <body>
-  <!-- 3D Wave Animation Background -->
   <div class="wave-container">
     <div class="wave-layer">
       <div class="wave"></div>
@@ -766,10 +763,8 @@
     </div>
   </div>
 
-  <!-- Floating Particles -->
   <div class="particle-system" id="particles"></div>
   
-  <!-- Interactive Mouse Effect -->
   <div class="interactive-wave">
     <div class="mouse-wave" id="mouseWave"></div>
   </div>
@@ -777,7 +772,9 @@
   <div class="auth-container">
     <h2>Create Account</h2>
     <% if (error) { %>
-    <p class="error-msg" style="text-align: center;"><%= error %></p>
+    <p class="error-msg" style="text-align: center;" id="errorMsg"><%= error %></p>
+    <% } else { %>
+      <p class="error-msg" style="text-align: center; display:none;" id="errorMsg"></p>
     <% } %>
     <form id="signupForm" action="/auth/signup" method="POST">
       <div class="form-group">
@@ -824,9 +821,80 @@
         <a href="/auth" class="link">Already have an account? Login</a>
       </div>
     </form>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <p style="margin-bottom: 10px; font-size: 0.9em; color: #555;">Or sign up with:</p>
+        <div id="g_id_signin_button"></div> </div>
+
   </div>
 
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
+    // Make sure errorMsg div is available for JS to use (if it's not already)
+    const errorMsgDiv = document.getElementById('errorMsg');
+    if (!errorMsgDiv) {
+      console.warn("errorMsg div not found in signup.ejs for Google sign-in messages.");
+    }
+
+    async function handleGoogleSignIn(response) {
+        console.log("Google ID Token received:", response.credential);
+
+        try {
+            const res = await fetch('/auth/google', { // This is your new backend route
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_token: response.credential })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                console.log("Backend response for Google sign-in:", data);
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    window.location.href = '/user_dashboard'; // Fallback
+                }
+            } else {
+                console.error("Error from backend during Google sign-in:", data.error || data.message);
+                if (errorMsgDiv) {
+                    errorMsgDiv.textContent = data.error || data.message || 'Google sign-up failed. Please try again.';
+                    errorMsgDiv.style.display = 'block';
+                } else {
+                    alert(data.error || data.message || 'Google sign-up failed. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error("Network error during Google sign-in:", error);
+            if (errorMsgDiv) {
+                errorMsgDiv.textContent = 'Network error during Google sign-up. Please check your connection.';
+                errorMsgDiv.style.display = 'block';
+            } else {
+                alert('Network error during Google sign-up. Please check your connection.');
+            }
+        }
+    }
+
+    // Render the Google button dynamically
+    document.getElementById('g_id_signin_button').innerHTML = `
+        <div id="g_id_onload"
+             data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
+             data-callback="handleGoogleSignIn"
+             data-auto_prompt="false"
+             data-auto_select="true">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="outline"
+             data-text="signup_with"
+             data-shape="rectangular"
+             data-logo_alignment="left">
+        </div>
+    `;
+
     // Enhanced zoom prevention for mobile
     function preventZoom() {
       // Prevent pinch zoom
@@ -836,7 +904,7 @@
           e.stopPropagation();
           return false;
         }
-      }, { passive: false });
+    }, { passive: false });
 
       // Prevent double-tap zoom
       let lastTouchEnd = 0;
@@ -849,7 +917,6 @@
         }
         lastTouchEnd = now;
       }, { passive: false });
-
       // Prevent zoom on input focus
       const inputs = document.querySelectorAll('input, select, textarea');
       inputs.forEach(input => {
@@ -877,7 +944,6 @@
           }
         });
       });
-
       // Prevent context menu which can lead to zoom
       document.addEventListener('contextmenu', function(e) {
         if (window.innerWidth <= 768) {
@@ -886,7 +952,6 @@
           return false;
         }
       }, { passive: false });
-
       // Prevent wheel zoom
       document.addEventListener('wheel', function(e) {
         if (e.ctrlKey || e.metaKey) {
@@ -895,7 +960,6 @@
           return false;
         }
       }, { passive: false });
-
       // Prevent keyboard zoom shortcuts
       document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
@@ -904,7 +968,6 @@
           return false;
         }
       }, { passive: false });
-
       // Force scale reset on orientation change
       window.addEventListener('orientationchange', function() {
         setTimeout(function() {
@@ -914,7 +977,7 @@
           }
           window.scrollTo(0, 0);
         }, 100);
-      });
+    });
 
       // Prevent zoom on window resize
       window.addEventListener('resize', function() {
@@ -964,7 +1027,6 @@
         if (firstInvalid) firstInvalid.focus();
       }
     });
-
     // Enhanced 3D Wave Animation System (disabled on mobile for performance)
     function createParticles() {
       const particleContainer = document.getElementById('particles');
@@ -998,13 +1060,11 @@
     function setupMouseInteraction() {
       // Disable on mobile for better performance and zoom prevention
       if (window.innerWidth <= 768) return;
-      
       const mouseWave = document.getElementById('mouseWave');
       if (!mouseWave) return;
       
       let mouseX = window.innerWidth / 2;
       let mouseY = window.innerHeight / 2;
-
       document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -1014,12 +1074,10 @@
         mouseWave.style.opacity = '1';
         mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
       });
-
       document.addEventListener('mouseleave', () => {
         mouseWave.style.opacity = '0';
         mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
       });
-
       mouseWave.style.left = mouseX + 'px';
       mouseWave.style.top = mouseY + 'px';
     }
@@ -1069,7 +1127,6 @@
               isKeyboardOpen = false;
               document.body.style.height = '';
               document.body.style.overflow = '';
-              
               // Maintain zoom prevention after keyboard close
               const viewport = document.querySelector('meta[name="viewport"]');
               if (viewport) {
@@ -1078,7 +1135,6 @@
             }
           }
         });
-
         // Additional zoom prevention on input interaction
         const inputs = document.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
@@ -1096,7 +1152,6 @@
             }, 300);
           });
         });
-
         // Prevent any accidental zoom gestures on the container
         const container = document.querySelector('.auth-container');
         if (container) {
@@ -1107,7 +1162,6 @@
               return false;
             }
           }, { passive: false });
-
           container.addEventListener('touchmove', function(e) {
             if (e.touches.length > 1) {
               e.preventDefault();
@@ -1130,7 +1184,6 @@
       setupFormAnimations();
       setupMobileEnhancements();
     });
-
     // Performance optimization
     document.addEventListener('visibilitychange', () => {
       const waves = document.querySelectorAll('.wave-layer');
@@ -1140,7 +1193,6 @@
         waves.forEach(wave => wave.style.animationPlayState = 'running');
       }
     });
-
     // Enhanced orientation change handling with zoom prevention
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
@@ -1150,7 +1202,7 @@
           viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
         }
         
-        // Scroll to top to reset position
+        // Scroll to 
         window.scrollTo(0, 0);
         
         // Re-initialize mobile enhancements if needed
@@ -1159,7 +1211,6 @@
         }
       }, 100);
     });
-
     // Additional safeguard: Monitor and reset zoom level
     setInterval(() => {
       if (window.innerWidth <= 768) {
