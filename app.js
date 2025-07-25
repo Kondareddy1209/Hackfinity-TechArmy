@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config(); // Ensure this is at the very top to load .env variables
 const fs = require('fs').promises;
 
 const admin = require('firebase-admin');
@@ -44,6 +44,8 @@ app.use((req, res, next) => {
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID
     });
+    // NEW: Make process.env available to all EJS templates
+    res.locals.process = { env: process.env };
     next();
 });
 
