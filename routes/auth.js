@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const { OAuth2Client } = require('google-auth-library'); // NEW: Import Google OAuth2Client
+
 const User = require('../models/User');
 const Otp = require('../models/Otp');
 const { requireAuth } = require('../middleware/authMiddleware');
@@ -13,6 +15,9 @@ const createToken = (id) => {
         expiresIn: jwtExpiresIn
     });
 };
+
+// NEW: Initialize Google OAuth2Client with your client ID
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -33,8 +38,96 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/signup', (req, res) => {
-    res.render('signup', { error: null });
+    res.render('signup', { error: null, message: null }); // Pass message as well for consistent display
 });
+
+// NEW: Google Sign-in/Sign-up handler
+router.post('/google', async (req, res) => {
+    const { id_token } = req.body;
+
+    if (!id_token) {
+        return res.status(400).json({ success: false, error: 'Google ID token missing.' });
+    }
+
+    try {
+        // Verify the ID token with Google
+        const ticket = await googleClient.verifyIdToken({
+            idToken: id_token,
+            audience: process.env.GOOGLE_CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, given_name: firstName, family_name: lastName, picture: profilePicture } = payload;
+
+        console.log(`Google authenticated: ${email}, Google ID: ${googleId}`);
+
+        let user;
+        // 1. Try to find user by googleId
+        user = await User.findOne({ googleId });
+
+        if (user) {
+            // User found via Google ID - Existing Google account login
+            console.log(`User ${email} found by Google ID. Logging in.`);
+        } else {
+            // 2. Try to find user by email (might be a traditional user connecting Google)
+            user = await User.findOne({ email });
+
+            if (user) {
+                // User found by email, but no googleId (was a traditional signup)
+                // Link Google account to existing user
+                if (user.googleId) {
+                    // This email is already linked to a different Google account.
+                    // This case is tricky: two different Google accounts or user email changed on Google?
+                    // For simplicity, we assume one email one Google account link
+                    return res.status(409).json({ success: false, error: 'This email is already registered with a different Google account. Please use Google Sign-in or log in directly.' });
+                }
+                user.googleId = googleId; // Link Google ID
+                user.isVerified = true; // Google verified the email
+                await user.save();
+                console.log(`Existing user ${email} linked with Google ID.`);
+            } else {
+                // 3. No user found - New Google signup
+                // Create a new user entry
+                user = new User({
+                    firstName: firstName || 'Google User', // Fallback name
+                    lastName: lastName || '',
+                    email: email,
+                    googleId: googleId,
+                    isVerified: true, // Google email is already verified
+                    profilePicture: profilePicture || '/images/default_image.png',
+                    // Password and mobile are not required for Google signup
+                    password: 'google_oauth_no_password', // Placeholder. Will not be saved if required: function() is used.
+                    mobile: '0000000000', // Placeholder or make optional in schema
+                    gender: 'Other' // Placeholder or make optional in schema
+                });
+                await user.save();
+                console.log(`New user ${email} created via Google signup.`);
+            }
+        }
+
+        // Successful login/signup, create JWT and set cookie
+        const token = createToken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 1000 * 60 * 60, // 1 hour
+            path: '/',
+            sameSite: 'Lax'
+        });
+
+        // Redirect based on role or to a default dashboard
+        const redirectUrl = user.role === 'admin' ? '/dashboard' : '/user_dashboard';
+        res.status(200).json({ success: true, message: 'Google sign-in successful', redirectUrl });
+
+    } catch (error) {
+        console.error('Error during Google ID token verification or user operation:', error);
+        if (error.code === 11000) { // Duplicate key error (e.g., email or googleId already exists)
+            return res.status(409).json({ success: false, error: 'Account already exists. Please login with your existing method or contact support.' });
+        }
+        res.status(500).json({ success: false, error: 'Google sign-in failed due to a server error. Please try again.' });
+    }
+});
+
 
 router.post('/signup', async (req, res) => {
     const { firstName, lastName, email, mobile, password, gender } = req.body;
@@ -44,17 +137,28 @@ router.post('/signup', async (req, res) => {
 
         if (user) {
             if (user.isVerified) {
+                // If user exists and is verified (could be a Google user), prevent re-signup
+                if (user.googleId) {
+                    return res.render('signup', { error: 'This email is already associated with a Google account. Please use Google Sign-in or log in directly.', message: null });
+                }
                 return res.render('signup', { error: 'User with this email already exists and is verified. Please log in.', message: null });
             } else {
+                // Existing unverified user, update their details
                 user.firstName = firstName;
                 user.lastName = lastName;
                 user.mobile = mobile;
                 user.gender = gender;
-                user.password = password;
+                user.password = password; // This will trigger pre-save hook for hashing
                 await user.save();
+                // Ensure googleId is null for traditional users if it was somehow set
+                if (user.googleId) {
+                    user.googleId = undefined; // unset the field
+                    await user.save();
+                }
             }
         } else {
-            user = new User({ firstName, lastName, email, mobile, password, gender });
+            // New traditional signup
+            user = new User({ firstName, lastName, email, mobile, password, gender, isVerified: false });
             await user.save();
         }
 
@@ -206,7 +310,7 @@ router.post('/admin-login', async (req, res) => {
 
         if (user && (await user.matchPassword(password))) {
             const token = createToken(user._id);
-            res.cookie('jwt', token, { // <<< IMPORTANT CHANGE: 'token' to 'jwt'
+            res.cookie('jwt', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 1000 * 60 * 60, // 1 hour
@@ -233,13 +337,18 @@ router.post('/login', async (req, res) => {
             return res.render('login', { error: 'Invalid credentials', message: null });
         }
 
+        // If it's a Google-signed up user and they try traditional login
+        if (user.googleId && !user.password) {
+             return res.render('login', { error: 'This account was created with Google. Please use the "Sign in with Google" button.', message: null });
+        }
+        
         if (!user.isVerified) {
             return res.render('login', { error: 'Please verify your email first. If you haven\'t received an OTP, please sign up again.', message: null });
         }
 
         if (user && (await user.matchPassword(password))) {
             const token = createToken(user._id);
-            res.cookie('jwt', token, { // <<< IMPORTANT CHANGE: 'token' to 'jwt'
+            res.cookie('jwt', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 maxAge: 1000 * 60 * 60, // 1 hour
@@ -262,7 +371,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/logout', requireAuth, (req, res) => {
-    res.clearCookie('jwt'); // <<< IMPORTANT CHANGE: 'token' to 'jwt'
+    res.clearCookie('jwt');
     res.redirect('/auth');
 });
 
