@@ -23,7 +23,8 @@
     body {
         margin: 0;
         font-family: Arial, sans-serif;
-        background-color: #f4f7f6; /* Light gray background for the page content */
+        background-color: #f4f7f6;
+        /* Light gray background for the page content */
     }
 
     .navbar {
@@ -53,7 +54,8 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin-right: 20px;
+        /* Adjusted margin-right as 'Home' link is gone */
+        margin-right: 0;
     }
 
     .navbar .logo {
@@ -61,18 +63,20 @@
         font-weight: bold;
         color: var(--text-white);
         text-decoration: none;
-        margin-bottom: 2px;
+        /* Removed margin-bottom as 'Home' link is gone */
+        margin-bottom: 0;
         white-space: nowrap;
     }
 
-    .home-brand-link {
+    /* REMOVED: .home-brand-link style is no longer needed */
+    /* .home-brand-link {
         color: var(--text-white);
         text-decoration: none;
         font-size: 0.8em;
         padding: 1px 4px;
         border-radius: 2px;
         opacity: 0.9;
-    }
+    } */
 
     .navbar-links {
         display: flex;
@@ -108,14 +112,17 @@
     .profile-link-container {
         display: flex;
         align-items: center;
-        gap: 8px; /* Space between image and text */
+        gap: 8px;
+        /* Space between image and text */
         text-decoration: none;
         color: var(--text-white);
-        padding: 5px 10px; /* Padding for the clickable area */
+        padding: 5px 10px;
+        /* Padding for the clickable area */
         border-radius: 4px;
         transition: background-color 0.2s ease;
         cursor: pointer;
-        white-space: nowrap; /* Keep name and image on one line */
+        white-space: nowrap;
+        /* Keep name and image on one line */
     }
 
     .profile-link-container:hover {
@@ -168,12 +175,15 @@
     .navbar-logout.login-btn {
         background-color: var(--login-blue);
     }
+
     .navbar-logout.login-btn:hover {
         background-color: #0056b3;
     }
+
     .navbar-logout.admin-login-btn {
         background-color: var(--admin-blue);
     }
+
     .navbar-logout.admin-login-btn:hover {
         background-color: var(--admin-blue-hover);
     }
@@ -241,7 +251,8 @@
 
     /* Mobile view for user info in side menu */
     .navbar-user-info.mobile-view {
-        display: flex; /* Always display as flex here when active */
+        display: flex;
+        /* Always display as flex here when active */
         flex-direction: column;
         align-items: center;
         padding: 20px;
@@ -258,10 +269,13 @@
         text-decoration: none;
         color: var(--text-white);
         transition: background-color 0.2s ease;
-        padding-bottom: 10px; /* Space below content */
+        padding-bottom: 10px;
+        /* Space below content */
     }
+
     .mobile-profile-link:hover {
-        background-color: #555; /* Darker hover for mobile */
+        background-color: #555;
+        /* Darker hover for mobile */
     }
 
     .navbar-user-info.mobile-view img {
@@ -296,12 +310,13 @@
         border: none;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .side-menu .mobile-logout-btn {
         background-color: var(--logout-red);
     }
+
     .side-menu .mobile-logout-btn:hover {
         background-color: var(--logout-red-hover);
     }
@@ -309,6 +324,7 @@
     .side-menu .mobile-login-btn {
         background-color: var(--login-blue);
     }
+
     .side-menu .mobile-login-btn:hover {
         background-color: #0056b3;
     }
@@ -316,6 +332,7 @@
     .side-menu .mobile-admin-login-btn {
         background-color: var(--admin-blue);
     }
+
     .side-menu .mobile-admin-login-btn:hover {
         background-color: var(--admin-blue-hover);
     }
@@ -331,6 +348,7 @@
         border-bottom: 1px solid var(--border-dark);
         transition: background-color 0.2s ease, color 0.2s ease;
     }
+
     .side-menu .mobile-admin-link:hover {
         background-color: #555;
         color: var(--primary-green);
@@ -360,7 +378,7 @@
         overflow-x: auto;
         margin: 20px 0;
         border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         background-color: white;
         border: 1px solid var(--table-border-color);
     }
@@ -440,6 +458,7 @@
     .admin-table .action-buttons .btn-update {
         background-color: var(--button-update-bg);
     }
+
     .admin-table .action-buttons .btn-update:hover {
         background-color: #4CAF50;
     }
@@ -447,6 +466,7 @@
     .admin-table .action-buttons .btn-delete {
         background-color: var(--button-delete-bg);
     }
+
     .admin-table .action-buttons .btn-delete:hover {
         background-color: #c9302c;
     }
@@ -464,11 +484,13 @@
         font-size: 1.05em;
         cursor: pointer;
         transition: background-color 0.2s ease, transform 0.1s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+
     .back-to-dashboard-btn:hover {
         background-color: #5a6268;
     }
+
     .back-to-dashboard-btn:active {
         transform: translateY(1px);
     }
@@ -484,7 +506,8 @@
         }
 
         .navbar-links,
-        .navbar-user-info { /* Hide desktop user info and links */
+        .navbar-user-info {
+            /* Hide desktop user info and links */
             display: none;
         }
 
@@ -494,11 +517,14 @@
         }
 
         .navbar-brand-area {
+            /* Removed specific margin-right for mobile as 'Home' link is gone */
             margin-right: 0;
         }
-        .home-brand-link {
+
+        /* REMOVED: .home-brand-link mobile style is no longer needed */
+        /* .home-brand-link {
             display: none;
-        }
+        } */
 
         .side-menu {
             padding-top: 20px;
@@ -564,8 +590,7 @@
     </div>
 
     <div class="navbar-brand-area">
-        <a href="/dashboard/home" class="logo">Agent Seller</a>
-        <a href="/dashboard/home" class="home-brand-link">Home</a>
+        <a href="/user_dashboard" class="logo">Agent Seller</a>
     </div>
 
     <div class="navbar-links" id="mainNavbarLinks">
@@ -625,7 +650,7 @@
                 <i class="fas fa-star"></i> <%= user.points || 0 %>
             </div>
         </div>
-
+        <a href="/user_dashboard">Home</a>
         <% if (user.role === 'admin') { %>
             <a href="/dashboard">Admin Dashboard</a>
             <a href="/admin/users">Manage Users</a>
