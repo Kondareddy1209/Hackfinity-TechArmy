@@ -2,152 +2,152 @@
 <html lang="en">
 
 <head>
-       
     <meta charset="UTF-8">
-       
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Manage Users • Admin Panel</title>
-       
+    <title>Manage Users • Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-       
     <script src="https://unpkg.com/lucide@latest"></script>
-        <style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
         body {
             font-family: 'Inter', sans-serif;
         }
 
+        /* General container for consistent padding on all devices */
         .admin-page-container {
             max-width: 1200px;
             margin: 20px auto;
-            padding: 0 15px;
+            padding: 0 1rem; /* Use rem for better scalability */
         }
 
         .admin-heading {
             text-align: center;
-            margin-top: 25px;
-            margin-bottom: 25px;
-            font-size: 1.8em;
+            margin-top: 1.5rem; /* Use rem for consistent spacing */
+            margin-bottom: 1.5rem;
+            font-size: 2em; /* Slightly larger for better readability on all screens */
             color: #333;
+            font-weight: 700; /* Make heading bolder */
         }
 
         .table-responsive-wrapper {
-            overflow-x: auto;
-            margin: 20px 0;
+            overflow-x: auto; /* Keeps the horizontal scroll for tables on small screens */
+            margin: 1.25rem 0;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Slightly more prominent shadow */
             background-color: white;
             border: 1px solid #e5e7eb;
-            /* gray-200 */
         }
 
         .admin-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 650px;
+            min-width: 700px; /* Increased min-width to prevent squishing on slightly larger mobiles/small tablets */
         }
 
         .admin-table th,
         .admin-table td {
             padding: 12px 15px;
             border: 1px solid #e5e7eb;
-            /* gray-200 */
             text-align: left;
             vertical-align: middle;
         }
 
         .admin-table th {
             background-color: #f3f4f6;
-            /* gray-100 */
-            font-weight: bold;
-            color: #333;
+            font-weight: 600; /* Slightly less bold than heading, more readable */
+            color: #374151; /* Darker gray for better contrast */
             text-transform: uppercase;
-            font-size: 0.9em;
+            font-size: 0.85em; /* Slightly smaller for table headers */
         }
 
         .admin-table tbody tr:nth-child(even) {
             background-color: #f9fafb;
-            /* gray-50 */
         }
 
         .admin-table tbody tr:hover {
-            background-color: #f0fdf4;
-            /* Light green hover */
+            background-color: #e0f2f7; /* Lighter blue hover for a fresh feel */
         }
 
         .admin-table .profile-img {
-            width: 36px;
-            height: 36px;
+            width: 40px; /* Slightly larger profile image */
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 1px solid #d1d5db;
+            border: 2px solid #a7f3d0; /* Greenish border for profile image */
         }
 
         .admin-table select {
-            padding: 6px 8px;
-            border-radius: 4px;
+            padding: 8px 10px; /* More padding for easier tapping on mobile */
+            border-radius: 6px;
             border: 1px solid #d1d5db;
             font-size: 0.9em;
-            min-width: 80px;
+            min-width: 90px;
             background-color: white;
+            appearance: none; /* Remove default select arrow */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.25em auto;
         }
 
         .admin-table .action-buttons {
             display: flex;
-            flex-wrap: nowrap;
-            gap: 8px;
+            flex-wrap: nowrap; /* Prevent wrapping for action buttons */
+            gap: 0.5rem;
             justify-content: flex-start;
         }
 
         .admin-table .action-buttons button {
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
             border: none;
             color: white;
-            font-size: 0.85em;
+            font-size: 0.875em; /* Slightly larger font size for buttons */
             cursor: pointer;
             white-space: nowrap;
             transition: background-color 0.2s ease, transform 0.1s ease;
+            display: inline-flex; /* Align icon and text vertically */
+            align-items: center;
+            gap: 6px; /* Space between icon and text */
         }
 
         .admin-table .action-buttons button:hover {
-            transform: translateY(-1px);
+            transform: translateY(-2px); /* More noticeable hover effect */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
         }
 
         .admin-table .action-buttons .update-btn {
             background-color: #22c55e;
-            /* green-500 */
         }
 
         .admin-table .action-buttons .update-btn:hover {
-            background-color: #16a34a;
-            /* green-600 */
+            background-color: #1a9c49; /* Darker green on hover */
         }
 
         .admin-table .action-buttons .delete-btn {
             background-color: #ef4444;
-            /* red-500 */
         }
 
         .admin-table .action-buttons .delete-btn:hover {
-            background-color: #dc2626;
-            /* red-600 */
+            background-color: #d12c2c; /* Darker red on hover */
         }
 
         .admin-table .action-buttons button:disabled {
             background-color: #9ca3af;
-            /* gray-400 */
             cursor: not-allowed;
             opacity: 0.7;
             transform: none;
+            box-shadow: none;
         }
 
+        /* Message styles remain largely the same, good job */
         .message-success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
-            padding: 12px;
+            padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 1.25rem;
             text-align: center;
             font-weight: 500;
         }
@@ -156,9 +156,9 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-            padding: 12px;
+            padding: 1rem;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 1.25rem;
             text-align: center;
             font-weight: 500;
         }
@@ -166,11 +166,10 @@
         .back-to-admin-dashboard {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 30px;
+            gap: 0.5rem;
+            margin-top: 2rem;
             padding: 12px 24px;
             background-color: #6b7280;
-            /* gray-500 */
             color: white;
             border-radius: 8px;
             font-weight: 600;
@@ -180,35 +179,78 @@
 
         .back-to-admin-dashboard:hover {
             background-color: #4b5563;
-            /* gray-600 */
-            transform: translateY(-2px);
+            transform: translateY(-3px); /* More pronounced lift on hover */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
-        /* Responsive adjustments */
+        /* --- Responsive adjustments --- */
         @media (max-width: 768px) {
+            .admin-heading {
+                font-size: 1.5em; /* Smaller heading on mobile */
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .admin-page-container {
+                margin: 10px auto;
+                padding: 0 0.8rem; /* Slightly less padding on mobile */
+            }
+
             .admin-table {
-                min-width: 550px;
-                /* Allow horizontal scroll for smaller screens */
+                min-width: 600px; /* Adjusted min-width for typical mobile table overflow */
             }
 
             .admin-table th,
             .admin-table td {
-                padding: 8px 10px;
-                font-size: 0.85em;
+                padding: 10px 12px; /* Reduced padding for denser table on mobile */
+                font-size: 0.8em; /* Smaller font size for table content */
             }
 
             .admin-table .profile-img {
-                width: 30px;
-                height: 30px;
+                width: 32px;
+                height: 32px;
             }
 
             .admin-table select {
-                font-size: 0.8em;
-                padding: 4px 6px;
+                font-size: 0.75em;
+                padding: 6px 8px;
+                min-width: 70px; /* Allow smaller width for select on mobile */
+            }
+
+            .admin-table .action-buttons {
+                flex-direction: column; /* Stack buttons vertically on mobile */
+                align-items: flex-start; /* Align buttons to the left */
+                gap: 0.3rem; /* Smaller gap when stacked */
             }
 
             .admin-table .action-buttons button {
-                padding: 6px 10px;
+                width: 100%; /* Make buttons full width when stacked */
+                padding: 8px 10px;
+                font-size: 0.8em;
+                justify-content: center; /* Center text and icon in stacked buttons */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-table th,
+            .admin-table td {
+                padding: 8px 10px; /* Further reduce padding for very small screens */
+                font-size: 0.75em;
+            }
+
+            .admin-table .profile-img {
+                width: 28px;
+                height: 28px;
+            }
+
+            .admin-table select {
+                font-size: 0.7em;
+                padding: 5px 7px;
+                min-width: 60px;
+            }
+
+            .admin-table .action-buttons button {
+                padding: 6px 8px;
                 font-size: 0.75em;
             }
         }
@@ -217,128 +259,105 @@
 
 <body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
 
-            <%- include('partials/navbar') %>
+    <%- include('partials/navbar') %>
 
-                <div class="flex-grow p-6 w-full">
-                    <div class="admin-page-container">
-                            <h2 class="admin-heading">👥 Manage Users</h2>
+    <div class="flex-grow p-4 md:p-6 w-full"> <div class="admin-page-container">
+            <h2 class="admin-heading">👥 Manage Users</h2>
 
-                            <% if (message) { %>
-                                    <div class="message-success">
-                        <%= message %>
-                    </div>
-                                <% } %>
-                                    <% if (error) { %>
-                                            <div class="message-error">
-                                <%= error %>
-                            </div>
-                                        <% } %>
+            <% if (message) { %>
+            <div class="message-success">
+                <%= message %>
+            </div>
+            <% } %>
+            <% if (error) { %>
+            <div class="message-error">
+                <%= error %>
+            </div>
+            <% } %>
 
-                                            <div class="table-responsive-wrapper">
-                                                    <% if (allUsers && allUsers.length> 0) { %>
-                                                            <table class="admin-table">
-                                                                    <thead>
-                                                                            <tr>
-                                                                                    <th>Profile</th>
-                                                                                    <th>Email</th>
-                                                                                    <th>Name</th>
-                                                                                    <th>Role</th>
-                                                                                    <th>Joined</th>
-                                                                                    <th>Actions</th>
-                                                                                </tr>
-                                                                        </thead>
-                                                                    <tbody>
-                                                                            <% allUsers.forEach(userItem=> { %>
-                                                                                    <tr>
-                                                                                            <td>
-                                                                                                    <img
-                                                                src="<%= userItem.profilePicture || '/images/default_image.png' %>"
-                                                                alt="<%= userItem.email %>" class="profile-img">
-                                                                                                </td>
-                                                                                            <td>
-                                                            <%= userItem.email %>
-                                                        </td>
-                                                                                            <td>
-                                                            <%= userItem.firstName || '' %>
-                                                                <%= userItem.lastName || '' %>
-                                                        </td>
-                                                                                            <td>
-                                                                                                    <form
-                                                                action="/admin/users/update-role/<%= userItem._id %>"
-                                                                method="POST" class="flex items-center gap-2">
-                                                                                                            <select
-                                                                    name="newRole" class="rounded-md">
-                                                                                                                   
-                                                                    <option value="user" <%=userItem.role==='user'
-                                                                        ? 'selected' : '' %>>User</option>
-                                                                                                                   
-                                                                    <option value="admin" <%=userItem.role==='admin'
-                                                                        ? 'selected' : '' %>>Admin</option>
-                                                                                                               
-                                                                </select>
-                                                                                                            <button
-                                                                    type="submit" class="update-btn">
-                                                                                                                    <i
-                                                                        data-lucide="refresh-cw"
-                                                                        class="w-4 h-4 inline-block align-middle"></i>
-                                                                    Update
-                                                                                                               
-                                                                </button>
-                                                                                                        </form>
-                                                                                                </td>
-                                                                                            <td>
-                                                            <%= new Date(userItem.createdAt).toLocaleDateString() %>
-                                                        </td>
-                                                                                            <td>
-                                                                                                    <div
-                                                                class="action-buttons">
-                                                                                                            <form
-                                                                    action="/admin/users/delete/<%= userItem._id %>"
-                                                                    method="POST"
-                                                                    onsubmit="return confirm('Are you sure you want to delete <%= userItem.email %>? This action cannot be undone.');">
-                                                                                                                   
-                                                                    <button type="submit" class="delete-btn" <%=(user &&
-                                                                        user._id && userItem._id &&
-                                                                        user._id.toString()===userItem._id.toString())
-                                                                        ? 'disabled title="Cannot delete your own account"'
-                                                                        : '' %>>
-                                                                                                                       
-                                                                            <i data-lucide="trash-2"
-                                                                            class="w-4 h-4 inline-block align-middle"></i>
-                                                                        Delete
-                                                                                                                       
-                                                                    </button>
-                                                                                                                </form>
-                                                                                                        </div>
-                                                                                                </td>
-                                                                                        </tr>
-                                                                                <% }); %>
-                                                                                </tbody>
-                                                                </table>
-                                                        <% } else { %>
-                                                                <div class="text-center text-gray-500 py-8 italic">No
-                                                users found in the system.</div>
-                                                            <% } %>
-                                                            </div>
+            <div class="table-responsive-wrapper">
+                <% if (allUsers && allUsers.length > 0) { %>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Profile</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% allUsers.forEach(userItem=> { %>
+                        <tr>
+                            <td>
+                                <img src="<%= userItem.profilePicture || '/images/default_image.png' %>"
+                                    alt="<%= userItem.email %>" class="profile-img">
+                            </td>
+                            <td>
+                                <%= userItem.email %>
+                            </td>
+                            <td>
+                                <%= userItem.firstName || '' %>
+                                <%= userItem.lastName || '' %>
+                            </td>
+                            <td>
+                                <form action="/admin/users/update-role/<%= userItem._id %>" method="POST"
+                                    class="flex items-center gap-2">
+                                    <select name="newRole" class="rounded-md">
+                                        <option value="user" <%=userItem.role==='user' ? 'selected' : '' %>>User
+                                        </option>
+                                        <option value="admin" <%=userItem.role==='admin' ? 'selected' : '' %>>Admin
+                                        </option>
+                                    </select>
+                                    <button type="submit" class="update-btn">
+                                        <i data-lucide="refresh-cw"
+                                            class="w-4 h-4 inline-block align-middle"></i> Update
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <%= new Date(userItem.createdAt).toLocaleDateString() %>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <form action="/admin/users/delete/<%= userItem._id %>" method="POST"
+                                        onsubmit="return confirm('Are you sure you want to delete <%= userItem.email %>? This action cannot be undone.');">
+                                        <button type="submit" class="delete-btn" <%=(user && user._id && userItem._id
+                                            && user._id.toString()===userItem._id.toString()) ? 'disabled title="Cannot delete your own account"'
+                                            : '' %>>
+                                            <i data-lucide="trash-2"
+                                                class="w-4 h-4 inline-block align-middle"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                <div class="text-center text-gray-500 py-8 italic">No users found in the system.</div>
+                <% } %>
+            </div>
 
-                                            <div class="flex justify-center">
-                                                    <a href="/admin/dashboard" class="back-to-admin-dashboard">
-                                                            <i data-lucide="arrow-left" class="w-5 h-5"></i> Back to
-                                        Admin Dashboard
-                                                        </a>
-                                                </div>
-                                        </div>
-                </div>
+            <div class="flex justify-center">
+                <a href="/dashboard" class="back-to-admin-dashboard">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Back to Admin Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
 
-                <%- include('partials/footer') %>
+    <%- include('partials/footer') %>
 
-               
-            <script>
-                // Initialize Lucide icons after the DOM is loaded
-                document.addEventListener('DOMContentLoaded', () => {
-                    lucide.createIcons();
-                });
-            </script>
+    <script>
+        // Initialize Lucide icons after the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
 
 </html>
