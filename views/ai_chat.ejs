@@ -5,17 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Assistant Chat • Agent Seller</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            /* Ensure the body takes full viewport height */
+            min-height: 100vh; 
+            display: flex;
+            flex-direction: column; /* Allows navbar, content, footer to stack */
+            background-color: #f0f2f5; /* Light grey background for the whole page */
         }
 
+        /* Main Chat Container - Laptop View */
         .chat-container {
             max-width: 900px;
+            width: 95%; /* Make it slightly responsive on larger screens */
             margin: 40px auto;
             display: flex;
             flex-direction: column;
@@ -23,27 +31,40 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            height: calc(100vh - 120px);
-            min-height: 500px;
+            /* Calculate height based on viewport, leaving space for margins/padding */
+            height: calc(100vh - 80px); 
+            min-height: 550px; /* Ensure a decent minimum height */
         }
 
-        @media (max-width: 768px) {
-            .chat-container {
-                margin: 20px auto;
-                height: calc(100vh - 80px);
-                border-radius: 0;
-                box-shadow: none;
-            }
-        }
-
+        /* Chat History Area */
         .chat-history {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
             background-color: #f9fafb;
             border-bottom: 1px solid #e5e7eb;
+            /* Custom scrollbar for a cleaner look */
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
         }
 
+        .chat-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-history::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+        }
+
+
+        /* Individual Chat Message */
         .chat-message {
             display: flex;
             margin-bottom: 15px;
@@ -58,24 +79,30 @@
             justify-content: flex-start;
         }
 
+        /* Message Bubble Styling */
         .message-bubble {
             max-width: 70%;
             padding: 12px 18px;
             border-radius: 20px;
             line-height: 1.5;
             word-wrap: break-word;
+            font-size: 0.95rem; /* Slightly larger text for readability */
         }
 
         .message-bubble.user {
-            background-color: #3b82f6;
+            background-color: #3b82f6; /* Blue for user messages */
             color: white;
-            border-bottom-right-radius: 5px;
+            /* Smoother tail for user message */
+            border-bottom-right-radius: 5px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
         }
 
         .message-bubble.ai {
-            background-color: #e5e7eb;
+            background-color: #e5e7eb; /* Light grey for AI messages */
             color: #333;
-            border-bottom-left-radius: 5px;
+            /* Smoother tail for AI message */
+            border-bottom-left-radius: 5px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Very subtle shadow */
         }
 
         .message-bubble img {
@@ -85,48 +112,63 @@
             margin-top: 10px;
         }
 
+        /* Chat Input Area */
         .chat-input-area {
             display: flex;
             padding: 15px;
             gap: 10px;
             align-items: center;
             border-top: 1px solid #e5e7eb;
+            background-color: #fff; /* Ensure background is white */
         }
 
         .chat-input-area input[type="text"] {
             flex-grow: 1;
-            padding: 12px 15px;
+            padding: 12px 18px; /* Slightly more padding */
             border: 1px solid #d1d5db;
-            border-radius: 25px;
+            border-radius: 25px; /* Fully rounded input */
             font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chat-input-area input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         .chat-input-area button {
-            background-color: #22c55e;
+            background-color: #22c55e; /* Green send button */
             color: white;
             padding: 12px;
-            border-radius: 50%;
+            border-radius: 50%; /* Circular button */
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
             border: none;
+            width: 44px; /* Fixed size for circular button */
+            height: 44px; /* Fixed size for circular button */
         }
 
         .chat-input-area button:hover:not(:disabled) {
-            background-color: #16a34a;
+            background-color: #16a34a; /* Darker green on hover */
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3); /* Add shadow on hover */
         }
 
         .chat-input-area button:disabled {
-            background-color: #9ca3af;
+            background-color: #9ca3af; /* Gray when disabled */
             cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: none;
         }
 
         .mic-button.recording {
-            background-color: #ef4444;
+            background-color: #ef4444; /* Red for recording */
             animation: pulse 1.5s infinite;
         }
 
@@ -147,11 +189,15 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        /* Debug indicator */
+        /* Debug indicator (optional, useful for development) */
         #js-load-indicator {
             position: fixed;
             bottom: 5px;
@@ -164,19 +210,110 @@
             z-index: 9999;
             display: none;
         }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            body {
+                /* On mobile, remove outer padding from the flex-grow div */
+                padding: 0; 
+            }
+
+            .chat-container {
+                width: 100%; /* Take full width on mobile */
+                margin: 0; /* No margin on mobile */
+                height: 100vh; /* Take full viewport height */
+                min-height: unset; /* Remove min-height constraint */
+                border-radius: 0; /* No border-radius on mobile for edge-to-edge feel */
+                box-shadow: none; /* No shadow on mobile */
+            }
+
+            .chat-history {
+                padding: 15px; /* Slightly less padding for chat history */
+            }
+
+            .chat-message {
+                margin-bottom: 10px; /* Less space between messages */
+            }
+
+            .message-bubble {
+                max-width: 85%; /* Allow bubbles to take more width on smaller screens */
+                padding: 10px 15px; /* Smaller padding for bubbles */
+                font-size: 0.9rem; /* Smaller font size for mobile messages */
+            }
+
+            .chat-input-area {
+                padding: 10px; /* Smaller padding for input area */
+                gap: 8px; /* Smaller gap between elements */
+            }
+
+            .chat-input-area input[type="text"] {
+                padding: 10px 15px; /* Adjust input padding */
+                font-size: 0.9rem; /* Smaller input font */
+                height: 40px; /* Slightly shorter input */
+            }
+
+            .chat-input-area button {
+                padding: 10px; /* Smaller padding for circular buttons */
+                width: 40px; /* Adjust button size */
+                height: 40px; /* Adjust button size */
+            }
+
+            /* Adjust icon size for smaller buttons */
+            .chat-input-area button i {
+                width: 4px; /* Adjust as needed, default is w-5 h-5 (20px) */
+                height: 4px; /* Adjust as needed */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-history {
+                padding: 10px; /* Even less padding for history */
+            }
+
+            .chat-message {
+                margin-bottom: 8px; /* Further reduce margin */
+            }
+
+            .message-bubble {
+                padding: 8px 12px; /* Even smaller padding */
+                font-size: 0.85rem; /* Smallest font size for very small screens */
+            }
+
+            .chat-input-area {
+                padding: 8px; /* Smallest padding for input area */
+                gap: 6px; /* Smallest gap */
+            }
+
+            .chat-input-area input[type="text"] {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                height: 38px;
+            }
+
+            .chat-input-area button {
+                padding: 8px;
+                width: 36px;
+                height: 36px;
+            }
+
+            /* Further adjust icon size for very small buttons */
+            .chat-input-area button i {
+                width: 16px; 
+                height: 16px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- Navbar placeholder -->
     <%- include('partials/navbar') %>
 
-    <div class="flex-grow p-6 w-full">
+    <div class="flex-grow flex justify-center items-center w-full p-4 md:p-6"> 
         <div class="chat-container">
             <h2 class="text-2xl font-bold text-center text-blue-800 p-4 border-b">
                 AI Assistant Chat
             </h2>
-            
+
             <div class="chat-history" id="chatHistory">
                 <div class="chat-message ai">
                     <div class="message-bubble ai">
@@ -184,17 +321,17 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="chat-input-area">
-                <input 
-                    type="text" 
-                    id="chatInput" 
+                <input
+                    type="text"
+                    id="chatInput"
                     placeholder="Type your message..."
                 >
-                <input 
-                    type="file" 
-                    id="imageUpload" 
-                    accept="image/*" 
+                <input
+                    type="file"
+                    id="imageUpload"
+                    accept="image/*"
                     class="hidden"
                 >
                 <button type="button" id="uploadImageBtn" title="Upload Image">
@@ -210,10 +347,8 @@
         </div>
     </div>
 
-    <!-- Footer placeholder -->
     <%- include('partials/footer') %>
 
-    <!-- Debug indicator -->
     <div id="js-load-indicator">JS not loaded</div>
 
     <script type="module">
@@ -221,7 +356,7 @@
         // DEBUG INDICATOR SETUP
         // =================================================================
         const jsIndicator = document.getElementById('js-load-indicator');
-        
+
         function updateIndicator(color, text) {
             if (jsIndicator) {
                 jsIndicator.style.display = 'block';
@@ -270,13 +405,13 @@
         // =================================================================
         // CHAT FUNCTIONALITY
         // =================================================================
-        
+
         /**
          * Append a message to the chat history
          */
         function appendMessage(sender, content, type = 'text', mediaUrl = null) {
             console.log(`[ai_chat.ejs] Appending message: ${sender}, ${type}, ${content.substring(0, 50)}...`);
-            
+
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('chat-message', sender);
 
@@ -285,10 +420,18 @@
 
             if (type === 'processing') {
                 bubbleDiv.innerHTML = `
-                    <i data-lucide="loader-circle" class="spinner w-5 h-5 inline-block align-middle mr-2"></i> 
+                    <i data-lucide="loader-circle" class="spinner w-5 h-5 inline-block align-middle mr-2"></i>
                     ${content}
                 `;
-            } else {
+            } else if (type === 'audio') {
+                const audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = mediaUrl;
+                audio.classList.add('block', 'w-full', 'my-2'); // Tailwind classes for better display
+                bubbleDiv.textContent = content; // "Audio message:"
+                bubbleDiv.appendChild(audio);
+            }
+             else {
                 bubbleDiv.textContent = content;
             }
 
@@ -307,7 +450,7 @@
             } else {
                 console.error("[ai_chat.ejs] chatHistory element not found when appending message.");
             }
-            
+
             lucide.createIcons();
             return messageDiv;
         }
@@ -317,7 +460,7 @@
          */
         async function sendTextMessage(text) {
             console.log("[ai_chat.ejs] sendTextMessage called.");
-            
+
             if (!text.trim()) {
                 console.warn("[ai_chat.ejs] Text message is empty.");
                 return;
@@ -339,13 +482,13 @@
 
             try {
                 console.log("[ai_chat.ejs] Sending text message to /api/grok-chat...");
-                
+
                 const response = await fetch('/api/grok-chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId, message: text })
                 });
-                
+
                 const data = await response.json();
                 console.log("[ai_chat.ejs] Response from /api/grok-chat:", data);
 
@@ -361,11 +504,11 @@
                 }
             } catch (error) {
                 console.error('[ai_chat.ejs] Error sending message:', error);
-                
+
                 if (processingMessage && processingMessage.parentNode) {
                     processingMessage.parentNode.removeChild(processingMessage);
                 }
-                
+
                 appendMessage('ai', 'Network Error: Could not connect to the AI service.', 'error');
             } finally {
                 sendBtn.disabled = chatInput.value.trim().length === 0;
@@ -406,11 +549,11 @@
 
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
             console.log("[ai_chat.ejs] MediaDevices API supported. Mic button should be active.");
-            
+
             if (micBtn) {
                 micBtn.addEventListener('click', async () => {
                     console.log("[ai_chat.ejs] micBtn click event.");
-                    
+
                     if (!isAuthReady || !userId) {
                         alert("Debug mode: User state not ready. Please check console.");
                         console.warn("[ai_chat.ejs] Debug mode: User state not ready for voice input.");
@@ -428,7 +571,7 @@
                     } else {
                         // Start recording
                         console.log("[ai_chat.ejs] Starting audio recording.");
-                        
+
                         try {
                             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                             mediaRecorder = new MediaRecorder(stream);
@@ -441,7 +584,7 @@
 
                             mediaRecorder.onstop = async () => {
                                 console.log("[ai_chat.ejs] MediaRecorder: stop event. Processing audio.");
-                                
+
                                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                                 const audioUrl = URL.createObjectURL(audioBlob);
                                 appendMessage('user', 'Audio message:', 'audio', audioUrl);
@@ -450,7 +593,7 @@
 
                                 try {
                                     console.log("[ai_chat.ejs] Sending audio to /api/grok-chat-audio...");
-                                    
+
                                     const formData = new FormData();
                                     formData.append('audio', audioBlob, 'audio.webm');
                                     formData.append('userId', userId);
@@ -459,7 +602,7 @@
                                         method: 'POST',
                                         body: formData
                                     });
-                                    
+
                                     const data = await response.json();
                                     console.log("[ai_chat.ejs] Response from /api/grok-chat-audio:", data);
 
@@ -474,11 +617,11 @@
                                     }
                                 } catch (error) {
                                     console.error('[ai_chat.ejs] Error sending audio:', error);
-                                    
+
                                     if (processingMessage && processingMessage.parentNode) {
                                         processingMessage.parentNode.removeChild(processingMessage);
                                     }
-                                    
+
                                     appendMessage('ai', 'Network Error: Could not send audio for transcription.', 'error');
                                 } finally {
                                     stream.getTracks().forEach(track => track.stop());
@@ -492,7 +635,7 @@
                             isRecording = true;
                         } catch (err) {
                             console.error('[ai_chat.ejs] Error accessing microphone:', err);
-                            
+
                             if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
                                 alert('Microphone access denied. Please allow microphone access in your browser settings to use voice input.');
                             } else {
@@ -516,20 +659,20 @@
         if (uploadImageBtn && imageUpload) {
             uploadImageBtn.addEventListener('click', () => {
                 console.log("[ai_chat.ejs] uploadImageBtn click event.");
-                
+
                 if (!isAuthReady || !userId) {
                     alert("Debug mode: User state not ready. Please check console.");
                     console.warn("[ai_chat.ejs] Debug mode: User state not ready for image upload.");
                     return;
                 }
-                
+
                 imageUpload.click();
                 console.log("[ai_chat.ejs] Hidden imageUpload input clicked.");
             });
 
             imageUpload.addEventListener('change', async (event) => {
                 console.log("[ai_chat.ejs] imageUpload change event detected.");
-                
+
                 const file = event.target.files[0];
                 if (!file) {
                     console.log("[ai_chat.ejs] No file selected in image upload.");
@@ -537,11 +680,11 @@
                 }
 
                 console.log(`[ai_chat.ejs] Image file selected: ${file.name}, Type: ${file.type}, Size: ${file.size} bytes.`);
-                
+
                 const reader = new FileReader();
                 reader.onload = async (e) => {
                     console.log("[ai_chat.ejs] FileReader onload complete. Base64 generated.");
-                    
+
                     const base64Image = e.target.result;
                     appendMessage('user', 'Image uploaded:', 'image', base64Image);
 
@@ -549,7 +692,7 @@
 
                     try {
                         console.log("[ai_chat.ejs] Sending image to /api/grok-chat-photo...");
-                        
+
                         const formData = new FormData();
                         formData.append('image', file);
                         formData.append('userId', userId);
@@ -564,7 +707,7 @@
                             method: 'POST',
                             body: formData
                         });
-                        
+
                         const data = await response.json();
                         console.log("[ai_chat.ejs] Response from /api/grok-chat-photo:", data);
 
@@ -579,17 +722,17 @@
                         }
                     } catch (error) {
                         console.error('[ai_chat.ejs] Error sending image:', error);
-                        
+
                         if (processingMessage && processingMessage.parentNode) {
                             processingMessage.parentNode.removeChild(processingMessage);
                         }
-                        
+
                         appendMessage('ai', 'Network Error: Could not send image for analysis.', 'error');
                     } finally {
                         imageUpload.value = '';
                     }
                 };
-                
+
                 reader.readAsDataURL(file);
             });
         } else {
