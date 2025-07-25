@@ -53,7 +53,7 @@
             display: flex;
             gap: 18px;
             align-items: stretch;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
         }
 
         .search-input-container {
@@ -93,7 +93,7 @@
         .search-controls {
             display: flex;
             gap: 12px;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
         }
 
         .search-btn {
@@ -404,6 +404,7 @@
             .product-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 25px;
+                margin-top: 2rem;
             }
             .product-card-image-container {
                 height: 180px;
@@ -432,18 +433,52 @@
                 margin-bottom: 1.5rem;
                 border-radius: 15px;
             }
+            /* Make the search input and buttons align in a single row */
+            .search-container {
+                flex-direction: row; /* Keep it a row */
+                flex-wrap: wrap; /* Allow wrapping if space is really tight */
+                align-items: center; /* Vertically align items */
+                gap: 10px; /* Reduce gap for mobile */
+            }
+            .search-input-container {
+                min-width: unset; /* Remove min-width constraint */
+                flex: 1; /* Allow it to take available space */
+                order: 1; /* Place search input first */
+            }
             .search-input {
                 padding: 12px 18px 12px 45px;
                 font-size: 16px;
+                height: 50px; /* Give it a consistent height */
             }
             .search-input-icon {
                 left: 15px;
                 width: 20px;
                 height: 20px;
             }
+            .search-controls {
+                gap: 8px; /* Further reduce gap between buttons */
+                order: 2; /* Place controls next to search input */
+                flex-grow: 0; /* Prevent controls from growing */
+                flex-shrink: 0; /* Prevent controls from shrinking */
+                justify-content: flex-end; /* Align buttons to the right */
+            }
             .search-btn {
-                padding: 10px 15px;
-                font-size: 0.9rem;
+                padding: 12px; /* Uniform padding for square-like buttons */
+                width: 50px; /* Fixed width for button */
+                height: 50px; /* Fixed height for button */
+                font-size: 0; /* Hide text, only show icon */
+                border-radius: 14px; /* Maintain rounded corners */
+            }
+            .search-btn .icon {
+                width: 22px; /* Make icons slightly larger for touch */
+                height: 22px;
+            }
+            /* Adjustments for the filter sections */
+            .mt-4 {
+                margin-top: 1.5rem; /* Adjust top margin for filter sections */
+            }
+            label.block {
+                margin-bottom: 0.5rem; /* Reduce margin below labels */
             }
             .product-grid {
                 grid-template-columns: 1fr;
@@ -488,12 +523,23 @@
         }
 
         @media (max-width: 480px) {
-            .search-input {
-                min-width: unset;
+            .search-container {
+                flex-direction: column; /* Stack input and controls vertically */
+                align-items: stretch; /* Stretch items to full width */
+            }
+            .search-input-container {
+                width: 100%; /* Take full width */
+                margin-bottom: 10px; /* Add some space below the input */
+                order: 1;
             }
             .search-controls {
-                justify-content: center;
-                width: 100%;
+                width: 100%; /* Take full width */
+                justify-content: space-between; /* Distribute buttons evenly */
+                order: 2;
+            }
+            .search-btn {
+                flex-grow: 1; /* Allow buttons to grow and fill space */
+                width: auto; /* Remove fixed width */
             }
             .product-card-image-container {
                 height: 160px;
@@ -570,7 +616,7 @@
                     </select>
             </div>
 
-            <div class=""> <label for="productCategoryFilter"
+            <div class="mt-4"> <label for="productCategoryFilter"
                     class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
                 <select id="productCategoryFilter"
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
