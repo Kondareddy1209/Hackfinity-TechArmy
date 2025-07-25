@@ -399,7 +399,9 @@
     <h2>User Login</h2>
 
     <% if (typeof error !== 'undefined' && error) { %>
-      <div class="message-error"><%= error %></div>
+      <div class="message-error" id="errorMsg"><%= error %></div>
+    <% } else { %>
+      <div class="message-error" id="errorMsg" style="display:none;"></div>
     <% } %>
 
     <% if (typeof message !== 'undefined' && message) { %>
@@ -453,21 +455,72 @@
         </button>
         <a href="/auth/signup" class="link" role="button">Sign Up</a>
       </div>
-
-      <div class="auth-links">
-        <p class="auth-link-text">
-          <a href="/auth/forgot-password" class="auth-link">Forgot Password?</a>
-        </p>
-        <p class="auth-link-text">
-          Are you an admin? 
-          <a href="/admin/login" class="auth-link admin-auth-link">Admin Login</a>
-        </p>
-      </div>
     </form>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <p style="margin-bottom: 10px; font-size: 0.9em; color: #555;">Or continue with:</p>
+        <div id="g_id_signin_button"></div> </div>
+
+    <div class="auth-links">
+      <p class="auth-link-text">
+        <a href="/auth/forgot-password" class="auth-link">Forgot Password?</a>
+      </p>
+      <p class="auth-link-text">
+       Are you an admin? 
+        <a href="/admin/login" class="auth-link admin-auth-link">Admin Login</a>
+      </p>
+    </div>
   </div>
 
-  <!-- 👁️ Toggle Password JS -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
+    // Make sure errorMsg div is available for JS to use (if it's not already)
+    const errorMsgDiv = document.getElementById('errorMsg');
+    if (!errorMsgDiv) {
+      console.warn("errorMsg div not found in login.ejs for Google sign-in messages.");
+    }
+
+    async function handleGoogleSignIn(response) {
+        console.log("Google ID Token received:", response.credential);
+
+        try {
+            const res = await fetch('/auth/google', { // This is your new backend route
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_token: response.credential })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                console.log("Backend response for Google sign-in:", data);
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    window.location.href = '/user_dashboard'; // Fallback
+                }
+            } else {
+                console.error("Error from backend during Google sign-in:", data.error || data.message);
+                if (errorMsgDiv) {
+                    errorMsgDiv.textContent = data.error || data.message || 'Google sign-in failed. Please try again.';
+                    errorMsgDiv.style.display = 'block';
+                } else {
+                    alert(data.error || data.message || 'Google sign-in failed. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error("Network error during Google sign-in:", error);
+            if (errorMsgDiv) {
+                errorMsgDiv.textContent = 'Network error during Google sign-in. Please check your connection.';
+                errorMsgDiv.style.display = 'block';
+            } else {
+                alert('Network error during Google sign-in. Please check your connection.');
+            }
+        }
+    }
+    
     document.getElementById("togglePass").addEventListener("click", function () {
       const passwordInput = document.getElementById("password");
       if (passwordInput.type === "password") {
@@ -478,6 +531,24 @@
         this.textContent = "👁️"; // switch back to eye
       }
     });
+
+    // Render the Google button dynamically
+    document.getElementById('g_id_signin_button').innerHTML = `
+        <div id="g_id_onload"
+             data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
+             data-callback="handleGoogleSignIn"
+             data-auto_prompt="false"
+             data-auto_select="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="outline"
+             data-text="signin_with"
+             data-shape="rectangular"
+             data-logo_alignment="left">
+        </div>
+    `;
   </script>
 </body>
 </html>
