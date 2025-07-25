@@ -29,13 +29,19 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: function() {
+            // Password is required only if googleId is NOT provided
+            return !this.googleId;
+        },
         minlength: 6
     },
     gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
-        required: true
+        required: function() {
+            // Gender is required only if googleId is NOT provided (for traditional signup)
+            return !this.googleId;
+        }
     },
     role: {
         type: String,
@@ -53,21 +59,27 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    // NEW FIELD FOR GOOGLE SIGNUP
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true // Allows null values, so users without googleId don't violate unique constraint
     }
 });
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) {
-        next();
+    if (this.password && this.isModified('password')) {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
     }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
     next();
 });
 
 // Method to compare passwords
 userSchema.methods.matchPassword = async function(enteredPassword) {
+    if (!this.password) return false;
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
