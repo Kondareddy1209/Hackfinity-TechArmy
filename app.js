@@ -5,18 +5,21 @@ const mongoose = require('mongoose');
 require('dotenv').config(); // Ensure this is at the very top to load .env variables
 const fs = require('fs').promises;
 
+// NEW: Import the User model so its schema indexes can be accessed
+const User = require('./models/User'); 
+
 const admin = require('firebase-admin');
 
 try {
-    const serviceAccount = require('./config/kondareddy-452915-firebase-adminsdk-fbsvc-35bea9d588.json');
-    if (!admin.apps.length) {
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
-        console.log('Firebase Admin SDK initialized successfully.');
-    }
+    const serviceAccount = require('./config/kondareddy-452915-firebase-adminsdk-fbsvc-35bea9d588.json');
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        console.log('Firebase Admin SDK initialized successfully.');
+    }
 } catch (error) {
-    console.error('ERROR: Failed to initialize Firebase Admin SDK. Check serviceAccountKey.json path and content:', error.message);
+    console.error('ERROR: Failed to initialize Firebase Admin SDK. Check serviceAccountKey.json path and content:', error.message);
 }
 
 const app = express();
@@ -34,40 +37,40 @@ app.use(checkUser);
 
 app.set('appId', process.env.APP_ID || 'mygreenhome-default-app-id');
 app.use((req, res, next) => {
-    res.locals.__app_id = app.get('appId');
-    res.locals.__firebase_config = JSON.stringify({
-        apiKey: process.env.FIREBASE_API_KEY,
-        authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-        appId: process.env.FIREBASE_APP_ID,
-        measurementId: process.env.FIREBASE_MEASUREMENT_ID
-    });
-    // NEW: Make process.env available to all EJS templates
-    res.locals.process = { env: process.env };
-    next();
+    res.locals.__app_id = app.get('appId');
+    res.locals.__firebase_config = JSON.stringify({
+        apiKey: process.env.FIREBASE_API_KEY,
+        authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.FIREBASE_APP_ID,
+        measurementId: process.env.FIREBASE_MEASUREMENT_ID
+    });
+    // NEW: Make process.env available to all EJS templates
+    res.locals.process = { env: process.env };
+    next();
 });
 
 const uploadDirs = [
-    path.join(__dirname, 'public', 'uploads', 'temp'),
-    path.join(__dirname, 'public', 'uploads', 'profile_pictures'),
-    path.join(__dirname, 'public', 'uploads', 'products')
+    path.join(__dirname, 'public', 'uploads', 'temp'),
+    path.join(__dirname, 'public', 'uploads', 'profile_pictures'),
+    path.join(__dirname, 'public', 'uploads', 'products')
 ];
 
 async function ensureUploadDirectories() {
-    for (const dir of uploadDirs) {
-        try {
-            await fs.mkdir(dir, { recursive: true });
-            console.log(`Ensured directory exists: ${dir}`);
-        } catch (err) {
-            if (err.code !== 'EEXIST') {
-                console.error(`Failed to create directory ${dir}:`, err);
-            } else {
-                console.log(`Directory already exists: ${dir} (Skipped creation)`);
-            }
-        }
-    }
+    for (const dir of uploadDirs) {
+        try {
+            await fs.mkdir(dir, { recursive: true });
+            console.log(`Ensured directory exists: ${dir}`);
+        } catch (err) {
+            if (err.code !== 'EEXIST') {
+                console.error(`Failed to create directory ${dir}:`, err);
+            } else {
+                console.log(`Directory already exists: ${dir} (Skipped creation)`);
+            }
+        }
+    }
 }
 
 ensureUploadDirectories();
@@ -81,27 +84,37 @@ app.use('/admin', adminRoutes);
 app.use(dashboardRoutes);
 
 app.get('/', (req, res) => {
-    res.redirect('/auth');
+    res.redirect('/auth');
 });
 
+// IMPORTANT CHANGE: Added .then() callback to ensure indexes are created/updated
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .then(() => {
+        console.log('MongoDB connected successfully');
+        // Explicitly create/ensure indexes for the User model
+        // This helps ensure 'sparse: true' is recognized by MongoDB even if the index existed before.
+        return mongoose.connection.db.collection('users').createIndexes(User.schema.indexes());
+    })
+    .then(() => {
+        console.log('MongoDB indexes for User schema ensured successfully.');
+    })
+    .catch(err => console.error('MongoDB connection error or index creation error:', err));
+
 
 app.use((req, res, next) => {
-    res.status(404).render('404', { title: 'Page Not Found', user: res.locals.user });
+    res.status(404).render('404', { title: 'Page Not Found', user: res.locals.user });
 });
 
 app.use((err, req, res, next) => {
-    console.error('Unhandled server error:', err.stack);
-    if (res.headersSent) {
-        return next(err);
-    }
-    res.status(500).render('500', { title: 'Server Error', user: res.locals.user, error: err.message || 'An unexpected server error occurred.' });
+    console.error('Unhandled server error:', err.stack);
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(500).render('500', { title: 'Server Error', user: res.locals.user, error: err.message || 'An unexpected server error occurred.' });
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`Access the application at: http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Access the application at: http://localhost:${PORT}`);
 });
