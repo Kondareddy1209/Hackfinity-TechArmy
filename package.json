@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Kondareddy1209/Hackfinity-TechArmy#readme",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "admin": "^1.4.1",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
