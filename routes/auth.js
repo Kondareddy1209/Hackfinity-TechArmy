@@ -8,10 +8,10 @@ const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const Otp = require('../models/Otp');
 const { requireAuth } = require('../middleware/authMiddleware');
-const bcrypt = require('bcryptjs'); // Assuming bcrypt is used for password hashing
+const bcrypt = require('bcryptjs'); // Ensure bcrypt is imported if matchPassword uses it
 
 const jwtSecret = process.env.JWT_SECRET || 'your_super_secret_jwt_key_fallback';
-const jwtExpiresIn = '1h';
+const jwtExpiresIn = '1h'; // Example: 1 hour token expiration
 const createToken = (id) => {
     return jwt.sign({ id }, jwtSecret, {
         expiresIn: jwtExpiresIn
@@ -24,13 +24,14 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false,
+    secure: false, // Use 'true' if you're on port 465 (SSL/TLS), 'false' for 587 (STARTTLS)
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
 });
 
+// --- GET Routes (Rendering Views) ---
 router.get('/', (req, res) => {
     res.render('login', { error: null, message: null });
 });
@@ -43,12 +44,32 @@ router.get('/signup', (req, res) => {
     res.render('signup', { error: null, message: null });
 });
 
-// NEW: Google Sign-in/Sign-up handler
+router.get('/verify-otp', (req, res) => {
+    const email = req.query.email || '';
+    res.render('verify_otp', { username: email, error: null, message: null, isPasswordReset: false });
+});
+
+router.get('/admin-login', (req, res) => {
+    res.render('admin_login', { error: null, message: null });
+});
+
+router.get('/forgot-password', (req, res) => {
+    res.render('forgot_password', { error: null, message: null });
+});
+
+router.get('/reset-password', async (req, res) => {
+    const email = req.query.email || '';
+    res.render('reset_password', { email, error: null, message: null });
+});
+
+// --- POST Routes (API Logic) ---
+
+// Google Sign-in/Sign-up handler
 router.post('/google', async (req, res) => {
     const { id_token } = req.body;
 
     if (!id_token) {
-        console.log('[GOOGLE SIGNIN] Error: Google ID token missing.');
+        console.log('[GOOGLE SIGNIN] Error: Google ID token missing from request body.');
         return res.status(400).json({ success: false, error: 'Google ID token missing.' });
     }
 
@@ -60,13 +81,14 @@ router.post('/google', async (req, res) => {
         });
 
         const payload = ticket.getPayload();
+        // Extract required fields from payload, normalize email
         const { sub: googleId, email: rawEmail, given_name: firstName, family_name: lastName, picture: profilePicture } = payload;
-        const email = rawEmail.toLowerCase(); // Normalize email to lowercase
+        const email = rawEmail.toLowerCase(); // Normalize email to lowercase for consistency
 
         console.log(`[GOOGLE SIGNIN] Verified Google ID: ${googleId}, Email: ${email}`);
 
         let user;
-        // 1. Try to find user by googleId OR by email
+        // 1. Try to find user by googleId OR by email. $or allows searching by either field.
         user = await User.findOne({
             $or: [
                 { googleId: googleId },
@@ -75,33 +97,36 @@ router.post('/google', async (req, res) => {
         });
 
         if (user) {
-            // User found
+            // User found in database
             console.log(`[GOOGLE SIGNIN] User found for ${email} / ${googleId}. Existing user details:`, user);
 
-            // Case A: User found by googleId (re-login for existing Google user)
+            // Case A: User found by the exact googleId (this is a returning Google user)
             if (user.googleId === googleId) {
                 console.log(`[GOOGLE SIGNIN] User ${email} logged in successfully via existing Google account.`);
-                // No update needed for basic login, but you might update lastLoginDate etc.
+                // No update needed for basic login flow. Update lastLoginDate if desired.
             }
-            // Case B: User found by email, but no googleId (traditional user linking Google account)
+            // Case B: User found by email, but did NOT have a googleId (traditional user linking Google account)
             else if (user.email === email && !user.googleId) {
                 console.log(`[GOOGLE SIGNIN] Existing email user ${email} found. Linking Google ID.`);
                 user.googleId = googleId; // Link Google ID
-                user.provider = 'google'; // Update provider type
-                user.isVerified = true; // Google verified the email
-                // Optionally update profile picture from Google if desired
+                user.provider = 'google'; // Set provider to Google
+                user.isVerified = true; // Google verified the email, so this account is now verified
+                // Optionally update profile picture from Google if the existing one is default or missing
                 if (!user.profilePicture || user.profilePicture === '/images/default_image.png') {
-                    user.profilePicture = profilePicture;
+                    user.profilePicture = profilePicture || '/images/default_image.png';
                 }
                 await user.save();
                 console.log(`[GOOGLE SIGNIN] Existing user ${email} successfully linked with Google ID.`);
             }
             // Case C: Email exists, but linked to a DIFFERENT Google ID (conflict)
+            // This is an edge case and might indicate data inconsistency or an attempt to link
+            // an email already taken by another Google account.
             else if (user.email === email && user.googleId && user.googleId !== googleId) {
                 console.warn(`[GOOGLE SIGNIN] Conflict: Email ${email} exists but is linked to a different Google ID (${user.googleId}). Current Google ID: ${googleId}.`);
                 return res.status(409).json({ success: false, error: 'This email is already registered and linked to a different Google account. Please use that account or contact support.' });
             }
-            // Case D: Google ID exists, but email doesn't match (should be caught by unique:true on googleId, but as a fallback)
+            // Case D: Google ID exists, but email doesn't match (should be prevented by `unique: true` on `googleId`)
+            // This would only happen if `googleId` was not unique or `sparse` was causing issues.
             else if (user.googleId === googleId && user.email !== email) {
                 console.warn(`[GOOGLE SIGNIN] Conflict: Google ID ${googleId} exists but linked to different email (${user.email}). Current email: ${email}.`);
                 return res.status(409).json({ success: false, error: 'This Google account is linked to a different email in our system. Please contact support.' });
@@ -112,41 +137,41 @@ router.post('/google', async (req, res) => {
             console.log(`[GOOGLE SIGNIN] No existing user found for ${email} / ${googleId}. Creating new user.`);
 
             user = new User({
-                firstName: firstName || 'Google User', // Fallback name
-                lastName: lastName || '',
+                firstName: firstName || 'Google User', // Provide a fallback if Google's payload lacks it
+                lastName: lastName || '', // Provide a fallback, as schema allows empty string for Google users
                 email: email,
                 googleId: googleId,
                 provider: 'google', // Explicitly set provider
-                isVerified: true, // Google email is already verified
+                isVerified: true, // Google's email is considered verified
                 profilePicture: profilePicture || '/images/default_image.png',
-                // Password is not required for Google signup due to schema's 'required' function
-                // Mobile and Gender are also not required due to schema's 'required' function
-                // You can set defaults or leave them undefined if your schema allows
-                mobile: null, // Set to null or undefined if not provided by Google and not required
-                gender: null, // Set to null or undefined if not provided by Google and not required
+                // password, mobile, gender are not explicitly set here for Google users
+                // because the schema's 'required' function will make them optional based on googleId presence.
+                // You can set them to null/undefined if you want to explicitly store null.
+                mobile: null, // Will be stored as null if not provided
+                gender: null, // Will be stored as null if not provided
             });
-            await user.save();
+            await user.save(); // Save the new user document
             console.log(`[GOOGLE SIGNIN] New user ${email} created via Google signup.`);
         }
 
-        // Successful login/signup, create JWT and set cookie
-        const token = createToken(user._id);
+        // --- Common success path for both existing and new Google users ---
+        const token = createToken(user._id); // Create JWT for the user
         res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 1000 * 60 * 60, // 1 hour
-            path: '/',
-            sameSite: 'Lax'
+            httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+            secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+            maxAge: 1000 * 60 * 60, // Cookie expires in 1 hour
+            path: '/', // Cookie accessible across the entire domain
+            sameSite: 'Lax' // Protection against CSRF attacks
         });
 
-        // Redirect based on role or to a default dashboard
+        // Determine redirect URL based on user role
         const redirectUrl = user.role === 'admin' ? '/dashboard' : '/user_dashboard';
         res.status(200).json({ success: true, message: 'Google sign-in successful', redirectUrl });
 
     } catch (error) {
         console.error('[GOOGLE SIGNIN ERROR] Error during Google ID token verification or user operation:', error);
-        if (error.code === 11000) { // Duplicate key error (e.g., email or googleId already exists)
-            const field = Object.keys(error.keyValue)[0];
+        if (error.code === 11000) { // Mongoose/MongoDB duplicate key error
+            const field = Object.keys(error.keyValue)[0]; // Get the field that caused the duplicate error
             const value = error.keyValue[field];
             if (field === 'email') {
                 return res.status(409).json({ success: false, error: `Account with email "${value}" already exists. Please login with your existing method.` });
@@ -159,6 +184,7 @@ router.post('/google', async (req, res) => {
 });
 
 
+// Traditional Email/Password Sign-up route
 router.post('/signup', async (req, res) => {
     const { firstName, lastName, email: rawEmail, mobile, password, gender } = req.body;
     const email = rawEmail.toLowerCase(); // Normalize email to lowercase
@@ -168,14 +194,14 @@ router.post('/signup', async (req, res) => {
     console.log(`[SIGNUP] Received request body:`, req.body);
     // --- END DEBUGGING LOGS ---
 
-    // Basic validation
+    // Basic validation (Frontend should also do this, but backend must re-validate)
     if (!email || !password || !firstName || !lastName || !mobile || !gender) {
         return res.status(400).render('signup', { error: 'All required fields must be provided.', message: null });
     }
     if (password.length < 6) {
         return res.status(400).render('signup', { error: 'Password must be at least 6 characters long.', message: null });
     }
-    if (!/^\d{10}$/.test(mobile)) {
+    if (!/^\d{10}$/.test(mobile)) { // Validate 10-digit mobile number
         return res.status(400).render('signup', { error: 'Please enter a valid 10-digit mobile number.', message: null });
     }
 
@@ -192,30 +218,30 @@ router.post('/signup', async (req, res) => {
         if (user) {
             // Case 1: User exists and is linked via Google (has googleId)
             if (user.googleId) {
-                console.log(`[SIGNUP] Email ${email} is linked to Google. Redirecting user.`);
+                console.log(`[SIGNUP] Email ${email} is linked to Google. Prompting Google Sign-in.`);
                 return res.render('signup', { error: 'This email is already associated with a Google account. Please use the "Sign in with Google" button to log in.', message: null });
             }
             // Case 2: User exists, is NOT linked via Google, and is already verified (traditional email/password user)
             else if (user.isVerified) {
-                console.log(`[SIGNUP] Email ${email} already exists and is verified. Redirecting to login.`);
+                console.log(`[SIGNUP] Email ${email} already exists and is verified. Prompting login.`);
                 return res.render('signup', { error: 'An account with this email already exists and is verified. Please log in.', message: null });
             }
-            // Case 3: User exists, is NOT linked via Google, and is NOT verified (unverified traditional user)
+            // Case 3: User exists, is NOT linked via Google, and is NOT verified (unverified traditional user trying to re-signup)
             else {
-                console.log(`[SIGNUP] Existing unverified user ${email} found. Resending OTP.`);
-                // For an existing unverified user, we don't create a new user or update all fields.
-                // We just resend the OTP for the existing account.
-                // Ensure the user's data (firstName, lastName, mobile, gender) is updated if they changed it
-                // during a re-signup attempt, but only if they are not verified.
+                console.log(`[SIGNUP] Existing unverified traditional user ${email} found. Updating data and resending OTP.`);
+                // Update user details if they've re-entered the form data
                 user.firstName = firstName;
                 user.lastName = lastName;
                 user.mobile = mobile;
                 user.gender = gender;
-                // Only update password if it's explicitly provided and different, or if it was null
-                if (password && (!user.password || await bcrypt.compare(password, user.password) === false)) {
+                // Only update password if a new one is provided or if the existing one is missing
+                if (password && (!user.password || !(await user.matchPassword(password)))) { // Check if new password is different or if no password exists
                      user.password = password; // Pre-save hook will hash it
                 }
-                await user.save();
+                user.isVerified = false; // Remains false until OTP verification
+                user.provider = 'email'; // Ensure provider is 'email'
+                user.googleId = null; // Ensure googleId is null
+                await user.save(); // Save updated details
             }
         } else {
             // Case 4: No user found - This is a completely new traditional signup
@@ -231,7 +257,7 @@ router.post('/signup', async (req, res) => {
                 provider: 'email', // Explicitly set provider
                 googleId: null // Ensure googleId is null for traditional signups
             });
-            await user.save();
+            await user.save(); // Save the new user document
             console.log(`[SIGNUP] New traditional user ${user.email} created.`);
         }
 
@@ -256,20 +282,22 @@ router.post('/signup', async (req, res) => {
             console.log(`[SIGNUP] OTP ${otpCode} sent to ${user.email}`);
         } catch (emailError) {
             console.error('[SIGNUP ERROR] Email send failed:', emailError);
-            // Don't block signup if email fails, but log it
+            // Decide if you want to block signup if email fails (e.g., if OTP is critical for verification)
+            // For now, it will proceed to redirect, but email won't be sent.
         }
+        // Redirect to OTP verification page after successful signup/OTP resend
         res.redirect(`/auth/verify-otp?email=${encodeURIComponent(user.email)}`);
 
     } catch (error) {
         console.error('[SIGNUP ERROR] Error during signup or sending OTP:', error);
-        if (error.code === 11000) { // Duplicate key error (e.g., email or mobile already exists)
-            const field = Object.keys(error.keyValue)[0];
+        if (error.code === 11000) { // Mongoose/MongoDB duplicate key error
+            const field = Object.keys(error.keyValue)[0]; // Get the field that caused the duplicate error
             const value = error.keyValue[field];
             let errorMessage = '';
             if (field === 'email') {
                 errorMessage = `Email "${value}" is already registered. Please log in or use Google Sign-in.`;
             } else if (field === 'mobile') {
-                errorMessage = `Mobile number "${value}" is already registered.`;
+                errorMessage = `Mobile number "${value}" is already registered. Please use another number or contact support.`;
             } else {
                 errorMessage = `Duplicate entry for ${field} "${value}".`;
             }
@@ -279,11 +307,7 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-router.get('/verify-otp', (req, res) => {
-    const email = req.query.email || '';
-    res.render('verify_otp', { username: email, error: null, message: null, isPasswordReset: false });
-});
-
+// Verify OTP route
 router.post('/verify-otp', async (req, res) => {
     const { username, otp } = req.body;
     const email = username.toLowerCase(); // Normalize email
@@ -311,15 +335,15 @@ router.post('/verify-otp', async (req, res) => {
             });
         }
 
-        await Otp.deleteOne({ _id: storedOtp._id });
+        await Otp.deleteOne({ _id: storedOtp._id }); // Delete the used OTP
 
-        user.isVerified = true;
-        // If a Google user somehow lands here (e.g., if isVerified was false initially)
-        // and they complete OTP, ensure their provider is set correctly.
+        user.isVerified = true; // Mark user as verified
+        // Ensure provider is correctly set if it wasn't during initial Google sign-in
         if (!user.provider) {
             user.provider = user.googleId ? 'google' : 'email';
         }
-        await user.save();
+        await user.save(); // Save the updated user status
+
         res.render('login', { message: 'Email verified successfully! You can now log in.', error: null });
 
     } catch (error) {
@@ -333,6 +357,7 @@ router.post('/verify-otp', async (req, res) => {
     }
 });
 
+// Resend OTP route
 router.post('/resend-otp', async (req, res) => {
     const { email: rawEmail } = req.body;
     const email = rawEmail.toLowerCase(); // Normalize email
@@ -376,6 +401,8 @@ router.post('/resend-otp', async (req, res) => {
             res.status(200).json({ success: true, message: 'New OTP sent successfully!' });
         } catch (emailError) {
             console.error('[RESEND OTP ERROR] Email send failed:', emailError);
+            // If email fails, you might want to consider if the frontend should still indicate success
+            // or if it should show an error, depending on how critical the email sending is.
             res.status(500).json({ success: false, message: 'Failed to send OTP email. Please try again later.' });
         }
 
@@ -385,10 +412,7 @@ router.post('/resend-otp', async (req, res) => {
     }
 });
 
-router.get('/admin-login', (req, res) => {
-    res.render('admin_login', { error: null, message: null });
-});
-
+// Admin Login route
 router.post('/admin-login', async (req, res) => {
     const { username, password } = req.body;
     const email = username.toLowerCase(); // Normalize email
@@ -404,9 +428,9 @@ router.post('/admin-login', async (req, res) => {
             return res.render('admin_login', { error: 'Access denied: Not an administrator.', message: null });
         }
 
-        // Admins must have a password, not Google-linked without password
+        // Admins must have a password for this route; Google-linked accounts need special handling
         if (user.googleId && !user.password) {
-            return res.render('admin_login', { error: 'Admin account linked to Google. Please use Google Sign-in if you have not set a password.', message: null });
+            return res.render('admin_login', { error: 'This Admin account is linked to Google and does not have a traditional password. Please use Google Sign-in if applicable, or contact support to set a password.', message: null });
         }
 
         if (!user.isVerified) {
@@ -432,6 +456,7 @@ router.post('/admin-login', async (req, res) => {
     }
 });
 
+// Traditional Email/Password Login route
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const email = username.toLowerCase(); // Normalize email
@@ -448,10 +473,10 @@ router.post('/login', async (req, res) => {
              return res.render('login', { error: 'This account was created with Google. Please use the "Sign in with Google" button.', message: null });
         }
         
-        // If it's a traditional user but no password (shouldn't happen if schema is correct)
+        // If it's a traditional user with no password (should ideally not happen due to schema's required:true)
         if (!user.password && !user.googleId) {
-            console.warn(`[LOGIN] User ${email} found with no password and no googleId. Incomplete account?`);
-            return res.render('login', { error: 'Account is incomplete. Please try signing up again or contact support.', message: null });
+            console.warn(`[LOGIN] User ${email} found with no password and no googleId. Incomplete or corrupted account?`);
+            return res.render('login', { error: 'Account is incomplete or corrupted. Please try signing up again or contact support.', message: null });
         }
 
         if (!user.isVerified) {
@@ -487,10 +512,7 @@ router.get('/logout', requireAuth, (req, res) => {
     res.redirect('/auth');
 });
 
-router.get('/forgot-password', (req, res) => {
-    res.render('forgot_password', { error: null, message: null });
-});
-
+// Request Password Reset OTP route
 router.post('/request-password-reset', async (req, res) => {
     const { email: rawEmail } = req.body;
     const email = rawEmail.toLowerCase(); // Normalize email
@@ -498,16 +520,16 @@ router.post('/request-password-reset', async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            // Don't reveal if email exists for security
-            return res.render('forgot_password', { message: 'If an account with that email exists, you will receive a password reset link.', error: null });
+            // For security, don't reveal if email exists. Always send a generic message.
+            return res.render('forgot_password', { message: 'If an account with that email exists, you will receive password reset instructions.', error: null });
         }
         // If it's a Google-linked account with no password, they can't reset a non-existent password
         if (user.googleId && !user.password) {
             return res.render('forgot_password', { error: 'This account is linked to Google and does not have a password to reset. Please use Google Sign-in.', message: null });
         }
 
-        // Proceed with OTP for password reset (assuming you'll implement this logic)
-        // For now, just send a generic message
+        // Logic to send a password reset OTP/link would go here.
+        // For now, it sends a generic message.
         res.render('forgot_password', { message: 'Password reset request received. Please check your email for instructions.', error: null });
 
     } catch (error) {
@@ -516,11 +538,7 @@ router.post('/request-password-reset', async (req, res) => {
     }
 });
 
-router.get('/reset-password', async (req, res) => {
-    const email = req.query.email || '';
-    res.render('reset_password', { email, error: null, message: null });
-});
-
+// Set New Password route
 router.post('/reset-password', async (req, res) => {
     const { email: rawEmail, newPassword, confirmPassword } = req.body;
     const email = rawEmail.toLowerCase(); // Normalize email
@@ -544,7 +562,7 @@ router.post('/reset-password', async (req, res) => {
         }
 
         user.password = newPassword; // Pre-save hook will hash this
-        user.isVerified = true; // Mark as verified if password reset implies verification
+        user.isVerified = true; // Mark as verified if password reset implies verification (common practice)
         await user.save();
 
         res.render('login', { message: 'Password has been reset successfully! You can now log in.', error: null });
