@@ -87,6 +87,13 @@ app.get('/', (req, res) => {
     res.redirect('/auth');
 });
 
+// THIS IS THE ROUTE FOR YOUR TEAM PAGE
+app.get('/team', (req, res) => {
+    // Pass user data to the team.ejs template if your navbar/footer needs it
+    res.render('team', { user: res.locals.user || null });
+});
+
+
 // REVERTED: Removed the explicit User.createIndexes() call from here.
 // Mongoose will create unique indexes defined in the schema automatically
 // when a document is saved, if they don't already exist.
