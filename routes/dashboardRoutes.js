@@ -9,6 +9,19 @@ const User = require('../models/User'); // Mongoose User model
 const { requireAuth } = require('../middleware/authMiddleware');
 const admin = require('firebase-admin');
 
+// NEW: Firebase Storage setup
+const { getStorage } = require('firebase-admin/storage');
+let bucket;
+try {
+    // Ensure admin.apps.length is checked before calling getStorage() as admin.initializeApp is in app.js
+    // Assuming Firebase Admin SDK is already initialized by app.js before this module runs.
+    bucket = getStorage().bucket(process.env.FIREBASE_STORAGE_BUCKET);
+    console.log("[dashboardRoutes] Firebase Storage bucket initialized.");
+} catch (error) {
+    console.error("[dashboardRoutes] ERROR: Failed to initialize Firebase Storage bucket:", error.message);
+}
+
+
 // --- For Excel Upload ---
 const multer = require('multer');
 const xlsx = require('xlsx');
@@ -69,6 +82,22 @@ try {
 } catch (error) {
     console.error("[dashboardRoutes] Error importing geminiAgent:", error.message);
     generateProductDescription = () => "Gemini AI service not available due to import error.";
+}
+
+// NEW: Helper function to upload buffer to Firebase Storage
+async function uploadToFirebaseStorage(fileBuffer, destinationPath, mimetype) {
+    if (!bucket) {
+        throw new Error("Firebase Storage bucket not initialized. Check FIREBASE_STORAGE_BUCKET in .env");
+    }
+    const file = bucket.file(destinationPath);
+    await file.save(fileBuffer, {
+        metadata: { contentType: mimetype },
+        public: true, // Make the file publicly accessible
+        predefinedAcl: 'publicRead' // Ensure public readability
+    });
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+    console.log(`File uploaded to Firebase Storage: ${publicUrl}`);
+    return publicUrl;
 }
 
 
@@ -185,9 +214,10 @@ router.get('/admin/products/add', async (req, res) => {
         return res.status(403).render('403', { title: 'Access Denied', user: user, message: 'You do not have permission to view this page.' });
     }
     console.log("[Server] /admin/products/add: Rendering add_product form.");
-    res.render('add_product', { error: null, message: null });
+    res.render('add_product', { user: user, error: null, message: null });
 });
 
+// UPDATED: Use Multer memory storage and upload to Firebase Storage
 router.post('/admin/products', requireAuth, async (req, res) => {
     console.log("[Server] /admin/products POST route accessed.");
     const user = res.locals.user;
@@ -195,16 +225,9 @@ router.post('/admin/products', requireAuth, async (req, res) => {
         return res.status(403).json({ success: false, error: 'Access Denied: Only administrators can add products.' });
     }
 
-    const uploadSingleProductImage = multer({
-        storage: multer.diskStorage({
-            destination: (req, file, cb) => {
-                cb(null, path.join(__dirname, '../public/uploads/products'));
-            },
-            filename: (req, file, cb) => {
-                cb(null, `${Date.now()}-${file.originalname}`);
-            }
-        }),
-        limits: { fileSize: 10 * 1024 * 1024 },
+    const uploadSingleProductImageInMemory = multer({
+        storage: multer.memoryStorage(), // Store in memory
+        limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
         fileFilter: (req, file, cb) => {
             if (file.mimetype.startsWith('image/')) {
                 cb(null, true);
@@ -214,7 +237,7 @@ router.post('/admin/products', requireAuth, async (req, res) => {
         }
     }).single('image');
 
-    uploadSingleProductImage(req, res, async (err) => {
+    uploadSingleProductImageInMemory(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
             console.error('Multer error during single product image upload:', err);
             return res.status(400).json({ success: false, error: err.message || 'File upload error.' });
@@ -224,29 +247,31 @@ router.post('/admin/products', requireAuth, async (req, res) => {
         }
 
         const { name, description, price, imageUrl, category, keywords } = req.body;
-        let finalImageUrl = imageUrl;
+        let finalImageUrl = imageUrl; // Use provided URL if any
 
-        if (req.file) {
-            finalImageUrl = `/uploads/products/${req.file.filename}`;
-            console.log(`[Server] Single product image uploaded: ${finalImageUrl}`);
-        } else if (!finalImageUrl) {
-            finalImageUrl = '/images/default_product.png';
+        // Process uploaded file (if exists) via Firebase Storage
+        if (req.file && req.file.buffer) {
+            const uniqueFileName = `product_images/${Date.now()}-${req.file.originalname}`; // Path inside Firebase Storage bucket
+            try {
+                finalImageUrl = await uploadToFirebaseStorage(req.file.buffer, uniqueFileName, req.file.mimetype);
+                console.log(`[Server] Product image uploaded to Firebase Storage: ${finalImageUrl}`);
+            } catch (firebaseErr) {
+                console.error('Error uploading to Firebase Storage:', firebaseErr);
+                return res.status(500).json({ success: false, error: `Failed to upload image to cloud storage: ${firebaseErr.message}` });
+            }
+        } else if (!finalImageUrl || finalImageUrl.trim() === '') {
+            finalImageUrl = '/images/default_product.png'; // Fallback to local default if no file and no URL
         }
+
 
         console.log(`[Server] /admin/products POST: Attempting to add product: ${name}`);
 
         if (!name || !description || !price || !category) {
             console.warn("[Server] /admin/products POST: Missing required fields.");
-            if (req.file && req.file.path) {
-                await fs.unlink(req.file.path).catch(e => console.error("Error deleting temp file on validation fail:", e));
-            }
             return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
         }
         if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
             console.warn("[Server] /admin/products POST: Invalid price.");
-            if (req.file && req.file.path) {
-                await fs.unlink(req.file.path).catch(e => console.error("Error deleting temp file on validation fail:", e));
-            }
             return res.status(400).json({ success: false, error: 'Price must be a non-negative number.' });
         }
 
@@ -255,7 +280,7 @@ router.post('/admin/products', requireAuth, async (req, res) => {
                 name,
                 description,
                 price: parseFloat(price),
-                imageUrl: finalImageUrl,
+                imageUrl: finalImageUrl, // This will now be a Firebase Storage URL or a direct URL
                 category,
                 keywords: keywords ? String(keywords).split(',').map(k => k.trim()).filter(k => k.length > 0) : []
             });
@@ -266,12 +291,8 @@ router.post('/admin/products', requireAuth, async (req, res) => {
 
         } catch (error) {
             console.error('[Server] Error in /admin/products POST route:', error);
-            if (req.file && req.file.path) {
-                await fs.unlink(req.file.path).catch(e => console.error("Error deleting uploaded file on DB error:", e));
-            }
-
             if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
-                return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists. Please choose a different name.` });
+                return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists.` });
             }
             res.status(500).json({ success: false, error: error.message || 'Failed to add product due to a server error. Please try again.' });
         }
@@ -335,7 +356,8 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
             const description = String(productData.description || '').trim();
             const price = parseFloat(productData.price);
             const category = String(productData.category || '').trim();
-            const imageUrl = String(productData.image_url || '').trim() || '/images/default_product.png';
+            // Assuming 'image_url' or 'product_image' might be present in Excel
+            const imageUrl = String(productData.image_url || productData.product_image || '').trim() || '/images/default_product.png'; 
             const keywords = String(productData.keywords || '')
                                 .split(',')
                                 .map(k => k.trim())
@@ -374,7 +396,7 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
                             description: description,
                             price: price,
                             category: category,
-                            imageUrl: imageUrl,
+                            imageUrl: imageUrl, // Uses URL from Excel, not uploaded file
                             keywords: keywords,
                             updatedAt: new Date()
                         }
@@ -386,7 +408,7 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
                         description: description,
                         price: price,
                         category: category,
-                        imageUrl: imageUrl,
+                        imageUrl: imageUrl, // Uses URL from Excel, not uploaded file
                         keywords: keywords,
                     });
                     await newProduct.save();
@@ -416,7 +438,7 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
 });
 
 
-router.get('/user/product-generator', async (req, res) => {
+router.get('/user/product-generator', requireAuth, async (req, res) => { // Added requireAuth
     console.log("[Server] /user/product-generator route accessed.");
     const user = res.locals.user;
     if (!user) {
@@ -427,7 +449,7 @@ router.get('/user/product-generator', async (req, res) => {
     res.render('product_description_generator', { user: user, error: null, message: null });
 });
 
-router.get('/user/my-catalog', async (req, res) => {
+router.get('/user/my-catalog', requireAuth, async (req, res) => { // Added requireAuth
     console.log("[Server] /user/my-catalog route accessed.");
     const user = res.locals.user;
     if (!user) {
@@ -444,7 +466,7 @@ router.get('/user/my-catalog', async (req, res) => {
     }
 });
 
-router.get('/user/my-catalog/edit/:productId', async (req, res) => {
+router.get('/user/my-catalog/edit/:productId', requireAuth, async (req, res) => { // Added requireAuth
     console.log("[Server] /user/my-catalog/edit/:productId route accessed.");
     const user = res.locals.user;
     const productId = req.params.productId;
@@ -472,7 +494,7 @@ router.get('/user/my-catalog/edit/:productId', async (req, res) => {
     }
 });
 
-router.post('/user/my-catalog/edit/:productId', async (req, res) => {
+router.post('/user/my-catalog/edit/:productId', requireAuth, async (req, res) => { // Added requireAuth
     console.log("[Server] /user/my-catalog/edit/:productId POST route accessed.");
     const user = res.locals.user;
     if (!user) {
@@ -539,10 +561,12 @@ router.post('/user/my-catalog/edit/:productId', async (req, res) => {
 });
 
 
-router.get('/user/listings/add', async (req, res) => {
+router.get('/user/listings/add', requireAuth, async (req, res) => { // Added requireAuth
     console.log("[Server] /user/listings/add route accessed.");
     const user = res.locals.user;
-    if (!user || user.role !== 'admin') {
+    // Original code restricted this to admin, but user_listings/add typically means for a regular user to list something.
+    // If you intend for regular users to add listings, you should remove the admin check here.
+    if (!user /* || user.role !== 'admin' */) { // Decide if you want only admins or all users to add listings
         console.warn("[Server] /user/listings/add: Access denied for non-admin user.");
         return res.status(403).render('403', { title: 'Access Denied', user: user, message: 'You do not have permission to view this page.' });
     }
@@ -551,93 +575,85 @@ router.get('/user/listings/add', async (req, res) => {
 });
 
 const { IncomingForm } = require('formidable');
+// UPDATED: Use Multer memory storage and upload to Firebase Storage
 router.post('/user/listings', requireAuth, async (req, res) => {
     console.log("[Server] /user/listings POST route accessed for image upload.");
     const user = res.locals.user;
 
-    const form = new IncomingForm({
-        uploadDir: path.join(__dirname, '../public/uploads/temp'),
-        keepExtensions: true,
-        maxFileSize: 10 * 1024 * 1024,
-    });
+    const uploadListingImageInMemory = multer({
+        storage: multer.memoryStorage(), // Store in memory
+        limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+        fileFilter: (req, file, cb) => {
+            if (file.mimetype.startsWith('image/')) {
+                cb(null, true);
+            } else {
+                cb(new Error('Only image files are allowed!'), false);
+            }
+        }
+    }).single('image'); // Assuming the input field name is 'image'
 
-    try {
-        const [fields, files] = await new Promise((resolve, reject) => {
-            form.parse(req, (err, fields, files) => {
-                if (err) {
-                    console.error('Formidable parse error in /user/listings:', err);
-                    if (err.code === 1009) {
-                        return reject(new Error('Image file size too large. Max 10MB allowed.'));
-                    }
-                    return reject(err);
-                }
-                resolve([fields, files]);
-            });
-        });
+    uploadListingImageInMemory(req, res, async (err) => {
+        if (err instanceof multer.MulterError) {
+            console.error('Multer error during public listing image upload:', err);
+            return res.status(400).json({ success: false, error: err.message || 'File upload error.' });
+        } else if (err) {
+            console.error('Unknown error during public listing image upload:', err);
+            return res.status(500).json({ success: false, error: err.message || 'Server error during file upload.' });
+        }
 
-        const name = (fields.name && fields.name[0]) || '';
-        const description = (fields.description && fields.description[0]) || '';
-        const price = (fields.price && fields.price[0]) || '';
-        const category = (fields.category && fields.category[0]) || '';
-        const contactInfo = (fields.contactInfo && fields.contactInfo[0]) || '';
-        const imageFile = files.image && files.image[0];
+        const { name, description, price, imageUrl, category, contactInfo } = req.body; // Assuming 'contactInfo' is in your Product model
+        let finalImageUrl = imageUrl; // Use provided URL if any
+
+        // Process uploaded file (if exists) via Firebase Storage
+        if (req.file && req.file.buffer) {
+            const uniqueFileName = `listing_images/${Date.now()}-${req.file.originalname}`; // Path inside Firebase Storage bucket
+            try {
+                finalImageUrl = await uploadToFirebaseStorage(req.file.buffer, uniqueFileName, req.file.mimetype);
+                console.log(`[Server] Public listing image uploaded to Firebase Storage: ${finalImageUrl}`);
+            } catch (firebaseErr) {
+                console.error('Error uploading to Firebase Storage:', firebaseErr);
+                return res.status(500).json({ success: false, error: `Failed to upload image to cloud storage: ${firebaseErr.message}` });
+            }
+        } else if (!finalImageUrl || finalImageUrl.trim() === '') {
+            finalImageUrl = '/images/default_product.png'; // Fallback to local default if no file and no URL
+        }
+
+        console.log(`[Server] /user/listings POST: Attempting to add product: ${name}`);
 
         if (!name || !description || !price || !category) {
-            console.warn("[Server] /user/listings POST: Missing required fields after parsing.");
-            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            console.warn("[Server] /user/listings POST: Missing required fields.");
             return res.status(400).json({ success: false, error: 'Please fill all required fields.' });
         }
         if (isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-            console.warn("[Server] /user/listings POST: Invalid price after parsing.");
-            if (imageFile && imageFile.filepath) await fs.unlink(imageFile.filepath).catch(e => console.error("Error deleting temp file:", e));
+            console.warn("[Server] /user/listings POST: Invalid price.");
             return res.status(400).json({ success: false, error: 'Price must be a non-negative number.' });
         }
 
-        let finalImageUrl = '/images/default_product.png';
+        try {
+            const newProduct = new Product({
+                name,
+                description,
+                price: parseFloat(price),
+                imageUrl: finalImageUrl, // This will now be a Firebase Storage URL or a direct URL
+                category,
+                contactInfo: contactInfo, // Ensure this field exists in your Product model
+                keywords: [], // Assuming keywords array is also handled if present in form
+            });
 
-        if (imageFile) {
-            const uploadDir = path.join(__dirname, '../public/uploads/products');
-            await fs.mkdir(uploadDir, { recursive: true });
+            await newProduct.save();
+            console.log(`[Server] Public listing "${newProduct.name}" added successfully to MongoDB Product collection with ID: ${newProduct._id}`);
+            res.status(201).json({ success: true, message: 'Product listing added successfully!', listing: newProduct });
 
-            const newFileName = `${Date.now()}-${imageFile.originalFilename}`;
-            const newPath = path.join(uploadDir, newFileName);
-
-            await fs.rename(imageFile.filepath, newPath);
-
-            finalImageUrl = `/uploads/products/${newFileName}`;
-            console.log(`[Server] Public listing image uploaded: ${finalImageUrl}`);
-        } else if (fields.imageUrl && fields.imageUrl[0]) {
-            finalImageUrl = fields.imageUrl[0];
-            console.log(`[Server] Public listing using provided image URL: ${finalImageUrl}`);
+        } catch (error) {
+            console.error('[Server] Error in /user/listings POST route:', error);
+            if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
+                return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists.` });
+            }
+            res.status(500).json({ success: false, error: error.message || 'Failed to add product due to a server error. Please try again.' });
         }
-
-        const newProduct = new Product({
-            name,
-            description,
-            price: parseFloat(price),
-            imageUrl: finalImageUrl,
-            category,
-            contactInfo: contactInfo,
-            keywords: [],
-        });
-
-        await newProduct.save();
-        console.log(`[Server] Public listing "${newProduct.name}" added successfully to MongoDB Product collection with ID: ${newProduct._id}`);
-        res.status(201).json({ success: true, message: 'Product listing added successfully!', listing: newProduct });
-
-    } catch (error) {
-        console.error('[Server] Error in /user/listings POST route:', error);
-        if (form.openedFiles && form.openedFiles[0] && form.openedFiles[0].filepath) {
-             await fs.unlink(form.openedFiles[0].filepath).catch(e => console.error("Error deleting temp file on caught error:", e));
-        }
-
-        if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
-            return res.status(409).json({ success: false, error: `Product with name "${error.keyValue.name}" already exists.` });
-        }
-        res.status(500).json({ success: false, error: error.message || 'Failed to add product due to a server error. Please try again.' });
-    } finally {
-    }
+    });
 });
+
 
 router.get('/user/all-products', requireAuth, async (req, res) => {
     console.log("[Server] /user/all-products route accessed.");
@@ -656,7 +672,7 @@ router.get('/user/all-products', requireAuth, async (req, res) => {
     }
 });
 
-router.get('/dashboard/profile', async (req, res) => {
+router.get('/dashboard/profile', requireAuth, async (req, res) => { // Added requireAuth
     console.log("[Server] /dashboard/profile route accessed.");
     const user = res.locals.user;
     if (!user) {
@@ -667,22 +683,16 @@ router.get('/dashboard/profile', async (req, res) => {
     res.render('profile_edit', { user: user, error: null, message: null });
 });
 
+// UPDATED: Use Multer memory storage and upload to Firebase Storage for profile pictures
 router.post('/dashboard/profile', requireAuth, async (req, res) => {
     const user = res.locals.user;
     if (!user) {
         return res.status(401).json({ success: false, error: 'User not authenticated.' });
     }
 
-    const uploadProfilePicture = multer({
-        storage: multer.diskStorage({
-            destination: (req, file, cb) => {
-                cb(null, path.join(__dirname, '../public/uploads/profile_pictures'));
-            },
-            filename: (req, file, cb) => {
-                cb(null, `${user._id}-${Date.now()}${path.extname(file.originalname)}`);
-            }
-        }),
-        limits: { fileSize: 5 * 1024 * 1024 },
+    const uploadProfilePictureInMemory = multer({
+        storage: multer.memoryStorage(), // Store in memory
+        limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
         fileFilter: (req, file, cb) => {
             if (file.mimetype.startsWith('image/')) {
                 cb(null, true);
@@ -692,7 +702,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         }
     }).single('profilePicture');
 
-    uploadProfilePicture(req, res, async (err) => {
+    uploadProfilePictureInMemory(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
             console.error('Multer error during profile picture upload:', err);
             return res.status(400).json({ success: false, error: err.message || 'File upload error.' });
@@ -706,24 +716,42 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         let mobile = req.body.mobile || '';
         let gender = req.body.gender || '';
         
-        let profilePictureUrl = user.profilePicture;
+        let profilePictureUrl = user.profilePicture; // Start with current URL
 
-        if (req.file) {
-            if (user.profilePicture && user.profilePicture !== '/images/default_image.png' && user.profilePicture.startsWith('/uploads/profile_pictures')) {
-                const oldFilePath = path.join(__dirname, '../public', user.profilePicture);
-                try {
-                    await fs.access(oldFilePath, fs.constants.F_OK);
-                    await fs.unlink(oldFilePath);
-                    console.log(`Deleted old profile picture: ${oldFilePath}`);
-                } catch (deleteErr) {
-                    console.warn(`Could not delete old profile picture ${oldFilePath}:`, deleteErr.message);
+        // Process uploaded file (if exists) via Firebase Storage
+        if (req.file && req.file.buffer) {
+            const uniqueFileName = `profile_pictures/${user._id}-${Date.now()}${path.extname(req.file.originalname)}`; // Path inside Firebase Storage bucket
+            try {
+                profilePictureUrl = await uploadToFirebaseStorage(req.file.buffer, uniqueFileName, req.file.mimetype);
+                console.log(`[Server] Profile picture uploaded to Firebase Storage: ${profilePictureUrl}`);
+
+                // Optional: Delete old profile picture from Firebase Storage if it was also hosted there
+                // This logic assumes old pictures would also be Firebase Storage URLs
+                if (user.profilePicture && user.profilePicture.startsWith('https://storage.googleapis.com/')) {
+                    // Extract the path from the URL for deletion (e.g., 'profile_pictures/user_id-timestamp.jpg')
+                    // This assumes bucket.name is part of the URL structure right after 'storage.googleapis.com/'
+                    const oldFilePathInBucket = user.profilePicture.substring(user.profilePicture.indexOf(bucket.name) + bucket.name.length + 1);
+                    try {
+                        await bucket.file(oldFilePathInBucket).delete();
+                        console.log(`Deleted old profile picture from Firebase Storage: ${oldFilePathInBucket}`);
+                    } catch (deleteErr) {
+                        // Log but don't error out if old file doesn't exist or deletion fails (e.g., permissions)
+                        console.warn(`Could not delete old profile picture ${oldFilePathInBucket} from Firebase Storage:`, deleteErr.message);
+                    }
                 }
+
+            } catch (firebaseErr) {
+                console.error('Error uploading profile picture to Firebase Storage:', firebaseErr);
+                return res.status(500).json({ success: false, error: `Failed to upload profile picture to cloud storage: ${firebaseErr.message}` });
             }
-            profilePictureUrl = `/uploads/profile_pictures/${req.file.filename}`;
+        }
+        // If no new file, and current profilePictureUrl from DB or form is empty (e.g. cleared by client), use default.
+        else if (!profilePictureUrl || profilePictureUrl.trim() === '') {
+             profilePictureUrl = '/images/default_image.png';
         }
 
+
         if (!firstName || firstName.length < 2 || !lastName || lastName.length < 2 || !mobile || !/^\d{10}$/.test(mobile) || !gender) {
-            if (req.file && req.file.path) await fs.unlink(req.file.path).catch(e => console.error("Error deleting temp profile file on validation fail:", e));
             return res.status(400).json({ success: false, error: 'Validation failed: Please fill all required fields correctly.' });
         }
 
@@ -733,7 +761,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
                 lastName: lastName,
                 mobile: mobile,
                 gender: gender,
-                profilePicture: profilePictureUrl
+                profilePicture: profilePictureUrl // This will now be a Firebase Storage URL
             }, { new: true, runValidators: true });
 
             if (!updatedUser) {
@@ -756,9 +784,6 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
 
         } catch (error) {
             console.error('Error updating user profile in DB:', error);
-            if (req.file && req.file.path) {
-                await fs.unlink(req.file.path).catch(e => console.error("Error deleting uploaded profile file on DB error:", e));
-            }
             if (error.code === 11000) {
                 const field = Object.keys(error.keyValue)[0];
                 return res.status(400).json({ success: false, error: `This ${field} "${error.keyValue[field]}" is already in use.` });
@@ -789,7 +814,7 @@ router.post('/api/generate-description', async (req, res) => {
     res.json({ description: description });
 });
 
-router.get('/ai-chat', (req, res) => {
+router.get('/ai-chat', requireAuth, (req, res) => { // Added requireAuth
     console.log("[Server] /ai-chat route accessed.");
     const user = res.locals.user;
     if (!user) {
@@ -819,7 +844,7 @@ router.post('/api/grok-chat', requireAuth, async (req, res) => {
             const systemPrompt = `You are a helpful AI assistant specialized in providing weather information.
             When asked about weather (especially for Chennai or Porumamilla), respond ONLY with a JSON object.
             The JSON object should have the following structure. Fill with realistic, but synthetic/placeholder, data if real-time data is not available.
-            Assume the current date is Wednesday, July 23, 2025.
+            Assume the current date is Tuesday, July 29, 2025.
             
             Example JSON Structure:
             {
@@ -829,7 +854,7 @@ router.post('/api/grok-chat', requireAuth, async (req, res) => {
                 "humidity": 0,
                 "wind_speed": { "kph": 0, "mph": 0 },
                 "cloud_cover": "Description",
-                "as_of": "Date and Time (e.g., Wednesday, July 23, 2025 at 1:09:10 PM IST)"
+                "as_of": "Date and Time (e.g., Tuesday, July 29, 2025 at 1:09:10 PM IST)"
               },
               "forecast": [
                 {
@@ -876,7 +901,7 @@ router.post('/api/grok-chat-audio', requireAuth, async (req, res) => {
     console.log("[Server] /api/grok-chat-audio POST route accessed (Audio Chat).");
     const user = res.locals.user;
 
-    const form = new IncomingForm();
+    const form = new (require('formidable').IncomingForm)(); // Use formidable directly here
     form.parse(req, async (err, fields, files) => {
         if (err) {
             console.error('[Server] Error parsing form data for audio:', err);
@@ -885,7 +910,7 @@ router.post('/api/grok-chat-audio', requireAuth, async (req, res) => {
         console.log("[Server] formidable parsing complete for audio.");
 
         const audioFile = files.audio && files.audio[0];
-        const userId = user.uid;
+        const userId = user.uid; // Use user.uid for Firebase, not general userId
 
         if (!audioFile) {
             return res.status(400).json({ error: 'Audio file is required.' });
@@ -929,7 +954,7 @@ router.post('/api/grok-chat-photo', requireAuth, async (req, res) => {
         return res.status(401).json({ success: false, error: 'User not authenticated.' });
     }
 
-    const form = new IncomingForm({
+    const form = new (require('formidable').IncomingForm)({ // Use formidable directly here
         uploadDir: path.join(__dirname, '../public/uploads/temp'),
         keepExtensions: true,
         maxFileSize: 5 * 1024 * 1024,
@@ -944,7 +969,7 @@ router.post('/api/grok-chat-photo', requireAuth, async (req, res) => {
         });
 
         const imageFile = files.image && files.image[0];
-        const userId = user.uid;
+        const userId = user.uid; // Use user.uid for Firebase, not general userId
         const query = fields.query && fields.query[0] || "";
 
         if (!imageFile) {

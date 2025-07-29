@@ -1,4 +1,5 @@
 <style>
+    /* Existing CSS (from your previous navbar.ejs) */
     :root {
         --primary-green: #4CAF50;
         --hover-green: #5cb85c;
@@ -24,9 +25,56 @@
         margin: 0;
         font-family: Arial, sans-serif;
         background-color: #f4f7f6;
-        /* Light gray background for the page content */
+        color: #333; /* Default text color for light mode */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
     }
 
+    /* DARK MODE STYLES */
+    body.dark-mode {
+        background-color: #1a202c; /* Dark background */
+        color: #e2e8f0; /* Light text for dark mode */
+    }
+
+    body.dark-mode .navbar {
+        background-color: #2d3748; /* Darker navbar */
+    }
+
+    body.dark-mode .navbar-links a:hover {
+        background-color: #4a5568; /* Darker hover */
+    }
+
+    body.dark-mode .navbar-points {
+        background-color: #d69e2e; /* Darker orange */
+    }
+    
+    /* You'll need to add dark mode styles for other elements as well, e.g.: */
+    /*
+    body.dark-mode .profile-link-container:hover { background-color: #4a5568; }
+    body.dark-mode .admin-link-btn { background-color: #3182ce; }
+    body.dark-mode .admin-link-btn:hover { background-color: #4299e1; }
+    body.dark-mode .side-menu { background-color: #1a202c; }
+    body.dark-mode .side-menu a:hover { background-color: #4a5568; color: var(--primary-green); }
+    body.dark-mode .navbar-user-info.mobile-view { background-color: #2d3748; }
+    */
+
+    /* Theme Toggle Button Styles */
+    #themeToggle {
+        background: none;
+        border: none;
+        font-size: 1.5em; /* Larger icon */
+        color: var(--text-white);
+        cursor: pointer;
+        transition: color 0.3s ease, transform 0.3s ease;
+        padding: 5px; /* Add some padding around the icon */
+        border-radius: 50%; /* Make it circular */
+    }
+
+    #themeToggle:hover {
+        color: var(--points-orange); /* Highlight on hover */
+        transform: scale(1.1);
+    }
+
+    /* Existing CSS for Navbar, Menu Toggle, etc. (no changes needed for existing layout) */
     .navbar {
         background-color: var(--primary-green);
         padding: 12px 20px;
@@ -54,7 +102,6 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        /* Adjusted margin-right as 'Home' link is gone */
         margin-right: 0;
     }
 
@@ -63,20 +110,9 @@
         font-weight: bold;
         color: var(--text-white);
         text-decoration: none;
-        /* Removed margin-bottom as 'Home' link is gone */
         margin-bottom: 0;
         white-space: nowrap;
     }
-
-    /* REMOVED: .home-brand-link style is no longer needed */
-    /* .home-brand-link {
-        color: var(--text-white);
-        text-decoration: none;
-        font-size: 0.8em;
-        padding: 1px 4px;
-        border-radius: 2px;
-        opacity: 0.9;
-    } */
 
     .navbar-links {
         display: flex;
@@ -108,21 +144,17 @@
         margin-left: 15px;
     }
 
-    /* New style for clickable profile link in navbar */
     .profile-link-container {
         display: flex;
         align-items: center;
         gap: 8px;
-        /* Space between image and text */
         text-decoration: none;
         color: var(--text-white);
         padding: 5px 10px;
-        /* Padding for the clickable area */
         border-radius: 4px;
         transition: background-color 0.2s ease;
         cursor: pointer;
         white-space: nowrap;
-        /* Keep name and image on one line */
     }
 
     .profile-link-container:hover {
@@ -615,6 +647,8 @@
             <a href="/admin/login">Admin Login</a>
             <a href="/team">Our Team</a>
         <% } %>
+        <button id="themeToggle" title="Toggle Theme (Light/Dark)">
+            <i class="fas fa-moon"></i> </button>
     </div>
 
     <div class="navbar-user-info" id="mainNavbarUserInfo">
@@ -674,6 +708,9 @@
         <a href="/admin/login" class="mobile-action-btn mobile-admin-login-btn">Admin Login</a>
         <a href="/team">Our Team</a>
     <% } %>
+    <button id="themeToggleMobile" class="mobile-action-btn" title="Toggle Theme (Light/Dark)" style="background-color: var(--admin-blue);">
+        <i class="fas fa-moon"></i> Toggle Theme
+    </button>
 </div>
 <script>
     document.getElementById("menuToggle").addEventListener("click", function () {
@@ -694,6 +731,44 @@
                 document.body.classList.remove('no-scroll');
             }
         });
+    });
+
+    // --- Theme Toggle Logic ---
+    const themeToggle = document.getElementById('themeToggle');
+    const themeToggleMobile = document.getElementById('themeToggleMobile');
+    const body = document.body;
+    const lightIcon = '<i class="fas fa-sun"></i>'; // Sun icon for light mode
+    const darkIcon = '<i class="fas fa-moon"></i>'; // Moon icon for dark mode
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = lightIcon;
+            themeToggleMobile.innerHTML = lightIcon + ' Toggle Theme'; // Keep text for mobile
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark-mode');
+            themeToggle.innerHTML = darkIcon;
+            themeToggleMobile.innerHTML = darkIcon + ' Toggle Theme'; // Keep text for mobile
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Initialize theme on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+        applyTheme(savedTheme);
+    });
+
+    // Event listeners for theme toggles
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+    });
+
+    themeToggleMobile.addEventListener('click', () => {
+        const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+        applyTheme(currentTheme === 'light' ? 'dark' : 'light');
     });
 
     // You might need to re-initialize Font Awesome icons if they are added dynamically after page load,

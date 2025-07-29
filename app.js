@@ -52,10 +52,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// MODIFIED: Removed automatic creation of public/uploads/products and profile_pictures
+// as they are now handled by Firebase Storage.
 const uploadDirs = [
-    path.join(__dirname, 'public', 'uploads', 'temp'),
-    path.join(__dirname, 'public', 'uploads', 'profile_pictures'),
-    path.join(__dirname, 'public', 'uploads', 'products')
+    path.join(__dirname, 'public', 'uploads', 'temp') // Formidable might still use a temp dir.
 ];
 
 async function ensureUploadDirectories() {
@@ -76,7 +76,7 @@ async function ensureUploadDirectories() {
 ensureUploadDirectories();
 
 const authRoutes = require('./routes/auth');
-const dashboardRoutes = require('./routes/dashboardRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes'); // This will now handle Firebase Storage uploads
 const adminRoutes = require('./routes/admin');
 
 app.use('/auth', authRoutes);

@@ -19,167 +19,437 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
+        :root {
+            --primary-green: #10b981;
+            --hover-green: #059669;
+            --admin-blue: #3b82f6;
+            --admin-blue-hover: #2563eb;
+            --logout-red: #ef4444;
+            --logout-red-hover: #dc2626;
+            --dark-bg: #1f2937;
+            --darker-bg: #111827;
+            --page-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: #e5e7eb;
+            --text-color: #1f2937;
+            --navbar-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --input-border: #d1d5db;
+            --input-bg: #ffffff;
+            --input-focus-border: #3b82f6;
+            --input-focus-shadow: rgba(59, 130, 246, 0.1);
+            --placeholder-color: #9ca3af;
+            --hover-bg-light: #f3f4f6;
+            --success-bg: #d1fae5;
+            --success-border: #10b981;
+            --error-bg: #fee2e2;
+            --error-border: #ef4444;
+            --warning-bg: #fef3c7;
+            --warning-border: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
-            background-color: #f0f2f5;
+            background: var(--page-bg);
             background-attachment: fixed;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
         }
 
-        .main-content-wrapper {
-            flex-grow: 1;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            width: 90%;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .section-title {
+        .header {
             text-align: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--admin-blue));
+            border-radius: 2px;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--admin-blue) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.125rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.16);
+        }
+
+        .tabs-container {
+            padding: 2rem 2rem 0 2rem;
         }
 
         .tabs {
             display: flex;
-            justify-content: center;
-            margin-bottom: 1.5rem;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 4px;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
         }
 
         .tab-button {
-            padding: 10px 20px;
-            background-color: #e5e7eb;
-            color: #4b5563;
+            flex: 1;
+            padding: 16px 24px;
+            background: transparent;
+            color: #64748b;
             font-weight: 600;
             border: none;
             cursor: pointer;
-            border-radius: 8px;
-            margin: 0 5px;
-            transition: all 0.2s ease;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            position: relative;
         }
 
         .tab-button.active {
-            background-color: #059669;
+            background: linear-gradient(135deg, var(--primary-green), var(--hover-green));
             color: white;
-            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
         }
 
         .tab-button:hover:not(.active) {
-            background-color: #d1d5db;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--admin-blue);
         }
 
         .tab-content {
             display: none;
+            padding: 0 2rem 2rem 2rem;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .tab-content.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid.two-column {
+            grid-template-columns: 1fr 1fr;
+        }
+
         .form-group {
-            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
 
         label {
             display: block;
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
         }
 
         input[type="text"],
         input[type="number"],
         input[type="url"],
         textarea,
-        select,
-        input[type="file"] {
-            display: block;
+        select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            background-color: #f9fafb;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            padding: 16px 20px;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            background: var(--input-bg);
+            transition: all 0.3s ease;
             font-size: 1rem;
-            color: #374151;
+            color: var(--text-color);
+            font-family: inherit;
         }
 
         input[type="text"]:focus,
         input[type="number"]:focus,
         input[type="url"]:focus,
         textarea:focus,
-        select:focus,
-        input[type="file"]:focus {
+        select:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            border-color: var(--admin-blue);
+            box-shadow: 0 0 0 4px var(--input-focus-shadow);
+            transform: translateY(-1px);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--placeholder-color);
         }
 
         textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
+            font-family: inherit;
         }
 
-        .submit-button,
-        .upload-button {
+        .file-upload-area {
+            border: 2px dashed var(--input-border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            background: linear-gradient(45deg, #f8fafc 0%, #f1f5f9 100%);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--admin-blue);
+            background: linear-gradient(45deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--primary-green);
+            background: linear-gradient(45deg, #ecfdf5 0%, #d1fae5 100%);
+            transform: scale(1.02);
+        }
+
+        .file-upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            color: var(--admin-blue);
+            opacity: 0.7;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            color: var(--admin-blue);
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
+            gap: 8px;
+            padding: 16px 32px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-right: 1rem; /* For spacing if multiple buttons */
+            font-size: 1rem;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
 
-        .submit-button:hover,
-        .upload-button:hover {
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--admin-blue), var(--admin-blue-hover));
+            color: white;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--primary-green), var(--hover-green));
+            color: white;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--dark-bg);
+            color: white;
+            box-shadow: 0 8px 24px rgba(31, 41, 55, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: var(--darker-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(31, 41, 55, 0.4);
         }
 
         .status-message {
-            margin-top: 1.5rem;
-            padding: 15px;
-            border-radius: 8px;
+            margin-top: 2rem;
+            padding: 20px;
+            border-radius: 12px;
             font-weight: 500;
-            text-align: center;
-            display: none; /* Hidden by default */
+            display: none;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .status-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
         }
 
         .status-message.success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #34d399;
+            background: var(--success-bg);
+            color: var(--success-border);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-message.success::before {
+            background: var(--success-border);
         }
 
         .status-message.error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #ef4444;
+            background: var(--error-bg);
+            color: var(--error-border);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-message.error::before {
+            background: var(--error-border);
         }
 
         .status-message.info {
-            background-color: #e0f2fe;
-            color: #1e40af;
-            border: 1px solid #60a5fa;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--admin-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .status-message.info::before {
+            background: var(--admin-blue);
         }
 
         .spinner {
@@ -187,12 +457,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .icon {
@@ -201,134 +467,296 @@
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
-            margin-right: 8px;
-        }
-        
-        .icon.no-margin { /* For icons that should not have right margin */
-            margin-right: 0;
         }
 
         .back-link {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-top: 2rem;
-            padding: 10px 20px;
-            background: #6b7280;
+            padding: 12px 20px;
+            background: rgba(31, 41, 55, 0.9);
             color: white;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            z-index: 100;
         }
 
         .back-link:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transform: translateX(-4px);
+            background: rgba(17, 24, 39, 0.9);
         }
 
-        .flex-end {
-            display: flex;
-            justify-content: flex-end;
+        .template-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--admin-blue);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
             margin-top: 1rem;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .template-link:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-green), var(--admin-blue));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .form-grid.two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-button {
+                justify-content: flex-start;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .back-link {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 2rem;
+                align-self: flex-start;
+            }
+
+            .file-upload-area {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --page-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                --card-bg: rgba(30, 41, 59, 0.95);
+                --text-color: #f1f5f9;
+                --input-bg: #334155;
+                --input-border: #475569;
+                --card-border: #475569;
+                --placeholder-color: #94a3b8;
+            }
         }
     </style>
 </head>
 
 <body>
     <%- include('partials/navbar') %>
+    
+    <a href="/user_dashboard" class="back-link">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="m12 19-7-7 7-7" />
+            <path d="M19 12H5" />
+        </svg>
+        Back to Dashboard
+    </a>
 
-    <div class="main-content-wrapper">
-        <h1 class="section-title">📦 Manage Products</h1>
-
-        <div class="tabs">
-            <button class="tab-button active" data-tab="single-product">Add Single Product</button>
-            <button class="tab-button" data-tab="bulk-upload">Bulk Upload (Excel)</button>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">📦 Product Management</h1>
+            <p class="subtitle">Add new products or upload in bulk to expand your catalog</p>
         </div>
 
-        <div id="single-product-tab" class="tab-content active">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Product</h2>
-            <form id="addProductForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="name">Product Name:</label>
-                    <input type="text" id="name" name="name" required>
+        <div class="card">
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="single-product">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        Add Single Product
+                    </button>
+                    <button class="tab-button" data-tab="bulk-upload">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M4 14.899A7 7 0 0 1 15.71 8h1.79a4.5 4.5 0 0 1 0 9H13M12 20V10M12 10l-4 4M12 10l4 4" />
+                        </svg>
+                        Bulk Upload
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea id="description" name="description" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="price">Price ($):</label>
-                    <input type="number" id="price" name="price" step="0.01" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="category">Category:</label>
-                    <select id="category" name="category" required>
-                        <option value="">Select Category</option>
-                        <option value="Agriculture & Farming">🌱 Agriculture & Farming</option>
-                        <option value="Arts & Handicrafts">🎨 Arts & Handicrafts</option>
-                        <option value="Food & Groceries">🍎 Food & Groceries</option>
-                        <option value="Retail & Fashion">🛍️ Retail & Fashion</option>
-                        <option value="Technology">💻 Technology</option>
-                        <option value="Home & Garden">🏡 Home & Garden</option>
-                        <option value="Services">🛠️ Services</option>
-                        <option value="Other">📦 Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="keywords">Keywords (comma-separated):</label>
-                    <input type="text" id="keywords" name="keywords" placeholder="e.g., organic, handmade, sustainable">
-                </div>
-                <div class="form-group">
-                    <label for="image">Product Image:</label>
-                    <input type="file" id="image" name="image" accept="image/*">
-                    <p class="text-sm text-gray-500 mt-1">Max 10MB. Leave blank if providing an Image URL.</p>
-                </div>
-                <div class="form-group">
-                    <label for="imageUrl">Or Image URL:</label>
-                    <input type="url" id="imageUrl" name="imageUrl" placeholder="http://example.com/image.jpg">
-                    <p class="text-sm text-gray-500 mt-1">Image file will take precedence if both are provided.</p>
-                </div>
-                <button type="submit" class="submit-button">
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M12 5v14M5 12h14" />
-                    </svg>
-                    Add Product
-                </button>
-            </form>
-            <div id="singleProductStatus" class="status-message" style="display: none;"></div>
-        </div>
+            </div>
 
-        <div id="bulk-upload-tab" class="tab-content">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Bulk Upload Products via Excel</h2>
-            <form id="excelUploadForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="excelFile">Upload Product Excel Sheet (.xlsx, .xls)</label>
-                    <input type="file" id="excelFile" name="excelFile" accept=".xlsx, .xls" required>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Please ensure your Excel sheet has columns for: "Product Name", "Description", "Price", "Category", "Keywords" (optional), "Image URL" (optional).
-                        "Product Name" will be used to identify and update existing products, otherwise new products will be created.
-                    </p>
+            <div id="single-product-tab" class="tab-content active">
+                <div class="section-header">
+                    <h2 class="section-title">Create New Product</h2>
+                    <p class="section-description">Fill out the form below to add a new product to your catalog</p>
                 </div>
-                <button type="submit" class="upload-button">
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path d="M4 14.899A7 7 0 0 1 15.71 8h1.79a4.5 4.5 0 0 1 0 9H13M12 20V10M12 10l-4 4M12 10l4 4" />
-                    </svg>
-                    Upload Excel
-                </button>
-            </form>
-            <div id="bulkUploadStatus" class="status-message" style="display: none;"></div>
-        </div>
 
-        <div class="flex-end">
-            <a href="/admin_dashboard" class="back-link">
-                <svg class="icon no-margin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="m12 19-7-7 7-7" />
-                    <path d="M19 12H5" />
-                </svg>
-                Back to Admin Dashboard
-            </a>
+                <form id="addProductForm" enctype="multipart/form-data">
+                    <div class="form-grid two-column">
+                        <div class="form-group">
+                            <label for="name">Product Name</label>
+                            <input type="text" id="name" name="name" placeholder="e.g., Organic Cotton T-Shirt" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price ($)</label>
+                            <input type="number" id="price" name="price" step="0.01" min="0" placeholder="29.99" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" placeholder="Describe your product features, benefits, and what makes it special..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Agriculture & Farming">🌱 Agriculture & Farming</option>
+                                <option value="Arts & Handicrafts">🎨 Arts & Handicrafts</option>
+                                <option value="Food & Groceries">🍎 Food & Groceries</option>
+                                <option value="Retail & Fashion">🛍️ Retail & Fashion</option>
+                                <option value="Technology">💻 Technology</option>
+                                <option value="Home & Garden">🏡 Home & Garden</option>
+                                <option value="Services">🛠️ Services</option>
+                                <option value="Other">📦 Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="keywords">Keywords</label>
+                            <input type="text" id="keywords" name="keywords" placeholder="organic, sustainable, handmade">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="image">Product Image</label>
+                            <div class="file-upload-area" id="imageUploadArea">
+                                <div class="file-upload-content">
+                                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                                    </svg>
+                                    <div>
+                                        <strong>Click to upload</strong> or drag and drop
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: #64748b;">
+                                        PNG, JPG, GIF up to 10MB
+                                    </div>
+                                </div>
+                                <input type="file" id="image" name="image" accept="image/*" class="file-input">
+                            </div>
+                            <div id="imageInfo" class="file-info"></div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="imageUrl">Or Image URL</label>
+                            <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                            <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">
+                                File upload takes precedence over URL if both are provided.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-success">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                            Add Product
+                        </button>
+                    </div>
+                </form>
+
+                <div id="singleProductStatus" class="status-message"></div>
+            </div>
+
+            <div id="bulk-upload-tab" class="tab-content">
+                <div class="section-header">
+                    <h2 class="section-title">Bulk Upload Products</h2>
+                    <p class="section-description">Upload multiple products at once using an Excel spreadsheet</p>
+                </div>
+
+                <form id="excelUploadForm" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="excelFile">Excel File (.xlsx, .xls)</label>
+                            <div class="file-upload-area" id="excelUploadArea">
+                                <div class="file-upload-content">
+                                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                        <polyline points="14,2 14,8 20,8" />
+                                    </svg>
+                                    <div>
+                                        <strong>Click to upload Excel file</strong> or drag and drop
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: #64748b;">
+                                        Excel files (.xlsx, .xls) only
+                                    </div>
+                                </div>
+                                <input type="file" id="excelFile" name="excelFile" accept=".xlsx,.xls" class="file-input" required>
+                            </div>
+                            <div id="excelInfo" class="file-info"></div>
+                            <div class="progress-bar" id="uploadProgress">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <a href="/download-template" class="template-link">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                                </svg>
+                                Download Excel Template
+                            </a>
+                            <p style="font-size: 0.875rem; color: #64748b; margin-top: 1rem; line-height: 1.5;">
+                                <strong>Required columns:</strong> Product Name, Description, Price, Category<br>
+                                <strong>Optional columns:</strong> Keywords, Image URL<br>
+                                Products with existing names will be updated, otherwise new products will be created.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M4 14.899A7 7 0 0 1 15.71 8h1.79a4.5 4.5 0 0 1 0 9H13M12 20V10M12 10l-4 4M12 10l4 4" />
+                            </svg>
+                            Upload Excel
+                        </button>
+                    </div>
+                </form>
+
+                <div id="bulkUploadStatus" class="status-message"></div>
+            </div>
         </div>
     </div>
 
@@ -357,6 +785,58 @@
                 });
             });
 
+            // File upload functionality
+            setupFileUpload('imageUploadArea', 'image', 'imageInfo');
+            setupFileUpload('excelUploadArea', 'excelFile', 'excelInfo');
+
+            function setupFileUpload(areaId, inputId, infoId) {
+                const uploadArea = document.getElementById(areaId);
+                const fileInput = document.getElementById(inputId);
+                const fileInfo = document.getElementById(infoId);
+
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        showFileInfo(files[0], fileInfo);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        showFileInfo(e.target.files[0], fileInfo);
+                    }
+                });
+            }
+
+            function showFileInfo(file, infoElement) {
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                infoElement.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                        </svg>
+                        <div>
+                            <strong>${file.name}</strong><br>
+                            <span style="font-size: 0.75rem; opacity: 0.8;">${file.type} • ${fileSize} MB</span>
+                        </div>
+                    </div>
+                `;
+                infoElement.style.display = 'block';
+            }
+
             // Single Product Add Form
             const addProductForm = document.getElementById('addProductForm');
             const singleProductStatus = document.getElementById('singleProductStatus');
@@ -364,12 +844,19 @@
             addProductForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
 
-                displayStatus(singleProductStatus, 'info', '<svg class="icon spinner inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Adding product...');
+                displayStatus(singleProductStatus, 'info', `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                        </svg>
+                        Adding product...
+                    </div>
+                `);
 
-                const formData = new FormData(addProductForm); // Collects all form data including files
+                const formData = new FormData(addProductForm);
 
                 try {
-                    const response = await fetch('/admin/products', { // This is your existing route
+                    const response = await fetch('/admin/products', {
                         method: 'POST',
                         body: formData,
                     });
@@ -377,20 +864,48 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        displayStatus(singleProductStatus, 'success', `✅ ${result.message}`);
-                        addProductForm.reset(); // Clear the form
+                        displayStatus(singleProductStatus, 'success', `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                                ${result.message || 'Product added successfully!'}
+                            </div>
+                        `);
+                        addProductForm.reset();
+                        document.getElementById('imageInfo').style.display = 'none';
                     } else {
-                        displayStatus(singleProductStatus, 'error', `❌ ${result.error || 'Failed to add product.'}`);
+                        displayStatus(singleProductStatus, 'error', `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                                ${result.error || 'Failed to add product.'}
+                            </div>
+                        `);
                     }
                 } catch (error) {
                     console.error('Error adding product:', error);
-                    displayStatus(singleProductStatus, 'error', '⛔ Network error. Failed to add product.');
+                    displayStatus(singleProductStatus, 'error', `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            Network error. Failed to add product.
+                        </div>
+                    `);
                 }
             });
 
             // Bulk Upload Form
             const excelUploadForm = document.getElementById('excelUploadForm');
             const bulkUploadStatus = document.getElementById('bulkUploadStatus');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFill');
 
             excelUploadForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
@@ -399,48 +914,135 @@
                 const file = fileInput.files[0];
 
                 if (!file) {
-                    displayStatus(bulkUploadStatus, 'error', 'Please select an Excel file to upload.');
+                    displayStatus(bulkUploadStatus, 'error', `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            Please select an Excel file to upload.
+                        </div>
+                    `);
                     return;
                 }
 
                 if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-                    displayStatus(bulkUploadStatus, 'error', 'Invalid file type. Please upload an .xlsx or .xls file.');
+                    displayStatus(bulkUploadStatus, 'error', `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            Invalid file type. Please upload an .xlsx or .xls file.
+                        </div>
+                    `);
                     return;
                 }
 
-                displayStatus(bulkUploadStatus, 'info', '<svg class="icon spinner inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Uploading and processing...');
+                // Show progress bar
+                uploadProgress.style.display = 'block';
+                progressFill.style.width = '0%';
+
+                displayStatus(bulkUploadStatus, 'info', `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                        </svg>
+                        Uploading and processing Excel file...
+                    </div>
+                `);
+
+                // Simulate progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressFill.style.width = progress + '%';
+                }, 200);
 
                 const formData = new FormData();
                 formData.append('excelFile', file);
 
                 try {
-                    const response = await fetch('/api/admin/products/bulk-upload', { // NEW API ENDPOINT
+                    const response = await fetch('/api/admin/products/bulk-upload', {
                         method: 'POST',
                         body: formData,
                     });
 
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+
                     const result = await response.json();
+                    
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                        progressFill.style.width = '0%';
+                    }, 1000);
 
                     if (response.ok) {
-                        let successMessage = `✅ Upload successful! ${result.insertedCount || 0} products added, ${result.updatedCount || 0} products updated.`;
+                        let successMessage = `
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 1rem;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                                Upload successful!
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+                                    <div>✅ Products added: <strong>${result.insertedCount || 0}</strong></div>
+                                    <div>🔄 Products updated: <strong>${result.updatedCount || 0}</strong></div>
+                                </div>
+                            </div>
+                        `;
+                        
                         if (result.errors && result.errors.length > 0) {
-                            successMessage += `<br><span style="color: #d97706;">⚠️ Some rows had issues:</span><ul>`;
+                            successMessage += `
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid #f59e0b;">
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem; color: #f59e0b;">⚠️ Some rows had issues:</div>
+                                    <ul style="margin: 0; padding-left: 1rem; font-size: 0.875rem;">
+                            `;
                             result.errors.forEach(err => {
-                                successMessage += `<li>Row: ${err.row_number || 'N/A'}: ${err.reason}</li>`;
+                                successMessage += `<li>Row ${err.row_number || 'N/A'}: ${err.reason}</li>`;
                             });
-                            successMessage += `</ul>`;
-                            displayStatus(bulkUploadStatus, 'info', successMessage); // Use info for partial success
+                            successMessage += `</ul></div>`;
+                            displayStatus(bulkUploadStatus, 'info', successMessage);
                         } else {
                             displayStatus(bulkUploadStatus, 'success', successMessage);
                         }
-                        fileInput.value = ''; // Clear the file input
+                        fileInput.value = '';
+                        document.getElementById('excelInfo').style.display = 'none';
                     } else {
-                        displayStatus(bulkUploadStatus, 'error', `❌ Upload failed: ${result.message || 'Unknown error'}. Details: ${result.details || 'N/A'}`);
+                        displayStatus(bulkUploadStatus, 'error', `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                                Upload failed: ${result.message || 'Unknown error'}
+                            </div>
+                            ${result.details ? `<div style="margin-top: 0.5rem; font-size: 0.875rem; opacity: 0.8;">Details: ${result.details}</div>` : ''}
+                        `);
                         console.error('Bulk upload error details:', result);
                     }
                 } catch (error) {
+                    clearInterval(progressInterval);
+                    uploadProgress.style.display = 'none';
+                    progressFill.style.width = '0%';
+                    
                     console.error('Network or server error during bulk upload:', error);
-                    displayStatus(bulkUploadStatus, 'error', '⛔ Network error or server is unreachable. Please try again.');
+                    displayStatus(bulkUploadStatus, 'error', `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            Network error or server is unreachable. Please try again.
+                        </div>
+                    `);
                 }
             });
 
@@ -449,6 +1051,13 @@
                 element.style.display = 'block';
                 element.className = `status-message ${type}`;
                 element.innerHTML = message;
+                
+                // Auto-hide success messages after 5 seconds
+                if (type === 'success') {
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 5000);
+                }
             }
 
             // Initialize Lucide icons
