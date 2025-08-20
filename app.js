@@ -52,7 +52,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// MODIFIED: Removed automatic creation of public/uploads/products and profile_pictures
+// MODIFIED: Removed automatic creation of local public/uploads/products and profile_pictures
 // as they are now handled by Firebase Storage.
 const uploadDirs = [
     path.join(__dirname, 'public', 'uploads', 'temp') // Formidable might still use a temp dir.
@@ -83,9 +83,22 @@ app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use(dashboardRoutes);
 
+// MODIFIED: The root route now renders the new landing page (index.ejs).
 app.get('/', (req, res) => {
-    res.redirect('/auth');
+    // Check if user is logged in
+    const user = res.locals.user;
+    if (user) {
+        // If logged in, redirect to their dashboard
+        if (user.role === 'admin') {
+            return res.redirect('/dashboard');
+        } else {
+            return res.redirect('/user_dashboard');
+        }
+    }
+    // If not logged in, show the new landing page
+    res.render('index', { user: res.locals.user || null });
 });
+
 
 // THIS IS THE ROUTE FOR YOUR TEAM PAGE
 app.get('/team', (req, res) => {
@@ -94,17 +107,11 @@ app.get('/team', (req, res) => {
 });
 
 
-// REVERTED: Removed the explicit User.createIndexes() call from here.
-// Mongoose will create unique indexes defined in the schema automatically
-// when a document is saved, if they don't already exist.
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('MongoDB connected successfully');
-        // No explicit index creation here.
-        // Mongoose will handle unique index creation from schema on the first document save
-        // if the index does not already exist.
     })
-    .catch(err => console.error('MongoDB connection error:', err)); // Simplified catch for now
+    .catch(err => console.error('MongoDB connection error:', err));
 
 
 app.use((req, res, next) => {
