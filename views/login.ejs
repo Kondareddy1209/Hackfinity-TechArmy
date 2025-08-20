@@ -6,7 +6,9 @@
   <title>User Login • Agent Seller </title>
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
   <meta name="description" content="Login to your MyGreenHome account" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* Old CSS styles... (unchanged) */
     html, body {
       height: 100%;
       margin: 0;
@@ -144,6 +146,71 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-sizing: border-box;
       z-index: 10;
+    }
+    
+    /* New dual-panel styling */
+    .auth-container-wrapper {
+      position: relative;
+      display: flex;
+      max-width: 900px;
+      width: 95%;
+      margin: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-sizing: border-box;
+      z-index: 10;
+    }
+    .auth-form-panel {
+        width: 50%;
+        padding: 18px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .auth-overview-panel {
+      width: 50%;
+      padding: 30px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(to bottom right, #34d399, #10b981);
+      animation: fadeIn 0.8s ease-out;
+    }
+    .auth-overview-panel h2 {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    .auth-overview-panel p {
+        font-size: 1.1em;
+        font-weight: 300;
+        margin-bottom: 25px;
+    }
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1em;
+    }
+    .feature-list li i {
+        color: #fde047;
+        margin-right: 15px;
     }
 
     h2 {
@@ -377,6 +444,9 @@
     @media (max-width: 768px) {
       body { padding: 10px; }
       .auth-container { max-width: 350px; padding: 20px; }
+      .auth-container-wrapper { flex-direction: column; margin: 0; }
+      .auth-form-panel { width: 100%; border-radius: 0; box-shadow: none; }
+      .auth-overview-panel { width: 100%; }
     }
 
     @media (max-width: 480px) {
@@ -387,89 +457,128 @@
 </head>
 <body>
   <div class="wave-container">
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
+    <div class="wave-layer">
+      <div class="wave"></div>
+    </div>
+    <div class="wave-layer">
+      <div class="wave"></div>
+    </div>
+    <div class="wave-layer">
+      <div class="wave"></div>
+    </div>
   </div>
 
-  <div class="auth-container">
-    <h2>User Login</h2>
-
-    <% if (typeof error !== 'undefined' && error) { %>
-      <div class="message-error" id="errorMsg"><%= error %></div>
-    <% } else { %>
-      <div class="message-error" id="errorMsg" style="display:none;"></div>
-    <% } %>
-
-    <% if (typeof message !== 'undefined' && message) { %>
-      <div class="message-success"><%= message %></div>
-    <% } %>
-
-    <form id="loginForm" action="/auth/login" method="POST" novalidate>
-      <div class="form-group">
-        <label for="username">Email Address</label>
-        <input 
-          id="username" 
-          name="username" 
-          type="email" 
-          required 
-          autocomplete="email"
-          placeholder="Enter your email"
-          aria-describedby="email-error"
-        >
-        <div id="email-error" class="error-msg" aria-live="polite"></div>
+  <div class="particle-system" id="particles"></div>
+  
+  <div class="interactive-wave">
+    <div class="mouse-wave" id="mouseWave"></div>
+  </div>
+  
+  <div class="auth-container-wrapper">
+      <!-- Left side: The Overview Panel -->
+      <div class="auth-overview-panel">
+          <h2>Welcome to Agent Seller</h2>
+          <p>Your all-in-one platform for digital catalog management and AI-powered sales. Create, manage, and sell with the power of intelligent automation.</p>
+          <ul class="feature-list">
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>AI-powered product descriptions</span>
+              </li>
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>Voice-controlled product search</span>
+              </li>
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>Secure multi-language support</span>
+              </li>
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>Easy bulk product uploads</span>
+              </li>
+          </ul>
       </div>
 
-      <div class="form-group password-group">
-        <label for="password">Password</label>
-        <input 
-          id="password" 
-          name="password" 
-          type="password" 
-          required 
-          autocomplete="current-password"
-          placeholder="Enter your password"
-          aria-describedby="password-error caps-alert"
-        >
-        <button 
-          type="button" 
-          id="togglePass" 
-          class="toggle-pass"
-          aria-label="Toggle password visibility"
-        >
-          👁️
-        </button>
-        <div id="caps-alert" class="caps-alert" hidden aria-live="polite">
-          ⚠️ Caps Lock is ON
-        </div>
-        <div id="password-error" class="error-msg" aria-live="polite"></div>
+      <!-- Right side: The Login Form -->
+      <div class="auth-form-panel">
+          <div class="auth-container">
+            <h2>User Login</h2>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+              <div class="message-error" id="errorMsg"><%= error %></div>
+            <% } else { %>
+              <div class="message-error" id="errorMsg" style="display:none;"></div>
+            <% } %>
+
+            <% if (typeof message !== 'undefined' && message) { %>
+              <div class="message-success"><%= message %></div>
+            <% } %>
+
+            <form id="loginForm" action="/auth/login" method="POST" novalidate>
+              <div class="form-group">
+                <label for="username">Email Address</label>
+                <input 
+                  id="username" 
+                  name="username" 
+                  type="email" 
+                  required 
+                  autocomplete="email"
+                  placeholder="Enter your email"
+                  aria-describedby="email-error"
+                >
+                <div id="email-error" class="error-msg" aria-live="polite"></div>
+              </div>
+
+              <div class="form-group password-group">
+                <label for="password">Password</label>
+                <input 
+                  id="password" 
+                  name="password" 
+                  type="password" 
+                  required 
+                  autocomplete="current-password"
+                  placeholder="Enter your password"
+                  aria-describedby="password-error caps-alert"
+                >
+                <button 
+                  type="button" 
+                  id="togglePass" 
+                  class="toggle-pass"
+                  aria-label="Toggle password visibility"
+                >
+                  👁️
+                </button>
+                <div id="caps-alert" class="caps-alert" hidden aria-live="polite">
+                  ⚠️ Caps Lock is ON
+                </div>
+                <div id="password-error" class="error-msg" aria-live="polite"></div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" id="loginBtn">
+                  <span class="btn-text">Login</span>
+                  <span class="btn-spinner" hidden>⏳</span>
+                </button>
+                <a href="/auth/signup" class="link" role="button">Sign Up</a>
+              </div>
+            </form>
+
+            <div style="margin-top: 20px; text-align: center;">
+                <p style="margin-bottom: 10px; font-size: 0.9em; color: #555;">Or continue with:</p>
+                <div id="g_id_signin_button"></div> 
+            </div>
+
+            <div class="auth-links">
+              <p class="auth-link-text">
+                <a href="/auth/forgot-password" class="auth-link">Forgot Password?</a>
+              </p>
+              <p class="auth-link-text">
+               Are you an admin? 
+                <a href="/admin/login" class="auth-link admin-auth-link">Admin Login</a>
+              </p>
+            </div>
+          </div>
       </div>
-
-      <div class="form-actions">
-        <button type="submit" id="loginBtn">
-          <span class="btn-text">Login</span>
-          <span class="btn-spinner" hidden>⏳</span>
-        </button>
-        <a href="/auth/signup" class="link" role="button">Sign Up</a>
-      </div>
-    </form>
-
-    <div style="margin-top: 20px; text-align: center;">
-        <p style="margin-bottom: 10px; font-size: 0.9em; color: #555;">Or continue with:</p>
-        <div id="g_id_signin_button"></div> </div>
-
-    <div class="auth-links">
-      <p class="auth-link-text">
-        <a href="/auth/forgot-password" class="auth-link">Forgot Password?</a>
-      </p>
-      <p class="auth-link-text">
-       Are you an admin? 
-        <a href="/admin/login" class="auth-link admin-auth-link">Admin Login</a>
-      </p>
-    </div>
   </div>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
