@@ -4,21 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-  <title>Sign Up • agent Seller</title>
+  <title>Sign Up • Agent Seller</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
-      box-sizing: border-box; /* Prevent text selection zoom on mobile */
+      box-sizing: border-box;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      /* Prevent touch callout */
       -webkit-touch-callout: none;
-      /* Prevent highlight */
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Allow text selection only for inputs */
     input, select, textarea {
       -webkit-user-select: text;
       -moz-user-select: text;
@@ -36,10 +34,8 @@
       overflow: hidden;
       background: linear-gradient(to right, #32CD32 0%, #a0e7e5 100%);
       position: relative;
-      /* Prevent zoom on mobile */
       touch-action: pan-y pinch-zoom;
       -ms-touch-action: pan-y pinch-zoom;
-      /* Prevent overscroll */
       overscroll-behavior: none;
       -webkit-overflow-scrolling: touch;
     }
@@ -52,7 +48,7 @@
       width: 100%;
       height: 100%;
       perspective: 1000px;
-      z-index: -1; /* Prevent interaction */
+      z-index: -1;
       pointer-events: none;
       touch-action: none;
     }
@@ -110,6 +106,7 @@
         rgba(255, 255, 255, 0.05) 70%, 
         transparent 100%);
       border-radius: 50%;
+      transform: translate(-50%, -50%);
       animation: ripple 4s ease-out infinite;
       pointer-events: none;
     }
@@ -185,44 +182,87 @@
       }
     }
 
-    /* Auth Container Styling */
-    .auth-container {
-      width: 320px;
-      padding: 18px;
+    /* Desktop Layout - Dual Panel */
+    .auth-container-wrapper {
+      position: relative;
+      display: flex;
+      max-width: 900px;
+      width: 95%;
+      margin: 20px;
       border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .auth-form-panel {
+      width: 50%;
+      padding: 18px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
-                  0 0 0 1px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
       position: relative;
-      z-index: 10;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      /* Prevent zoom interaction */
-      touch-action: pan-y;
     }
 
-    .auth-container:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
-                  0 0 0 1px rgba(255, 255, 255, 0.3);
+    .auth-overview-panel {
+      width: 50%;
+      padding: 30px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    .auth-overview-panel h2 {
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
-    .auth-container::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.1) 0%, 
-        rgba(255, 255, 255, 0.05) 100%);
-      border-radius: 12px;
-      z-index: -1;
-      pointer-events: none;
+    .auth-overview-panel p {
+      font-size: 1.1em;
+      font-weight: 300;
+      margin-bottom: 25px;
+    }
+    
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto;
     }
 
-    .auth-container * {
-      position: relative;
-      z-index: 1;
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 1em;
+    }
+    
+    .feature-list li i {
+      color: #fde047;
+      margin-right: 15px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: unset;
+      background: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      border: none;
+      padding: 0;
+      display: block;
     }
 
     h2 {
@@ -259,29 +299,26 @@
       height: 36px;
       background: rgba(255, 255, 255, 0.9);
       transition: all 0.3s ease;
-      /* Prevent zoom on focus for mobile */
       touch-action: manipulation;
     }
 
-    /* Prevent zoom on input focus specifically */
     input:focus,
     select:focus {
       outline: none;
-      border-color: #4A90E2;
-      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
       transform: translateY(-1px);
-      /* Force font size to prevent zoom */
       font-size: 16px;
     }
 
     input:invalid:focus,
     input:invalid:not(:placeholder-shown) {
-      border-color: #e74c3c;
-      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
     }
 
     input:valid {
-      border-color: #2ecc71;
+      border-color: #10b981;
     }
 
     .password-group {
@@ -295,16 +332,28 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: #4A90E2;
-      font-size: 12px;
-      transition: color 0.3s ease;
+      color: #6366f1;
+      font-size: 14px;
+      transition: all 0.3s ease;
       touch-action: manipulation;
       -webkit-user-select: none;
       user-select: none;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
     }
 
     .password-group .toggle-pass:hover {
-      color: #357ab8;
+      color: #4f46e5;
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .password-group .toggle-pass:active {
+      transform: scale(0.95);
     }
 
     .form-actions {
@@ -326,7 +375,7 @@
       border: none;
       font-size: 10px;
       color: white;
-      background: linear-gradient(135deg, #4A90E2, #357ab8);
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
       border-radius: 20px;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -350,9 +399,9 @@
     }
 
     button:hover:not(:disabled) {
-      background: linear-gradient(135deg, #357ab8, #2c5aa0);
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     }
 
     button:hover:not(:disabled)::before {
@@ -428,6 +477,17 @@
       user-select: none;
     }
 
+    .google-signin-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .google-signin-section p {
+      margin-bottom: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
+
     /* Interactive mouse effect */
     .interactive-wave {
       position: absolute;
@@ -477,229 +537,284 @@
       }
     }
 
-    /* Mobile-specific optimizations with enhanced zoom prevention */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Mobile-first responsive design - IMPROVED */
     @media (max-width: 768px) {
       body {
-        padding: 20px 15px;
-        align-items: center;
+        padding: 10px;
+        align-items: flex-start;
         justify-content: center;
         overflow-y: auto;
         overflow-x: hidden;
         min-height: 100vh;
         background: linear-gradient(135deg, #32CD32 0%, #a0e7e5 100%);
-        /* Enhanced zoom prevention */
         touch-action: pan-y;
         -ms-touch-action: pan-y;
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
-        /* Prevent any zoom gestures */
         -webkit-text-size-adjust: 100%;
         -ms-text-size-adjust: 100%;
       }
 
-      /* Disable wave animations on mobile for better performance */
+      /* Disable heavy animations on mobile for better performance */
       .wave-layer {
         display: none;
       }
 
-      /* Disable particles on mobile */
       .particle-system {
         display: none;
       }
 
-      /* Disable mouse wave on mobile */
       .interactive-wave {
         display: none;
       }
 
-      .auth-container {
+      /* Mobile Layout - Single Column */
+      .auth-container-wrapper {
+        flex-direction: column;
         width: 100%;
-        max-width: 350px;
-        margin: 20px 0;
-        padding: 18px;
-        border-radius: 12px;
+        max-width: 400px;
+        margin: 20px auto;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
-                    0 0 0 1px rgba(255, 255, 255, 0.2);
-        transform: none;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        /* Force no zoom on container */
-        touch-action: pan-y;
       }
 
-      .auth-container:hover {
-        transform: none;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-                    0 0 0 1px rgba(255, 255, 255, 0.2);
+      /* Overview panel becomes a header on mobile */
+      .auth-overview-panel {
+        width: 100%;
+        padding: 25px 20px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+        text-align: center;
+        order: -1; /* Move to top */
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.8em;
+        font-weight: 700;
+        margin-bottom: 8px;
+        line-height: 1.2;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.95em;
+        font-weight: 300;
+        margin-bottom: 15px;
+        line-height: 1.4;
+        opacity: 0.95;
+      }
+
+      /* Hide feature list on mobile to save space */
+      .feature-list {
+        display: none;
+      }
+
+      /* Form panel adjustments */
+      .auth-form-panel {
+        width: 100%;
+        padding: 25px 20px;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+      }
+
+      .auth-container {
+        width: 100%;
+        padding: 0;
       }
 
       h2 {
-        font-size: 19px;
-        margin: 5px 0 10px;
+        font-size: 22px;
+        margin: 0 0 20px;
         color: #2c5530;
+        font-weight: 600;
       }
 
       .form-group {
-        margin-bottom: 6px;
+        margin-bottom: 16px;
       }
 
       label {
-        font-size: 12px;
-        margin-bottom: 1px;
-        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 6px;
+        font-weight: 600;
         color: #333;
       }
 
-      input,
-      select {
-        padding: 7px 34px 7px 9px;
-        /* Force 16px font size to prevent zoom */
-        font-size: 16px !important;
-        height: 36px;
-        border-radius: 5px;
-        border: 1.5px solid #ddd;
-        background: rgba(255, 255, 255, 0.9);
+      input, select {
+        padding: 12px 40px 12px 14px;
+        font-size: 16px !important; /* Prevent zoom */
+        height: 50px;
+        border-radius: 8px;
+        border: 2px solid #e0e0e0;
+        background: #fff;
         transition: all 0.3s ease;
-        /* Prevent zoom on input */
         touch-action: manipulation;
-        -webkit-text-size-adjust: 100%;
       }
 
-      input:focus,
-      select:focus {
+      input:focus, select:focus {
         border-color: #4A90E2;
         box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        transform: translateY(-1px);
-        /* Ensure no zoom on focus */
+        transform: none; /* Remove transform on mobile */
         font-size: 16px !important;
         zoom: 1;
         -webkit-text-size-adjust: 100%;
       }
 
+      input:valid {
+        border-color: #2ecc71;
+      }
+
       .password-group .toggle-pass {
-        right: 8px;
-        top: 26px;
-        background: none;
-        border: none;
-        cursor: pointer;
+        right: 12px;
+        top: 32px;
+        font-size: 14px;
         color: #4A90E2;
-        font-size: 12px;
-        transition: color 0.3s ease;
-        padding: 0;
-        height: auto;
-        line-height: 1;
+        padding: 4px;
         touch-action: manipulation;
       }
 
-      .password-group .toggle-pass:hover {
-        color: #357ab8;
-      }
-
-      .password-group .toggle-pass:active {
-        transform: none;
-        background: none;
-      }
-
       .password-group small {
-        font-size: 9px;
-        margin-top: 2px;
-        margin-bottom: 3px;
+        font-size: 11px;
+        margin-top: 4px;
+        margin-bottom: 4px;
         color: #666;
       }
 
       #capsAlert {
-        font-size: 12px;
-        margin-top: 5px;
-        padding: 3px 6px;
-        border-radius: 3px;
+        font-size: 13px;
+        margin-top: 8px;
+        padding: 6px 10px;
+        border-radius: 4px;
       }
 
       .form-actions {
-        flex-direction: row;
-        gap: 15px;
-        margin-top: 12px;
-        margin-bottom: 5px;
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        align-items: stretch;
       }
 
       button {
-        padding: 6px 12px;
-        font-size: 10px;
-        font-weight: normal;
-        border-radius: 20px;
-        min-height: auto;
-        width: auto;
-        height: auto;
+        padding: 14px 24px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        width: 100%;
+        height: 50px;
         touch-action: manipulation;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
       }
 
       button:active {
-        transform: translateY(-2px);
+        transform: translateY(1px);
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
       }
 
       .link {
-        padding: 6px 12px;
-        font-size: 10px;
-        font-weight: normal;
-        border-radius: 5px;
+        padding: 14px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
         text-align: center;
-        min-height: auto;
-        display: inline-block;
-        width: auto;
-        height: auto;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         touch-action: manipulation;
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        text-decoration: none;
       }
 
       .link:active {
-        transform: translateY(-2px);
+        transform: translateY(1px);
+        box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
       }
 
       .error-msg {
-        font-size: 10px;
-        margin: -3px 0 3px;
+        font-size: 12px;
+        margin: 4px 0 8px;
         text-align: left;
         padding: 0;
         background: none;
         border-radius: 0;
         border-left: none;
       }
+
+      .google-signin-section {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+      }
+
+      .google-signin-section p {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 15px;
+      }
+
+      /* Google Sign-in button styling for mobile */
+      #g_id_signin_button .g_id_signin {
+        width: 100% !important;
+        height: 50px !important;
+      }
     }
 
     /* Very small mobile screens */
-    @media (max-width: 480px) {
+    @media (max-width: 380px) {
       body {
-        padding: 15px 10px;
-        touch-action: pan-y;
+        padding: 10px 5px;
       }
 
-      .auth-container {
+      .auth-container-wrapper {
+        margin: 15px auto;
+        max-width: 350px;
+      }
+
+      .auth-overview-panel {
         padding: 20px 15px;
-        margin: 5px 0;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.6em;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.9em;
+      }
+
+      .auth-form-panel {
+        padding: 20px 15px;
       }
 
       h2 {
-        font-size: 22px;
-        margin-bottom: 16px;
+        font-size: 20px;
+        margin-bottom: 15px;
       }
 
       .form-group {
         margin-bottom: 14px;
       }
 
-      input,
-      select {
-        padding: 12px 36px 12px 14px;
+      input, select {
         height: 48px;
-        /* Force 16px to prevent zoom */
-        font-size: 16px !important;
+        padding: 10px 36px 10px 12px;
       }
 
-      button,
-      .link {
-        padding: 14px 20px;
-        min-height: 48px;
+      button, .link {
+        height: 48px;
         font-size: 15px;
       }
     }
@@ -707,44 +822,64 @@
     /* Landscape orientation on mobile */
     @media (max-height: 600px) and (orientation: landscape) {
       body {
-        padding: 10px;
+        padding: 5px;
         align-items: center;
-        touch-action: pan-y;
-      }
-
-      .auth-container {
-        margin: 10px 0;
-        max-height: 90vh;
         overflow-y: auto;
       }
 
+      .auth-container-wrapper {
+        margin: 10px auto;
+        max-height: 95vh;
+        overflow-y: auto;
+      }
+
+      .auth-overview-panel {
+        padding: 15px 20px;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.4em;
+        margin-bottom: 5px;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.85em;
+        margin-bottom: 10px;
+      }
+
+      .auth-form-panel {
+        padding: 15px 20px;
+      }
+
       h2 {
-        font-size: 20px;
-        margin-bottom: 12px;
+        font-size: 18px;
+        margin-bottom: 10px;
       }
 
       .form-group {
         margin-bottom: 10px;
       }
 
-      input,
-      select {
+      input, select {
         height: 42px;
-        padding: 10px 32px 10px 12px;
-        /* Force 16px to prevent zoom */
+        padding: 8px 32px 8px 10px;
         font-size: 16px !important;
       }
 
-      button,
-      .link {
-        padding: 12px 20px;
-        min-height: 42px;
+      button, .link {
+        padding: 10px 20px;
+        height: 42px;
         font-size: 14px;
       }
 
       .form-actions {
         margin-top: 15px;
         gap: 8px;
+      }
+
+      .google-signin-section {
+        margin-top: 15px;
+        padding-top: 15px;
       }
     }
   </style>
@@ -769,78 +904,102 @@
     <div class="mouse-wave" id="mouseWave"></div>
   </div>
 
-  <div class="auth-container">
-    <h2>Create Account</h2>
-    <% if (error) { %>
-    <p class="error-msg" style="text-align: center;" id="errorMsg"><%= error %></p>
-    <% } else { %>
-      <p class="error-msg" style="text-align: center; display:none;" id="errorMsg"></p>
-    <% } %>
-    <form id="signupForm" action="/auth/signup" method="POST">
-      <div class="form-group">
-        <label for="firstName">First Name</label>
-        <input id="firstName" name="firstName" type="text" required>
+  <div class="auth-container-wrapper">
+    <!-- Overview Panel (becomes header on mobile) -->
+    <div class="auth-overview-panel">
+      <h2>Welcome to Agent Seller</h2>
+      <p>Your all-in-one platform for digital catalog management and AI-powered sales.</p>
+      <ul class="feature-list">
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>AI-powered product descriptions</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Voice-controlled product search</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Secure multi-language support</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Easy bulk product uploads</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-container">
+        <h2>Create Account</h2>
+        <p class="error-msg" style="text-align: center; display: none;" id="errorMsg"></p>
+        
+        <form id="signupForm" action="/auth/signup" method="POST">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input id="firstName" name="firstName" type="text" required>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input id="lastName" name="lastName" type="text" required>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="mobile">Mobile Number</label>
+            <input id="mobile" name="mobile" type="tel" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" required>
+          </div>
+
+          <div class="form-group password-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required minlength="6">
+            <button type="button" id="togglePass" class="toggle-pass">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+            <small>(minimum 6 characters)</small>
+            <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select name="gender" id="gender" required>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit">Send OTP</button>
+            <a href="/auth" class="link">Already have an account? Login</a>
+          </div>
+        </form>
+
+        <div class="google-signin-section">
+          <p>Or sign up with:</p>
+          <div id="g_id_signin_button"></div> 
+        </div>
       </div>
-
-      <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <input id="lastName" name="lastName" type="text" required>
-      </div>
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" required>
-      </div>
-
-      <div class="form-group">
-        <label for="mobile">Mobile Number</label>
-        <input id="mobile" name="mobile" type="tel" pattern="[0-9]{10}" title="Enter a 10-digit mobile number"
-          required>
-      </div>
-
-      <div class="form-group password-group">
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" required minlength="6">
-        <button type="button" id="togglePass" class="toggle-pass">👁️</button>
-        <small>(min 6 characters)</small>
-        <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
-      </div>
-
-      <div class="form-group">
-        <label for="gender">Gender</label>
-        <select name="gender" id="gender" required>
-          <option value="">Select</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit">Send OTP</button>
-        <a href="/auth" class="link">Already have an account? Login</a>
-      </div>
-    </form>
-
-    <div style="margin-top: 20px; text-align: center;">
-        <p style="margin-bottom: 10px; font-size: 0.9em; color: #555;">Or sign up with:</p>
-        <div id="g_id_signin_button"></div> </div>
-
+    </div>
   </div>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
-    // Make sure errorMsg div is available for JS to use (if it's not already)
+    // Make sure errorMsg div is available for JS to use
     const errorMsgDiv = document.getElementById('errorMsg');
-    if (!errorMsgDiv) {
-      console.warn("errorMsg div not found in signup.ejs for Google sign-in messages.");
-    }
-
+    
     async function handleGoogleSignIn(response) {
         console.log("Google ID Token received:", response.credential);
 
         try {
-            const res = await fetch('/auth/google', { // This is your new backend route
+            const res = await fetch('/auth/google', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -855,7 +1014,7 @@
                 if (data.redirectUrl) {
                     window.location.href = data.redirectUrl;
                 } else {
-                    window.location.href = '/user_dashboard'; // Fallback
+                    window.location.href = '/user_dashboard';
                 }
             } else {
                 console.error("Error from backend during Google sign-in:", data.error || data.message);
@@ -878,351 +1037,386 @@
     }
 
     // Render the Google button dynamically
-    document.getElementById('g_id_signin_button').innerHTML = `
-        <div id="g_id_onload"
-             data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
-             data-callback="handleGoogleSignIn"
-             data-auto_prompt="false"
-             data-auto_select="true">
-        </div>
-        <div class="g_id_signin"
-             data-type="standard"
-             data-size="large"
-             data-theme="outline"
-             data-text="signup_with"
-             data-shape="rectangular"
-             data-logo_alignment="left">
-        </div>
-    `;
+    window.addEventListener('load', function() {
+        // Initialize Google Sign-In
+        if (typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.initialize({
+                client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual client ID
+                callback: handleGoogleSignIn,
+                auto_select: false,
+                cancel_on_tap_outside: false
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById('g_id_signin_button'),
+                {
+                    type: 'standard',
+                    theme: 'outline',
+                    size: 'large',
+                    text: 'signup_with',
+                    shape: 'rectangular',
+                    logo_alignment: 'left',
+                    width: '100%'
+                }
+            );
+        } else {
+            // Fallback if Google library isn't loaded
+            document.getElementById('g_id_signin_button').innerHTML = `
+                <button type="button" style="
+                    width: 100%;
+                    height: 50px;
+                    border: 2px solid #dadce0;
+                    border-radius: 8px;
+                    background: white;
+                    color: #3c4043;
+                    font-size: 14px;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" 
+                   onmouseout="this.style.boxShadow='none'"
+                   onclick="alert('Google Sign-In not available. Please use the form above.')">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign up with Google
+                </button>
+            `;
+        }
+    });
 
     // Enhanced zoom prevention for mobile
     function preventZoom() {
-      // Prevent pinch zoom
-      document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 1) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-    }, { passive: false });
-
-      // Prevent double-tap zoom
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function(e) {
-        const now = (new Date()).getTime();
-        if (now - lastTouchEnd <= 300) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-        lastTouchEnd = now;
-      }, { passive: false });
-      // Prevent zoom on input focus
-      const inputs = document.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        input.addEventListener('touchstart', function(e) {
-          e.stopPropagation();
-        }, { passive: true });
-
-        input.addEventListener('focus', function() {
-          // Force minimum scale to prevent zoom
-          if (window.innerWidth <= 768) {
-            const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-              viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+        // Prevent pinch zoom
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
             }
-          }
+        }, { passive: false });
+
+        // Prevent double-tap zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+
+        // Prevent zoom on input focus
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('touchstart', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+
+            input.addEventListener('focus', function() {
+                if (window.innerWidth <= 768) {
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                    }
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                if (window.innerWidth <= 768) {
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                    }
+                }
+            });
         });
 
-        input.addEventListener('blur', function() {
-          // Reset viewport after blur
-          if (window.innerWidth <= 768) {
-            const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-              viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+        // Prevent context menu which can lead to zoom
+        document.addEventListener('contextmenu', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
             }
-          }
-        });
-      });
-      // Prevent context menu which can lead to zoom
-      document.addEventListener('contextmenu', function(e) {
-        if (window.innerWidth <= 768) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }, { passive: false });
-      // Prevent wheel zoom
-      document.addEventListener('wheel', function(e) {
-        if (e.ctrlKey || e.metaKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }, { passive: false });
-      // Prevent keyboard zoom shortcuts
-      document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }, { passive: false });
-      // Force scale reset on orientation change
-      window.addEventListener('orientationchange', function() {
-        setTimeout(function() {
-          const viewport = document.querySelector('meta[name="viewport"]');
-          if (viewport) {
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-          }
-          window.scrollTo(0, 0);
-        }, 100);
-    });
+        }, { passive: false });
 
-      // Prevent zoom on window resize
-      window.addEventListener('resize', function() {
-        if (window.innerWidth <= 768) {
-          const viewport = document.querySelector('meta[name="viewport"]');
-          if (viewport) {
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-          }
-        }
-      });
+        // Prevent wheel zoom
+        document.addEventListener('wheel', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, { passive: false });
+
+        // Prevent keyboard zoom shortcuts
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+        }, { passive: false });
+
+        // Force scale reset on orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                }
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+
+        // Prevent zoom on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                }
+            }
+        });
     }
 
-    // Original form functionality
+    // Password toggle functionality
     const pwInput = document.getElementById('password');
     const toggle = document.getElementById('togglePass');
-    if (pwInput && toggle) {
-      toggle.addEventListener('click', () => {
-        pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
-        toggle.innerHTML = pwInput.type === 'password' ? '👁️' : '🙈';
-      });
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    if (pwInput && toggle && eyeIcon) {
+        toggle.addEventListener('click', () => {
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                pwInput.type = 'password';
+                eyeIcon.className = 'fas fa-eye';
+            }
+        });
     }
 
+    // Caps lock detection
     const capsAlert = document.getElementById('capsAlert');
     if (pwInput && capsAlert) {
-      pwInput.addEventListener('keydown', e => {
-        if (e.getModifierState && e.getModifierState('CapsLock')) capsAlert.hidden = false;
-      });
-      pwInput.addEventListener('keyup', e => {
-        if (!e.getModifierState || !e.getModifierState('CapsLock')) capsAlert.hidden = true;
-      });
+        pwInput.addEventListener('keydown', e => {
+            if (e.getModifierState && e.getModifierState('CapsLock')) {
+                capsAlert.hidden = false;
+            }
+        });
+        pwInput.addEventListener('keyup', e => {
+            if (!e.getModifierState || !e.getModifierState('CapsLock')) {
+                capsAlert.hidden = true;
+            }
+        });
     }
 
+    // Form validation
     document.getElementById('signupForm').addEventListener('submit', function (e) {
-      const fields = ['firstName', 'lastName', 'email', 'mobile', 'password', 'gender'];
-      let isValid = true;
-      for (const id of fields) {
-        const input = document.getElementById(id);
-        if (!input.value.trim()) {
-          isValid = false;
-          input.reportValidity();
-          break;
+        const fields = ['firstName', 'lastName', 'email', 'mobile', 'password', 'gender'];
+        let isValid = true;
+        
+        for (const id of fields) {
+            const input = document.getElementById(id);
+            if (!input.value.trim()) {
+                isValid = false;
+                input.reportValidity();
+                break;
+            }
         }
-      }
-      if (!isValid) {
-        e.preventDefault();
-        const firstInvalid = document.querySelector('#signupForm :invalid');
-        if (firstInvalid) firstInvalid.focus();
-      }
+        
+        if (!isValid) {
+            e.preventDefault();
+            const firstInvalid = document.querySelector('#signupForm :invalid');
+            if (firstInvalid) {
+                firstInvalid.focus();
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     });
-    // Enhanced 3D Wave Animation System (disabled on mobile for performance)
+
+    // Create particles (desktop only)
     function createParticles() {
-      const particleContainer = document.getElementById('particles');
-      if (!particleContainer) return;
-      
-      // Disable particles on mobile for better performance and zoom prevention
-      const isMobile = window.innerWidth <= 768;
-      if (isMobile) return;
+        const particleContainer = document.getElementById('particles');
+        if (!particleContainer) return;
+        
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) return;
 
-      const particleCount = 30;
+        const particleCount = 30;
 
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        
-        particle.style.left = Math.random() * 100 + '%';
-        
-        const drift = (Math.random() - 0.5) * 150;
-        particle.style.setProperty('--drift', drift + 'px');
-        
-        particle.style.animationDelay = Math.random() * 8 + 's';
-        
-        const size = Math.random() * 2 + 1;
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        
-        particleContainer.appendChild(particle);
-      }
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            particle.style.left = Math.random() * 100 + '%';
+            
+            const drift = (Math.random() - 0.5) * 150;
+            particle.style.setProperty('--drift', drift + 'px');
+            
+            particle.style.animationDelay = Math.random() * 8 + 's';
+            
+            const size = Math.random() * 2 + 1;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            particleContainer.appendChild(particle);
+        }
     }
 
+    // Mouse interaction (desktop only)
     function setupMouseInteraction() {
-      // Disable on mobile for better performance and zoom prevention
-      if (window.innerWidth <= 768) return;
-      const mouseWave = document.getElementById('mouseWave');
-      if (!mouseWave) return;
-      
-      let mouseX = window.innerWidth / 2;
-      let mouseY = window.innerHeight / 2;
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+        if (window.innerWidth <= 768) return;
+        
+        const mouseWave = document.getElementById('mouseWave');
+        if (!mouseWave) return;
+        
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            mouseWave.style.left = mouseX + 'px';
+            mouseWave.style.top = mouseY + 'px';
+            mouseWave.style.opacity = '1';
+            mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            mouseWave.style.opacity = '0';
+            mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
         
         mouseWave.style.left = mouseX + 'px';
         mouseWave.style.top = mouseY + 'px';
-        mouseWave.style.opacity = '1';
-        mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
-      });
-      document.addEventListener('mouseleave', () => {
-        mouseWave.style.opacity = '0';
-        mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
-      });
-      mouseWave.style.left = mouseX + 'px';
-      mouseWave.style.top = mouseY + 'px';
     }
 
+    // Form animations (desktop only)
     function setupFormAnimations() {
-      const inputs = document.querySelectorAll('input, select');
-      inputs.forEach(input => {
-        // Only add hover animations on desktop
-        if (window.innerWidth > 768) {
-          input.addEventListener('focus', () => {
-            input.style.transform = 'translateY(-2px)';
-          });
-          
-          input.addEventListener('blur', () => {
-            input.style.transform = 'translateY(0)';
-          });
-        }
-      });
-    }
-
-    // Enhanced mobile-specific zoom prevention
-    function setupMobileEnhancements() {
-      if (window.innerWidth <= 768) {
-        // Handle virtual keyboard without zoom
-        let initialViewportHeight = window.innerHeight;
-        let isKeyboardOpen = false;
-        
-        window.addEventListener('resize', () => {
-          const currentHeight = window.innerHeight;
-          const heightDifference = initialViewportHeight - currentHeight;
-          
-          // If keyboard is likely open (height reduced significantly)
-          if (heightDifference > 150) {
-            if (!isKeyboardOpen) {
-              isKeyboardOpen = true;
-              document.body.style.height = currentHeight + 'px';
-              document.body.style.overflow = 'hidden';
-              
-              // Force viewport to prevent zoom during keyboard open
-              const viewport = document.querySelector('meta[name="viewport"]');
-              if (viewport) {
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-              }
-            }
-          } else {
-            if (isKeyboardOpen) {
-              isKeyboardOpen = false;
-              document.body.style.height = '';
-              document.body.style.overflow = '';
-              // Maintain zoom prevention after keyboard close
-              const viewport = document.querySelector('meta[name="viewport"]');
-              if (viewport) {
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-              }
-            }
-          }
-        });
-        // Additional zoom prevention on input interaction
-        const inputs = document.querySelectorAll('input, select, textarea');
+        const inputs = document.querySelectorAll('input, select');
         inputs.forEach(input => {
-          input.addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-          }, { passive: true });
-
-          input.addEventListener('focus', function() {
-            // Scroll input into view without zoom
-            setTimeout(() => {
-              this.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
-              });
-            }, 300);
-          });
+            if (window.innerWidth > 768) {
+                input.addEventListener('focus', () => {
+                    input.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', () => {
+                    input.style.transform = 'translateY(0)';
+                });
+            }
         });
-        // Prevent any accidental zoom gestures on the container
-        const container = document.querySelector('.auth-container');
-        if (container) {
-          container.addEventListener('touchstart', function(e) {
-            if (e.touches.length > 1) {
-              e.preventDefault();
-              e.stopPropagation();
-              return false;
-            }
-          }, { passive: false });
-          container.addEventListener('touchmove', function(e) {
-            if (e.touches.length > 1) {
-              e.preventDefault();
-              e.stopPropagation();
-              return false;
-            }
-          }, { passive: false });
-        }
-      }
     }
 
-    // Initialize all functions
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialize zoom prevention first
-      preventZoom();
-      
-      // Then initialize other features
-      createParticles();
-      setupMouseInteraction();
-      setupFormAnimations();
-      setupMobileEnhancements();
-    });
-    // Performance optimization
-    document.addEventListener('visibilitychange', () => {
-      const waves = document.querySelectorAll('.wave-layer');
-      if (document.hidden) {
-        waves.forEach(wave => wave.style.animationPlayState = 'paused');
-      } else {
-        waves.forEach(wave => wave.style.animationPlayState = 'running');
-      }
-    });
-    // Enhanced orientation change handling with zoom prevention
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => {
-        // Force viewport reset to prevent zoom
-        const viewport = document.querySelector('meta[name="viewport"]');
-        if (viewport) {
-          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-        }
-        
-        // Scroll to 
-        window.scrollTo(0, 0);
-        
-        // Re-initialize mobile enhancements if needed
+    // Mobile enhancements
+    function setupMobileEnhancements() {
         if (window.innerWidth <= 768) {
-          setupMobileEnhancements();
+            let initialViewportHeight = window.innerHeight;
+            let isKeyboardOpen = false;
+            
+            // Handle virtual keyboard
+            window.addEventListener('resize', () => {
+                const currentHeight = window.innerHeight;
+                const heightDifference = initialViewportHeight - currentHeight;
+                
+                if (heightDifference > 150) {
+                    if (!isKeyboardOpen) {
+                        isKeyboardOpen = true;
+                        document.body.style.height = currentHeight + 'px';
+                        document.body.style.overflow = 'hidden';
+                    }
+                } else {
+                    if (isKeyboardOpen) {
+                        isKeyboardOpen = false;
+                        document.body.style.height = '';
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+
+            // Smooth scroll to focused input
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    setTimeout(() => {
+                        this.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }, 300);
+                });
+            });
+
+            // Prevent zoom on container
+            const container = document.querySelector('.auth-container-wrapper');
+            if (container) {
+                container.addEventListener('touchstart', function(e) {
+                    if (e.touches.length > 1) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                }, { passive: false });
+            }
         }
-      }, 100);
+    }
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', () => {
+        preventZoom();
+        createParticles();
+        setupMouseInteraction();
+        setupFormAnimations();
+        setupMobileEnhancements();
     });
-    // Additional safeguard: Monitor and reset zoom level
-    setInterval(() => {
-      if (window.innerWidth <= 768) {
-        // Check if page has been zoomed and reset if necessary
-        const currentZoom = Math.round(window.devicePixelRatio * 100) / 100;
-        if (currentZoom !== 1) {
-          const viewport = document.querySelector('meta[name="viewport"]');
-          if (viewport) {
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-          }
+
+    // Handle visibility change for performance
+    document.addEventListener('visibilitychange', () => {
+        const waves = document.querySelectorAll('.wave-layer');
+        if (document.hidden) {
+            waves.forEach(wave => wave.style.animationPlayState = 'paused');
+        } else {
+            waves.forEach(wave => wave.style.animationPlayState = 'running');
         }
-      }
+    });
+
+    // Handle orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+            }
+            window.scrollTo(0, 0);
+            if (window.innerWidth <= 768) {
+                setupMobileEnhancements();
+            }
+        }, 100);
+    });
+
+    // Periodic zoom check for mobile
+    setInterval(() => {
+        if (window.innerWidth <= 768) {
+            const currentZoom = Math.round(window.devicePixelRatio * 100) / 100;
+            if (currentZoom !== 1) {
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                }
+            }
+        }
     }, 1000);
   </script>
 </body>
