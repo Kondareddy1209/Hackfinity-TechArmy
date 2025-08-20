@@ -19,14 +19,16 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
+        /* Themed styles using CSS variables */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
-            background-color: #f0f2f5;
+            background-color: var(--page-bg); /* Themed background */
             background-attachment: fixed;
             display: flex;
             flex-direction: column;
+            color: var(--text-color); /* Themed text color */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .main-content-wrapper {
@@ -34,19 +36,19 @@
             max-width: 1500px;
             margin: 35px auto;
             padding: 35px;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card-bg); /* Themed card background */
             backdrop-filter: blur(10px);
             border-radius: 25px;
-            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 35px 70px var(--shadow-color); /* Themed shadow */
         }
 
         .search-section {
-            background: #ffffff;
+            background: var(--card-bg); /* Themed background */
             border-radius: 20px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-            border: 1px solid #c0c0c0;
+            box-shadow: 0 12px 25px var(--shadow-color); /* Themed shadow */
+            border: 1px solid var(--card-border); /* Themed border */
         }
 
         .search-container {
@@ -66,25 +68,30 @@
             width: 100%;
             padding: 16px 22px 16px 55px;
             font-size: 18px;
-            border: 1px solid #a0a0a0;
+            border: 1px solid var(--input-border); /* Themed border */
             border-radius: 16px;
-            background: white;
+            background: var(--input-bg); /* Themed background */
+            color: var(--text-color); /* Themed text */
             transition: all 0.3s ease;
             box-shadow: none;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4);
+            border-color: var(--input-focus-border); /* Themed border */
+            box-shadow: 0 0 0 4px var(--input-focus-shadow); /* Themed shadow */
         }
+        .search-input::placeholder {
+            color: var(--placeholder-color); /* Themed placeholder */
+        }
+
 
         .search-input-icon {
             position: absolute;
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            color: #333;
+            color: var(--text-color); /* Themed color */
             z-index: 2;
             width: 24px;
             height: 24px;
@@ -106,7 +113,7 @@
             justify-content: center;
             transition: all 0.2s ease;
             font-weight: 600;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 3px 6px var(--shadow-color); /* Themed shadow */
             position: relative;
             overflow: hidden;
             font-size: 1rem;
@@ -129,22 +136,22 @@
 
         .search-btn:hover {
             transform: translateY(-1.5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 5px 15px var(--shadow-color); /* Stronger themed shadow */
         }
 
         .search-btn.primary {
-            background: #3b82f6;
-            color: white;
+            background: var(--admin-blue); /* Themed color */
+            color: var(--navbar-text);
         }
 
         .search-btn.secondary {
-            background: #8b5cf6;
-            color: white;
+            background: var(--primary-green); /* Themed color */
+            color: var(--navbar-text);
         }
 
         .search-btn.tertiary {
-            background: #6b7280;
-            color: white;
+            background: var(--dark-bg); /* Themed color */
+            color: var(--navbar-text);
         }
 
         /* Product Grid Changes - Decreased size, fixed 3 items per row on large screens */
@@ -156,19 +163,19 @@
         }
 
         .product-card {
-            background: white;
+            background: var(--card-bg); /* Themed background */
             border-radius: 14px;
             overflow: hidden;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-            border: 1px solid #d0d0d0;
+            box-shadow: 0 4px 18px var(--shadow-color); /* Themed shadow */
+            border: 1px solid var(--card-border); /* Themed border */
             position: relative;
             cursor: pointer;
         }
 
         .product-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px var(--shadow-color); /* Stronger themed shadow */
         }
 
         .product-card-image-container {
@@ -176,7 +183,7 @@
             padding-bottom: 100%;
             position: relative;
             overflow: hidden;
-            background: #f3f4f6;
+            background: var(--hover-bg-light); /* Light themed background */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -205,7 +212,7 @@
         .product-card-title {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #1f2937;
+            color: var(--heading-color); /* Themed color */
             margin-bottom: 10px;
             line-height: 1.4;
             background: none;
@@ -224,17 +231,17 @@
 
         .product-card-footer {
             padding: 15px 20px;
-            background: #f9fafb;
+            background: var(--hover-bg-light); /* Light themed background */
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #f0f0f0;
+            border-top: 1px solid var(--card-border); /* Themed border */
             position: relative;
             z-index: 2;
         }
 
         .product-price {
-            color: #228B22; /* Forest Green */
+            color: var(--primary-green); /* Themed color */
             font-size: 1.2rem;
             font-weight: 700;
             background: none;
@@ -245,8 +252,8 @@
 
         .product-category {
             font-size: 0.75rem;
-            color: #555;
-            background: #e5e7eb;
+            color: var(--text-color); /* Themed text color */
+            background: var(--card-border); /* Themed background */
             padding: 5px 10px;
             border-radius: 12px;
             font-weight: 500;
@@ -262,11 +269,11 @@
         }
 
         .loading-card {
-            background: white;
+            background: var(--card-bg); /* Themed background */
             border-radius: 14px;
             overflow: hidden;
             height: 360px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 18px var(--shadow-color); /* Themed shadow */
         }
 
         .loading-card .skeleton.h-44 {
@@ -280,7 +287,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background: linear-gradient(90deg, var(--card-border) 25%, var(--hover-bg-light) 50%, var(--card-border) 75%); /* Themed gradient */
             background-size: 200% 100%;
             animation: shimmer 2s infinite;
         }
@@ -309,11 +316,11 @@
             grid-column: 1 / -1;
             text-align: center;
             padding: 4.5rem 2.5rem;
-            color: #6b7280;
+            color: var(--text-color); /* Themed color */
             font-size: 1.3rem;
-            background: white;
+            background: var(--card-bg); /* Themed background */
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 10px 25px var(--shadow-color); /* Themed shadow */
         }
 
         .search-status {
@@ -321,12 +328,16 @@
             margin: 1.5rem 0;
             padding: 1.2rem;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--card-bg); /* Themed background */
             backdrop-filter: blur(8px);
             font-weight: 600;
             font-size: 1.1rem;
-            color: #4a5568;
+            color: var(--text-color); /* Themed color */
         }
+        .search-status span {
+            color: var(--logout-red); /* Themed error text color */
+        }
+
 
         .back-to-dashboard-link {
             display: inline-flex;
@@ -334,13 +345,13 @@
             gap: 10px;
             margin-top: 2.5rem;
             padding: 10px 20px;
-            background: #6b7280;
-            color: white;
+            background: var(--dark-bg); /* Themed background */
+            color: var(--navbar-text);
             border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px var(--shadow-color); /* Themed shadow */
             position: relative;
             overflow: hidden;
             font-size: 0.95rem;
@@ -363,7 +374,7 @@
 
         .back-to-dashboard-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px var(--shadow-color); /* Stronger themed shadow */
         }
 
         .icon {
@@ -435,15 +446,15 @@
             }
             /* Make the search input and buttons align in a single row */
             .search-container {
-                flex-direction: row; /* Keep it a row */
-                flex-wrap: wrap; /* Allow wrapping if space is really tight */
-                align-items: center; /* Vertically align items */
-                gap: 10px; /* Reduce gap for mobile */
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
             }
             .search-input-container {
-                min-width: unset; /* Remove min-width constraint */
-                flex: 1; /* Allow it to take available space */
-                order: 1; /* Place search input first */
+                min-width: unset;
+                flex: 1;
+                order: 1;
             }
             .search-input {
                 padding: 12px 18px 12px 45px;
@@ -456,29 +467,29 @@
                 height: 20px;
             }
             .search-controls {
-                gap: 8px; /* Further reduce gap between buttons */
-                order: 2; /* Place controls next to search input */
-                flex-grow: 0; /* Prevent controls from growing */
-                flex-shrink: 0; /* Prevent controls from shrinking */
-                justify-content: flex-end; /* Align buttons to the right */
+                gap: 8px;
+                order: 2;
+                flex-grow: 0;
+                flex-shrink: 0;
+                justify-content: flex-end;
             }
             .search-btn {
-                padding: 12px; /* Uniform padding for square-like buttons */
-                width: 50px; /* Fixed width for button */
-                height: 50px; /* Fixed height for button */
-                font-size: 0; /* Hide text, only show icon */
-                border-radius: 14px; /* Maintain rounded corners */
+                padding: 12px;
+                width: 50px;
+                height: 50px;
+                font-size: 0;
+                border-radius: 14px;
             }
             .search-btn .icon {
-                width: 22px; /* Make icons slightly larger for touch */
+                width: 22px;
                 height: 22px;
             }
             /* Adjustments for the filter sections */
             .mt-4 {
-                margin-top: 1.5rem; /* Adjust top margin for filter sections */
+                margin-top: 1.5rem;
             }
             label.block {
-                margin-bottom: 0.5rem; /* Reduce margin below labels */
+                margin-bottom: 0.5rem;
             }
             .product-grid {
                 grid-template-columns: 1fr;
@@ -524,22 +535,22 @@
 
         @media (max-width: 480px) {
             .search-container {
-                flex-direction: column; /* Stack input and controls vertically */
-                align-items: stretch; /* Stretch items to full width */
+                flex-direction: column;
+                align-items: stretch;
             }
             .search-input-container {
-                width: 100%; /* Take full width */
-                margin-bottom: 10px; /* Add some space below the input */
+                width: 100%;
+                margin-bottom: 10px;
                 order: 1;
             }
             .search-controls {
-                width: 100%; /* Take full width */
-                justify-content: space-between; /* Distribute buttons evenly */
+                width: 100%;
+                justify-content: space-between;
                 order: 2;
             }
             .search-btn {
-                flex-grow: 1; /* Allow buttons to grow and fill space */
-                width: auto; /* Remove fixed width */
+                flex-grow: 1;
+                width: auto;
             }
             .product-card-image-container {
                 height: 160px;
@@ -695,49 +706,123 @@
             let currentSearchQuery = '';
             let currentCategoryFilter = '';
             let totalProductsCount = 0;
+            let isLanguageSelected = false; // Flag to ensure products load only after language selection
 
             // --- Text-to-Speech (TTS) Setup ---
             const synth = window.speechSynthesis;
             const utterThis = new SpeechSynthesisUtterance();
-            utterThis.lang = ttsLanguageFilter.value; // Initialize with default selected language
             utterThis.volume = 1;
             utterThis.rate = 1;
             utterThis.pitch = 1;
 
-            // Update language when dropdown changes
-            ttsLanguageFilter.addEventListener('change', () => {
-                utterThis.lang = ttsLanguageFilter.value;
-                speakMessage("Voice language changed to " + ttsLanguageFilter.options[ttsLanguageFilter.selectedIndex].text);
-            });
-
-            // Function to speak a message
-            function speakMessage(message) {
+            // Function to stop speech
+            function stopSpeech() {
                 if (synth.speaking) {
                     synth.cancel();
                 }
+            }
+
+            // Function to speak a message, trying to find a voice for the selected language
+            function speakMessage(message) {
+                stopSpeech(); // Stop any ongoing speech before speaking new message
                 utterThis.text = message;
+
+                // Dynamically get voices. Important to do this after voices are loaded.
+                const voices = synth.getVoices();
+                if (voices.length === 0) {
+                    console.warn("No voices available on this system. Cannot speak.");
+                    return;
+                }
+
+                const selectedLang = ttsLanguageFilter.value;
+                let selectedVoice = voices.find(
+                    voice => voice.lang === selectedLang || voice.lang.startsWith(selectedLang.split('-')[0])
+                );
+
+                if (selectedVoice) {
+                    utterThis.voice = selectedVoice;
+                    utterThis.lang = selectedVoice.lang; // Ensure utterance lang matches voice
+                } else {
+                    // Fallback: If no specific voice for the selected language, try generic English.
+                    console.warn(`No specific voice found for language ${selectedLang}. Falling back to en-US.`);
+                    selectedVoice = voices.find(voice => voice.lang === 'en-US');
+                    if (selectedVoice) {
+                        utterThis.voice = selectedVoice;
+                        utterThis.lang = selectedVoice.lang;
+                        // Optional: Could add a small visual/audible cue about language fallback
+                    } else {
+                        console.error("No en-US or selected language voices available. Cannot speak.");
+                        return; // Cannot speak
+                    }
+                }
                 synth.speak(utterThis);
             }
 
+            // NEW: Function to prompt language selection at the very start
+            function promptLanguageSelectionOnInit() {
+                if (!isLanguageSelected) { // Only prompt if language not yet selected
+                    searchStatus.innerHTML = `👋 Please select your preferred voice language from the dropdown above to continue.`;
+                    speakMessage("Welcome! Please select your preferred voice language from the dropdown to start Browse products.");
+                    // Disable controls until language is selected
+                    productSearchInput.disabled = true;
+                    micSearchBtn.disabled = true;
+                    imageSearchInput.disabled = true;
+                    resetSearchBtn.disabled = true;
+                    loadMoreBtn.disabled = true; // Ensure load more is disabled
+                    dynamicProductGrid.innerHTML = '<div class="no-products-message">Please select a language to load products.</div>';
+                    lucide.createIcons();
+                }
+            }
+
+            // NEW: Handle language selection to enable controls and fetch products
+            ttsLanguageFilter.addEventListener('change', () => {
+                stopSpeech(); // Stop any ongoing speech
+                const selectedText = ttsLanguageFilter.options[ttsLanguageFilter.selectedIndex].text;
+                searchStatus.innerHTML = `Language set to ${selectedText}. Loading products...`;
+                speakMessage(`Language set to ${selectedText}. Loading products.`);
+                isLanguageSelected = true; // Mark language as selected
+
+                // Enable controls
+                productSearchInput.disabled = false;
+                micSearchBtn.disabled = false;
+                imageSearchInput.disabled = false;
+                resetSearchBtn.disabled = false;
+                
+                // Immediately fetch products after language is chosen
+                currentPage = 1;
+                allLoadedProducts = []; // Clear any previous state
+                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, false, ttsLanguageFilter.value); // Pass selected language
+            });
+
+            // NEW: Stop speech when navigating away from the page
+            window.addEventListener('beforeunload', stopSpeech);
+
+
             // Event listener for "Load More" button
             loadMoreBtn.addEventListener('click', () => {
+                stopSpeech(); // Stop speech on interaction
                 currentPage++;
-                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, true);
+                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, true, ttsLanguageFilter.value); // Pass selected language
             });
-
             // Event listener for category filter change
             productCategoryFilter.addEventListener('change', () => {
+                stopSpeech(); // Stop speech on interaction
                 currentCategoryFilter = productCategoryFilter.value;
                 currentPage = 1;
-                fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+                // Only fetch if language is already selected
+                if (isLanguageSelected) {
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, false, ttsLanguageFilter.value); // Pass selected language
+                }
             });
-
             /**
              * Renders product cards into the grid.
              * @param {Array} productsToRender - The array of product objects to render.
              * @param {boolean} append - If true, appends products; otherwise, replaces existing ones.
              */
             function renderProducts(productsToRender, append = false) {
+                // Only render actual content if language is selected
+                if (!isLanguageSelected) return; 
+
                 if (!append) {
                     dynamicProductGrid.innerHTML = '';
                 }
@@ -751,13 +836,12 @@
                 }
 
                 const fragment = document.createDocumentFragment();
-
                 productsToRender.forEach(product => {
                     const productCard = document.createElement('div');
                     productCard.classList.add('product-card');
                     productCard.innerHTML = `
                         <div class="product-card-image-container">
-                            <img src="${product.imageUrl || '/images/default_product.png'}"
+                            <img src="${product.imageUrl || '/images/default_image.png'}"
                                 alt="${product.name || 'Product Image'}"
                                 class="product-card-image"
                                 onerror="this.src='/images/default_product.png'"
@@ -777,16 +861,14 @@
                 dynamicProductGrid.appendChild(fragment);
 
                 // --- Automatic Voice Output for Products ---
-                // This logic is re-enabled to speak product names automatically after rendering.
-                if (productsToRender.length > 0 && !append) { // Only speak on initial render after a search/filter, not on 'Load More'
-                    let productNamesToSpeak = productsToRender.slice(0, 3).map(p => p.name).join(', '); // Get names of first 3 products
+                // Speak product names only if language is selected and it's not a reset/re-prompt sequence
+                if (productsToRender.length > 0 && !append && isLanguageSelected) { 
+                    let productNamesToSpeak = productsToRender.slice(0, 3).map(p => p.name).join(', ');
                     if (productsToRender.length > 3) {
                         productNamesToSpeak += `, and ${productsToRender.length - 3} more.`;
                     } else {
                         productNamesToSpeak += '.';
                     }
-                    // IMPORTANT: The voice will be in the selected language, but it will pronounce
-                    // English product names (unless your backend provides localized names).
                     speakMessage(`Found products: ${productNamesToSpeak}`);
                 }
                 // --- End Automatic Voice Output ---
@@ -810,24 +892,29 @@
              * @param {number} page - Page number for pagination.
              * @param {number} limit - Number of products per page.
              * @param {boolean} append - If true, appends fetched products to existing ones.
+             * @param {string} lang - The language code for translation.
              */
-            async function fetchProducts(query = '', category = '', page = 1, limit = productsPerPage, append = false) {
+            async function fetchProducts(query = '', category = '', page = 1, limit = productsPerPage, append = false, lang = ttsLanguageFilter.value) { // Default lang from dropdown
+                // Prevent fetching if language not yet selected
+                if (!isLanguageSelected) {
+                    return; // Do not fetch products until a language is chosen
+                }
+
                 const loadingMessage = 'Loading products...';
                 searchStatus.innerHTML = `<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ${loadingMessage}`;
                 loadMoreBtn.disabled = true;
                 loadMoreBtn.innerHTML = '<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Loading...';
-
                 if (!append) {
-                    dynamicProductGrid.innerHTML = initialLoadingGridHtml;
+                    dynamicProductGrid.innerHTML = initialLoadingGridHtml; // Show skeletons while loading
                 }
 
                 try {
-                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&page=${page}&limit=${limit}`);
+                    // Pass the selected language to the API
+                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}&page=${page}&limit=${limit}&lang=${encodeURIComponent(lang)}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const data = await response.json();
-
                     totalProductsCount = data.totalProducts;
 
                     if (append) {
@@ -836,59 +923,61 @@
                         allLoadedProducts = data.products;
                     }
 
-                    renderProducts(data.products, append); // Call renderProducts here to display and speak
+                    renderProducts(data.products, append);
                     const statusText = `Displaying ${allLoadedProducts.length} of ${totalProductsCount} products.`;
                     searchStatus.textContent = statusText;
-                    // Product names are now spoken within renderProducts itself.
-
                 } catch (error) {
                     console.error("Failed to fetch products:", error);
                     const errorMessage = 'Failed to load products. Please try again.';
                     searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${errorMessage}</span>`;
                     dynamicProductGrid.innerHTML = '<div class="no-products-message">Failed to load products. Network error or server issue.</div>';
-                    loadMoreBtn.style.display = 'none';
                     speakMessage(errorMessage);
                 } finally {
                     loadMoreBtn.disabled = false;
                     loadMoreBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Load More Products';
                 }
             }
-
-            // Initial load of products when the page loads
-            fetchProducts();
+            
+            // --- Initial Load & Language Prompt Trigger ---
+            // On DOMContentLoaded, immediately trigger the language prompt.
+            // Ensure voices are loaded first before speaking the prompt.
+            if (synth.getVoices().length === 0) {
+                synth.onvoiceschanged = promptLanguageSelectionOnInit;
+            } else {
+                promptLanguageSelectionOnInit();
+            }
 
             let searchTimeout;
             productSearchInput.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
+                stopSpeech(); // Stop speech on interaction
                 searchStatus.textContent = '';
-                if (synth.speaking) {
-                    synth.cancel();
-                }
                 searchTimeout = setTimeout(() => {
                     currentSearchQuery = productSearchInput.value.trim();
                     currentPage = 1;
-                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+                    if (isLanguageSelected) { // Only fetch if language already selected
+                        fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, false, ttsLanguageFilter.value); // Pass selected language
+                    }
                 }, 300);
             });
-
             // Speech Recognition (Voice Search)
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
                 recognition.continuous = false;
-                recognition.lang = ttsLanguageFilter.value; // Use the selected language for input recognition as well
-                recognition.interimResults = false;
-
+                // Set initial recognition language, will update on dropdown change
+                recognition.lang = ttsLanguageFilter.value;
                 // Update recognition language when TTS language changes (if applicable)
                 ttsLanguageFilter.addEventListener('change', () => {
                     recognition.lang = ttsLanguageFilter.value;
                 });
-
-
                 micSearchBtn.addEventListener('click', () => {
-                    if (synth.speaking) {
-                        synth.cancel();
+                    if (!isLanguageSelected) { // Prevent voice search if language not chosen
+                        searchStatus.innerHTML = `<span style="color: red;">Please select a language first to use voice search.</span>`;
+                        speakMessage("Please select your preferred voice language first.");
+                        return;
                     }
+                    stopSpeech(); // Stop speech on interaction
                     micSearchBtn.innerHTML = '<svg class="icon spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>';
                     const listeningMessage = 'Listening... Speak now.';
                     searchStatus.innerHTML = `🎤 ${listeningMessage}`;
@@ -903,7 +992,6 @@
                         resetMicButton();
                     }
                 });
-
                 recognition.onresult = (event) => {
                     const transcript = event.results[0][0].transcript;
                     productSearchInput.value = transcript;
@@ -912,7 +1000,7 @@
                     speakMessage(transcribedMessage);
                     currentSearchQuery = transcript;
                     currentPage = 1;
-                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+                    fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, false, ttsLanguageFilter.value); // Pass selected language
                 };
 
                 recognition.onerror = (event) => {
@@ -922,7 +1010,6 @@
                     speakMessage(errorMessage);
                     resetMicButton();
                 };
-
                 recognition.onend = () => {
                     resetMicButton();
                     if (searchStatus.textContent.includes('Listening')) {
@@ -931,7 +1018,6 @@
                         speakMessage(noSpeechMessage);
                     }
                 };
-
                 function resetMicButton() {
                     micSearchBtn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="8" x2="16" y1="22" y2="22"/></svg>';
                 }
@@ -950,9 +1036,7 @@
                     return;
                 }
 
-                if (synth.speaking) {
-                    synth.cancel();
-                }
+                stopSpeech(); // Stop speech on interaction
 
                 const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
                 const maxSize = 5 * 1024 * 1024; // 5MB
@@ -965,6 +1049,12 @@
                     return;
                 }
 
+                if (!isLanguageSelected) { // Prevent image search if language not chosen
+                    searchStatus.innerHTML = `<span style="color: red;">Please select a language first to use image search.</span>`;
+                    speakMessage("Please select your preferred voice language first.");
+                    return;
+                }
+
                 const analyzingMessage = 'Analyzing image...';
                 searchStatus.innerHTML = `<svg class="icon spinner inline-block mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 🔍 ${analyzingMessage}`;
                 speakMessage(analyzingMessage);
@@ -972,7 +1062,6 @@
                 const formData = new FormData();
                 formData.append('image', file);
                 formData.append('query', productSearchInput.value.trim());
-
                 try {
                     const response = await fetch('/api/search-by-image', {
                         method: 'POST',
@@ -988,7 +1077,7 @@
                         speakMessage(imageAnalysisMessage);
                         currentSearchQuery = searchKeywords;
                         currentPage = 1;
-                        fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage);
+                        fetchProducts(currentSearchQuery, currentCategoryFilter, currentPage, productsPerPage, false, ttsLanguageFilter.value); // Pass selected language
                     } else {
                         const errorMessage = `Error analyzing image: ${result.message || 'Unknown error'}.`;
                         searchStatus.innerHTML = `<span style="color: #ef4444;">❌ ${errorMessage}</span>`;
@@ -1006,9 +1095,7 @@
 
             // Reset Search Button
             resetSearchBtn.addEventListener('click', () => {
-                if (synth.speaking) {
-                    synth.cancel();
-                }
+                stopSpeech(); // Stop speech on interaction
                 productSearchInput.value = '';
                 productCategoryFilter.value = '';
                 searchStatus.textContent = '';
@@ -1016,8 +1103,19 @@
                 currentCategoryFilter = '';
                 currentPage = 1;
                 allLoadedProducts = [];
-                fetchProducts();
-                speakMessage("Search reset.");
+                // Clear the status and ensure the prompt appears again.
+                searchStatus.innerHTML = '';
+                isLanguageSelected = false; // Reset flag
+                
+                // Disable controls during reset state
+                productSearchInput.disabled = true;
+                micSearchBtn.disabled = true;
+                imageSearchInput.disabled = true;
+                resetSearchBtn.disabled = true;
+                loadMoreBtn.disabled = true;
+                dynamicProductGrid.innerHTML = '<div class="no-products-message">Please select a language to load products.</div>';
+                
+                promptLanguageSelectionOnInit(); // Re-prompt language after reset
             });
         });
     </script>

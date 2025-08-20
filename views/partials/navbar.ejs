@@ -1,100 +1,128 @@
 <style>
-    /* Existing CSS (from your previous navbar.ejs) */
+    /* -------------------------------------- */
+    /* CSS Variables for Theming - Light Mode (Default) */
+    /* -------------------------------------- */
     :root {
+        --page-bg: #f4f7f6; /* Global background */
+        --text-color: #333; /* Default text color */
+        --text-secondary-color: #6b7280; /* Secondary text color */
+        --heading-color: #2c3e50; /* Headings */
+        --card-bg: white; /* Background for cards, forms, sections */
+        --card-border: #e5e7eb; /* Borders for cards, inputs */
+        --shadow-color: rgba(0, 0, 0, 0.1); /* Subtle shadows */
+        --hover-bg-light: #f1f1f1; /* Light hover for general elements */
+        
         --primary-green: #4CAF50;
         --hover-green: #5cb85c;
-        --text-white: white;
+        --navbar-bg: var(--primary-green);
+        --navbar-text: white;
+        
         --logout-red: #d9534f;
         --logout-red-hover: #c9302c;
         --points-orange: #f39c12;
+        
         --admin-blue: #4A90E2;
         --admin-blue-hover: #357ab8;
-        --dark-bg: #333;
-        --darker-bg: #2e2e2e;
-        --border-dark: #444;
         --login-blue: #007bff;
+        --login-blue-hover: #0056b3;
+        
+        --input-bg: rgba(255, 255, 255, 0.8);
+        --input-border: #ccc;
+        --input-focus-border: #3b82f6;
+        --input-focus-shadow: rgba(59, 130, 246, 0.25);
+        --placeholder-color: #9ca3af;
 
-        --table-header-bg: #f2f2f2;
+        --table-header-bg: #f3f4f6;
+        --table-row-even-bg: #f9fafb;
+        --table-hover-bg: #e0f2f7;
         --table-border-color: #ddd;
-        --button-update-bg: #5cb85c;
-        --button-delete-bg: #d9534f;
+
+        --status-success-bg: #d4edda;
+        --status-success-color: #155724;
+        --status-error-bg: #f8d7da;
+        --status-error-color: #721c24;
+        --status-info-bg: #e0f2fe;
+        --status-info-color: #1e40af;
     }
 
-    /* General body/page styling for consistent padding */
+    /* -------------------------------------- */
+    /* Dark Theme Overrides */
+    /* -------------------------------------- */
+    body.dark-mode {
+        --page-bg: #1a202c;
+        --text-color: #e2e8f0;
+        --text-secondary-color: #a0aec0;
+        --heading-color: #cbd5e0;
+        --card-bg: #2d3748;
+        --card-border: #4a5568;
+        --shadow-color: rgba(0, 0, 0, 0.4);
+        --hover-bg-light: #4a5568;
+
+        --navbar-bg: #2d3748;
+        --navbar-text: white;
+        
+        --primary-green: #38a169;
+        --hover-green: #48bb78;
+        
+        --logout-red: #c53030;
+        --logout-red-hover: #9b2c2c;
+        --points-orange: #ed8936;
+
+        --admin-blue: #4299e1;
+        --admin-blue-hover: #63b3ed;
+        --login-blue: #4299e1;
+        --login-blue-hover: #3182ce;
+
+        --input-bg: #4a5568;
+        --input-border: #667085;
+        --input-focus-border: #63b3ed;
+        --input-focus-shadow: rgba(99, 179, 237, 0.25);
+        --placeholder-color: #a0aec0;
+
+        --table-header-bg: #4a5568;
+        --table-row-even-bg: #2d3748;
+        --table-hover-bg: #4a5568;
+        --dark-mode-table-border-color: #667085;
+
+        --status-success-bg: #2f855a;
+        --status-success-color: #fff;
+        --status-error-bg: #c53030;
+        --status-error-color: #fff;
+        --status-info-bg: #2b6cb0;
+        --status-info-color: #fff;
+    }
+
+    /* -------------------------------------- */
+    /* Base and Layout Styles */
+    /* -------------------------------------- */
     body {
         margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: #f4f7f6;
-        color: #333; /* Default text color for light mode */
-        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme change */
+        font-family: 'Inter', sans-serif;
+        background-color: var(--page-bg);
+        color: var(--text-color);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* DARK MODE STYLES */
-    body.dark-mode {
-        background-color: #1a202c; /* Dark background */
-        color: #e2e8f0; /* Light text for dark mode */
-    }
-
-    body.dark-mode .navbar {
-        background-color: #2d3748; /* Darker navbar */
-    }
-
-    body.dark-mode .navbar-links a:hover {
-        background-color: #4a5568; /* Darker hover */
-    }
-
-    body.dark-mode .navbar-points {
-        background-color: #d69e2e; /* Darker orange */
-    }
-    
-    /* You'll need to add dark mode styles for other elements as well, e.g.: */
-    /*
-    body.dark-mode .profile-link-container:hover { background-color: #4a5568; }
-    body.dark-mode .admin-link-btn { background-color: #3182ce; }
-    body.dark-mode .admin-link-btn:hover { background-color: #4299e1; }
-    body.dark-mode .side-menu { background-color: #1a202c; }
-    body.dark-mode .side-menu a:hover { background-color: #4a5568; color: var(--primary-green); }
-    body.dark-mode .navbar-user-info.mobile-view { background-color: #2d3748; }
-    */
-
-    /* Theme Toggle Button Styles */
-    #themeToggle {
-        background: none;
-        border: none;
-        font-size: 1.5em; /* Larger icon */
-        color: var(--text-white);
-        cursor: pointer;
-        transition: color 0.3s ease, transform 0.3s ease;
-        padding: 5px; /* Add some padding around the icon */
-        border-radius: 50%; /* Make it circular */
-    }
-
-    #themeToggle:hover {
-        color: var(--points-orange); /* Highlight on hover */
-        transform: scale(1.1);
-    }
-
-    /* Existing CSS for Navbar, Menu Toggle, etc. (no changes needed for existing layout) */
     .navbar {
-        background-color: var(--primary-green);
+        background-color: var(--navbar-bg);
         padding: 12px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: var(--text-white);
+        color: var(--navbar-text);
         position: sticky;
         top: 0;
         z-index: 1000;
         width: 100%;
         font-size: 1em;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 5px var(--shadow-color);
     }
 
     .menu-toggle {
         display: none;
         font-size: 1.8em;
         cursor: pointer;
-        color: var(--text-white);
+        color: var(--navbar-text);
         margin-right: 15px;
     }
 
@@ -108,7 +136,7 @@
     .navbar .logo {
         font-size: 1.5em;
         font-weight: bold;
-        color: var(--text-white);
+        color: var(--navbar-text);
         text-decoration: none;
         margin-bottom: 0;
         white-space: nowrap;
@@ -124,7 +152,7 @@
     }
 
     .navbar-links a {
-        color: var(--text-white);
+        color: var(--navbar-text);
         text-decoration: none;
         padding: 7px 14px;
         border-radius: 4px;
@@ -149,7 +177,7 @@
         align-items: center;
         gap: 8px;
         text-decoration: none;
-        color: var(--text-white);
+        color: var(--navbar-text);
         padding: 5px 10px;
         border-radius: 4px;
         transition: background-color 0.2s ease;
@@ -166,7 +194,7 @@
         height: 36px;
         border-radius: 50%;
         object-fit: cover;
-        border: 2px solid var(--text-white);
+        border: 2px solid var(--navbar-text);
     }
 
     .navbar-user-info span {
@@ -180,7 +208,7 @@
         padding: 4px 10px;
         border-radius: 15px;
         font-size: 0.8em;
-        color: var(--text-white);
+        color: var(--navbar-text);
         display: flex;
         align-items: center;
         gap: 4px;
@@ -189,7 +217,7 @@
 
     .navbar-logout {
         background-color: var(--logout-red);
-        color: var(--text-white);
+        color: var(--navbar-text);
         border: none;
         padding: 8px 15px;
         border-radius: 4px;
@@ -209,7 +237,7 @@
     }
 
     .navbar-logout.login-btn:hover {
-        background-color: #0056b3;
+        background-color: var(--login-blue-hover);
     }
 
     .navbar-logout.admin-login-btn {
@@ -222,7 +250,7 @@
 
     .admin-link-btn {
         background-color: var(--admin-blue);
-        color: var(--text-white);
+        color: var(--navbar-text);
         padding: 8px 15px;
         border-radius: 4px;
         font-size: 0.9em;
@@ -284,7 +312,6 @@
     /* Mobile view for user info in side menu */
     .navbar-user-info.mobile-view {
         display: flex;
-        /* Always display as flex here when active */
         flex-direction: column;
         align-items: center;
         padding: 20px;
@@ -293,33 +320,30 @@
         text-align: center;
     }
 
-    /* New style for clickable profile link in mobile side menu */
     .mobile-profile-link {
         display: flex;
         flex-direction: column;
         align-items: center;
         text-decoration: none;
-        color: var(--text-white);
+        color: var(--navbar-text);
         transition: background-color 0.2s ease;
         padding-bottom: 10px;
-        /* Space below content */
     }
 
     .mobile-profile-link:hover {
         background-color: #555;
-        /* Darker hover for mobile */
     }
 
     .navbar-user-info.mobile-view img {
         width: 70px;
         height: 70px;
         margin-bottom: 10px;
-        border: 3px solid var(--text-white);
+        border: 3px solid var(--navbar-text);
     }
 
     .navbar-user-info.mobile-view span {
         font-size: 1.2em;
-        color: var(--text-white);
+        color: var(--navbar-text);
         margin-bottom: 8px;
     }
 
@@ -338,7 +362,7 @@
         font-size: 1.1em;
         text-align: center;
         text-decoration: none;
-        color: var(--text-white);
+        color: var(--navbar-text);
         border: none;
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -358,7 +382,7 @@
     }
 
     .side-menu .mobile-login-btn:hover {
-        background-color: #0056b3;
+        background-color: var(--login-blue-hover);
     }
 
     .side-menu .mobile-admin-login-btn {
@@ -376,8 +400,8 @@
         padding: 12px 20px;
         font-size: 1.2em;
         color: #f1f1f1;
-        text-decoration: none;
         border-bottom: 1px solid var(--border-dark);
+        text-decoration: none;
         transition: background-color 0.2s ease, color 0.2s ease;
     }
 
@@ -385,148 +409,8 @@
         background-color: #555;
         color: var(--primary-green);
     }
-
-    /* Admin Page Specific Styles - General Layout */
-    .admin-page-container {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 0 15px;
-    }
-
-    .admin-heading {
-        text-align: center;
-        margin-top: 25px;
-        margin-bottom: 25px;
-        font-size: 1.8em;
-        color: #333;
-    }
-
-    .admin-heading i {
-        margin-right: 10px;
-        color: #666;
-    }
-
-    .table-responsive-wrapper {
-        overflow-x: auto;
-        margin: 20px 0;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        background-color: white;
-        border: 1px solid var(--table-border-color);
-    }
-
-    .admin-table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 650px;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .admin-table th,
-    .admin-table td {
-        padding: 12px 15px;
-        border: 1px solid var(--table-border-color);
-        text-align: left;
-        vertical-align: middle;
-    }
-
-    .admin-table th {
-        background-color: var(--table-header-bg);
-        font-weight: bold;
-        color: #333;
-        text-transform: uppercase;
-        font-size: 0.9em;
-    }
-
-    .admin-table tbody tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    .admin-table tbody tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    .admin-table .profile-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: cover;
-        vertical-align: middle;
-        margin-right: 5px;
-    }
-
-    .admin-table select {
-        padding: 6px 8px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-        font-size: 0.9em;
-        min-width: 80px;
-    }
-
-    .admin-table .action-buttons {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 8px;
-        justify-content: flex-start;
-    }
-
-    .admin-table .action-buttons .btn {
-        padding: 8px 12px;
-        border-radius: 5px;
-        border: none;
-        color: white;
-        font-size: 0.85em;
-        cursor: pointer;
-        white-space: nowrap;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-
-    .admin-table .action-buttons .btn:active {
-        transform: translateY(1px);
-    }
-
-
-    .admin-table .action-buttons .btn-update {
-        background-color: var(--button-update-bg);
-    }
-
-    .admin-table .action-buttons .btn-update:hover {
-        background-color: #4CAF50;
-    }
-
-    .admin-table .action-buttons .btn-delete {
-        background-color: var(--button-delete-bg);
-    }
-
-    .admin-table .action-buttons .btn-delete:hover {
-        background-color: #c9302c;
-    }
-
-    .back-to-dashboard-btn {
-        display: block;
-        width: fit-content;
-        margin: 30px auto 40px auto;
-        padding: 12px 25px;
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 1.05em;
-        cursor: pointer;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .back-to-dashboard-btn:hover {
-        background-color: #5a6268;
-    }
-
-    .back-to-dashboard-btn:active {
-        transform: translateY(1px);
-    }
-
+    
+    /* Responsive adjustments */
     @media screen and (max-width: 768px) {
         .navbar {
             padding: 6px 10px;
@@ -539,7 +423,6 @@
 
         .navbar-links,
         .navbar-user-info {
-            /* Hide desktop user info and links */
             display: none;
         }
 
@@ -549,67 +432,11 @@
         }
 
         .navbar-brand-area {
-            /* Removed specific margin-right for mobile as 'Home' link is gone */
             margin-right: 0;
         }
 
-        /* REMOVED: .home-brand-link mobile style is no longer needed */
-        /* .home-brand-link {
-            display: none;
-        } */
-
         .side-menu {
             padding-top: 20px;
-        }
-
-        /* Admin Page Mobile Specific Styles */
-        .admin-page-container {
-            margin: 10px auto;
-            padding: 0 10px;
-        }
-
-        .admin-heading {
-            margin-top: 15px;
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-
-        .table-responsive-wrapper {
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-
-        .admin-table {
-            min-width: 550px;
-        }
-
-        .admin-table th,
-        .admin-table td {
-            padding: 8px 10px;
-            font-size: 0.8em;
-        }
-
-        .admin-table .profile-icon {
-            width: 25px;
-            height: 25px;
-        }
-
-        .admin-table select {
-            font-size: 0.8em;
-            padding: 4px 6px;
-            min-width: 70px;
-        }
-
-        .admin-table .action-buttons .btn {
-            padding: 5px 8px;
-            font-size: 0.75em;
-            gap: 3px;
-        }
-
-        .back-to-dashboard-btn {
-            font-size: 0.9em;
-            padding: 10px 20px;
-            margin: 20px auto;
         }
     }
 </style>
@@ -620,18 +447,16 @@
     <div class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
     </div>
-
     <div class="navbar-brand-area">
-        <a href="/user_dashboard" class="logo">Agent Seller</a>
+        <a href="/" class="logo">Agent Seller</a>
     </div>
-
     <div class="navbar-links" id="mainNavbarLinks">
         <% if (typeof user !== 'undefined' && user) { %>
             <% if (user.role === 'admin') { %>
                 <a href="/dashboard">Admin Dashboard</a>
                 <a href="/admin/users">Manage Users</a>
                 <a href="/admin/products/add">Add Admin Product</a>
-                <a href="/user/listings/add">Add Public Listing</a>
+                <a href="/user/all-products">View All Products</a>
             <% } else { %>
                 <a href="/user_dashboard">Dashboard</a>
                 <a href="/user/product-generator">Product Generator</a>
@@ -642,15 +467,18 @@
             <a href="/ai-chat">AI Chat</a>
             <a href="/team">Our Team</a>
         <% } else { %>
-            <a href="/auth">Login</a>
+            <!-- Added Home link for non-logged-in users -->
+            <a href="/">Home</a>
+            <a href="/auth/login">Login</a>
             <a href="/auth/signup">Sign Up</a>
             <a href="/admin/login">Admin Login</a>
             <a href="/team">Our Team</a>
         <% } %>
+        <!-- THEME TOGGLE FOR DESKTOP -->
         <button id="themeToggle" title="Toggle Theme (Light/Dark)">
-            <i class="fas fa-moon"></i> </button>
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
-
     <div class="navbar-user-info" id="mainNavbarUserInfo">
         <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
             <a href="/admin" class="admin-link-btn" title="Admin Panel">
@@ -667,15 +495,13 @@
             </a>
             <a href="/auth/logout" class="navbar-logout">Logout</a>
         <% } else { %>
-            <a href="/auth" class="navbar-logout login-btn">Login</a>
+            <a href="/auth/login" class="navbar-logout login-btn">Login</a>
             <a href="/admin/login" class="navbar-logout admin-login-btn">Admin</a>
         <% } %>
     </div>
 </nav>
-
 <div id="mySideMenu" class="side-menu">
     <a href="javascript:void(0)" class="close-btn" id="closeMenu">&times;</a>
-
     <% if (typeof user !== 'undefined' && user) { %>
         <div class="navbar-user-info mobile-view">
             <a href="/dashboard/profile" class="mobile-profile-link">
@@ -686,12 +512,12 @@
                 <i class="fas fa-star"></i> <%= user.points || 0 %>
             </div>
         </div>
-        <a href="/user_dashboard">Home</a>
+        <a href="/">Home</a>
         <% if (user.role === 'admin') { %>
             <a href="/dashboard">Admin Dashboard</a>
             <a href="/admin/users">Manage Users</a>
             <a href="/admin/products/add">Add Admin Product</a>
-            <a href="/user/listings/add">Add Public Listing</a>
+            <a href="/user/all-products">View All Products</a>
         <% } else { %>
             <a href="/user_dashboard">Dashboard</a>
             <a href="/user/product-generator">Product Generator</a>
@@ -703,7 +529,8 @@
         <a href="/team">Our Team</a>
         <a href="/auth/logout" class="mobile-action-btn mobile-logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</a>
     <% } else { %>
-        <a href="/auth" class="mobile-action-btn mobile-login-btn">Login</a>
+        <a href="/">Home</a>
+        <a href="/auth/login" class="mobile-action-btn mobile-login-btn">Login</a>
         <a href="/auth/signup" class="mobile-action-btn">Sign Up</a>
         <a href="/admin/login" class="mobile-action-btn mobile-admin-login-btn">Admin Login</a>
         <a href="/team">Our Team</a>
@@ -717,61 +544,46 @@
         document.getElementById("mySideMenu").style.width = "250px";
         document.body.classList.add('no-scroll');
     });
-
     document.getElementById("closeMenu").addEventListener("click", function () {
         document.getElementById("mySideMenu").style.width = "0";
         document.body.classList.remove('no-scroll');
     });
-
     document.querySelectorAll("#mySideMenu a").forEach(link => {
         link.addEventListener("click", function() {
-            // Only close menu if not the close button itself and not an external link
             if (!link.classList.contains('close-btn') && !link.hasAttribute('target')) {
                 document.getElementById("mySideMenu").style.width = "0";
                 document.body.classList.remove('no-scroll');
             }
         });
     });
-
-    // --- Theme Toggle Logic ---
     const themeToggle = document.getElementById('themeToggle');
     const themeToggleMobile = document.getElementById('themeToggleMobile');
     const body = document.body;
-    const lightIcon = '<i class="fas fa-sun"></i>'; // Sun icon for light mode
-    const darkIcon = '<i class="fas fa-moon"></i>'; // Moon icon for dark mode
-
+    const lightIcon = '<i class="fas fa-sun"></i>';
+    const darkIcon = '<i class="fas fa-moon"></i>';
     function applyTheme(theme) {
         if (theme === 'dark') {
             body.classList.add('dark-mode');
             themeToggle.innerHTML = lightIcon;
-            themeToggleMobile.innerHTML = lightIcon + ' Toggle Theme'; // Keep text for mobile
+            themeToggleMobile.innerHTML = lightIcon + ' Toggle Theme';
             localStorage.setItem('theme', 'dark');
         } else {
             body.classList.remove('dark-mode');
             themeToggle.innerHTML = darkIcon;
-            themeToggleMobile.innerHTML = darkIcon + ' Toggle Theme'; // Keep text for mobile
+            themeToggleMobile.innerHTML = darkIcon + ' Toggle Theme';
             localStorage.setItem('theme', 'light');
         }
     }
-
-    // Initialize theme on page load
     document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
         applyTheme(savedTheme);
     });
-
-    // Event listeners for theme toggles
     themeToggle.addEventListener('click', () => {
         const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
         applyTheme(currentTheme === 'light' ? 'dark' : 'light');
     });
-
     themeToggleMobile.addEventListener('click', () => {
         const currentTheme = body.classList.contains('dark-mode') ? 'dark' : 'light';
         applyTheme(currentTheme === 'light' ? 'dark' : 'light');
     });
-
-    // You might need to re-initialize Font Awesome icons if they are added dynamically after page load,
-    // though the CDN link usually handles static content well.
-    // FontAwesome might have its own method like FontAwesome.dom.i2svg(); for dynamic content.
 </script>
