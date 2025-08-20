@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Seller • Digital Catalog & AI Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-hero {
+            background-color: #ffffff;
+            background-image: linear-gradient(to right, #f8fafc, #f1f5f9);
+            padding: 4rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .feature-card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            text-align: center;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .feature-icon {
+            color: #22c55e;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem auto;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background-color: #22c55e;
+        }
+        .btn-primary:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: #3b82f6;
+        }
+        .btn-secondary:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <main class="flex-grow">
+        <div class="main-hero flex flex-col justify-center items-center text-center">
+            <div class="container">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-4 animate-fade-in-down">
+                    Your Digital Catalog, Powered by AI
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto animate-fade-in">
+                    Agent Seller helps you manage products effortlessly with intelligent tools for generation, search, and a seamless user experience.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
+                    <a href="/auth" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Log in to Get Started
+                    </a>
+                    <a href="/auth/signup" class="btn btn-secondary">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Create a Free Account
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container py-16">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Key Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card">
+                    <i data-lucide="sparkles" class="feature-icon text-indigo-500"></i>
+                    <h3 class="text-xl font-semibold mb-2">AI Product Descriptions</h3>
+                    <p class="text-gray-600">Generate compelling product descriptions instantly using AI.</p>
+                </div>
+                <div class="feature-card">
+                    <i data-lucide="mic" class="feature-icon text-blue-500"></i>
+                    <h3 class="text-xl font-semibold mb-2">Voice-Controlled Search</h3>
+                    <p class="text-gray-600">Find products with simple voice commands in multiple languages.</p>
+                </div>
+                <div class="feature-card">
+                    <i data-lucide="layers" class="feature-icon text-green-500"></i>
+                    <h3 class="text-xl font-semibold mb-2">Scalable Catalog Management</h3>
+                    <p class="text-gray-600">Manage your entire product inventory with powerful tools, including bulk upload.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
