@@ -124,7 +124,7 @@ router.get('/api/products', requireAuth, async (req, res) => {
         }
         if (categoryFilter && categoryFilter !== 'all') {
             if (query.$or) {
-                query = { $and: [ query, { category: { $regex: categoryFilter, $options: 'i' } } ] };
+                query = { $and: [query, { category: { $regex: categoryFilter, $options: 'i' } }] };
             } else {
                 query.category = { $regex: categoryFilter, $options: 'i' };
             }
@@ -169,8 +169,8 @@ router.get('/dashboard', async (req, res) => {
             const totalUsers = await User.countDocuments({});
             const adminUsers = await User.countDocuments({ role: 'admin' });
             const recentSignups = await User.find({})
-                                        .sort({ createdAt: -1 })
-                                        .limit(5);
+                .sort({ createdAt: -1 })
+                .limit(5);
             console.log("[Server] /dashboard: Admin data fetched. Rendering admin_dashboard.");
             res.render('admin_dashboard', {
                 user: user,
@@ -357,11 +357,11 @@ router.post('/api/admin/products/bulk-upload', requireAuth, uploadExcel.single('
             const price = parseFloat(productData.price);
             const category = String(productData.category || '').trim();
             // Assuming 'image_url' or 'product_image' might be present in Excel
-            const imageUrl = String(productData.image_url || productData.product_image || '').trim() || '/images/default_product.png'; 
+            const imageUrl = String(productData.image_url || productData.product_image || '').trim() || '/images/default_product.png';
             const keywords = String(productData.keywords || '')
-                                .split(',')
-                                .map(k => k.trim())
-                                .filter(k => k.length > 0);
+                .split(',')
+                .map(k => k.trim())
+                .filter(k => k.length > 0);
 
 
             if (!name) {
@@ -549,7 +549,7 @@ router.post('/user/my-catalog/edit/:productId', requireAuth, async (req, res) =>
     } catch (error) {
         console.error('[Server] Error updating product:', error);
         if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
-             try {
+            try {
                 const product = await Product.findById(productId).lean();
                 return res.status(409).render('edit_product', { user: user, product: product, error: `Product with name "${name}" already exists.`, message: null });
             } catch (fetchError) {
@@ -715,7 +715,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         let lastName = req.body.lastName || '';
         let mobile = req.body.mobile || '';
         let gender = req.body.gender || '';
-        
+
         let profilePictureUrl = user.profilePicture; // Start with current URL
 
         // Process uploaded file (if exists) via Firebase Storage
@@ -747,7 +747,7 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
         }
         // If no new file, and current profilePictureUrl from DB or form is empty (e.g. cleared by client), use default.
         else if (!profilePictureUrl || profilePictureUrl.trim() === '') {
-             profilePictureUrl = '/images/default_image.png';
+            profilePictureUrl = '/images/default_image.png';
         }
 
 
@@ -796,18 +796,29 @@ router.post('/dashboard/profile', requireAuth, async (req, res) => {
 
 router.post('/api/generate-description', async (req, res) => {
     console.log("[Server] /api/generate-description POST route accessed.");
-    const { productName, keywords } = req.body;
-    console.log(`[Server] Generating description for: ${productName}, keywords: ${keywords}`);
+    const { productName, keywords, tone, language } = req.body;
+    console.log(`[Server] Generating description for: ${productName}, keywords: ${keywords}, tone: ${tone}, language: ${language}`);
 
     if (!productName || !keywords) {
         return res.status(400).json({ error: 'Product name and keywords are required.' });
     }
 
-    const description = await generateProductDescription(productName, keywords);
-    console.log(`[Server] Generated description (first 50 chars): ${description.substring(0, Math.min(description.length, 50))}...`);
+    let description = await generateProductDescription(productName, keywords, tone, language);
+    console.log(`[Server] Gemini generated description (first 50 chars): ${String(description).substring(0, Math.min(description.length, 50))}...`);
 
     if (description.startsWith("Failed to generate description") || description.startsWith("AI agent not configured")) {
-        console.error("[Server] /api/generate-description: AI generation failed or not configured.");
+        console.warn("[Server] /api/generate-description: Gemini generation failed. Falling back to Groq.");
+        try {
+            const prompt = `Generate a concise and engaging product description for a product named "${productName}". Focus on these keywords: ${keywords}. The tone should be ${tone}. The description MUST be written in ${language}. Keep it under 100 words.`;
+            description = await getGroqChatCompletion(prompt);
+            console.log(`[Server] Groq generated description (first 50 chars): ${String(description).substring(0, Math.min(description.length, 50))}...`);
+        } catch (groqError) {
+            console.error("[Server] /api/generate-description: Groq generation also failed:", groqError);
+            return res.status(500).json({ error: description + " And fallback to Groq failed." });
+        }
+    }
+
+    if (String(description).startsWith("Failed") || String(description).startsWith("Groq AI agent not configured")) {
         return res.status(500).json({ error: description });
     }
 
@@ -837,7 +848,7 @@ router.post('/api/grok-chat', requireAuth, async (req, res) => {
         const lowerCaseMessage = message.toLowerCase();
         // Check for weather query for Chennai or Porumamilla
         const isWeatherQuery = (lowerCaseMessage.includes("weather") || lowerCaseMessage.includes("forecast")) &&
-                               (lowerCaseMessage.includes("chennai") || lowerCaseMessage.includes("porumamilla") || lowerCaseMessage.includes("today") || lowerCaseMessage.includes("tomorrow"));
+            (lowerCaseMessage.includes("chennai") || lowerCaseMessage.includes("porumamilla") || lowerCaseMessage.includes("today") || lowerCaseMessage.includes("tomorrow"));
 
         if (isWeatherQuery) {
             console.log("[Server] Grok Chat: Detected weather query. Requesting JSON from Groq.");
@@ -875,7 +886,7 @@ router.post('/api/grok-chat', requireAuth, async (req, res) => {
               "disclaimer": "Weather conditions can change rapidly, and this information is subject to change. This data is illustrative."
             }
             `;
-            
+
             const groqResponse = await getGroqChatCompletion(message, true, systemPrompt); // Pass true for returnJson
 
             if (typeof groqResponse === 'object') {
@@ -923,10 +934,10 @@ router.post('/api/grok-chat-audio', requireAuth, async (req, res) => {
             console.log("[Server] Audio Chat: Calling transcribeAudio (mock)...");
             const transcribedText = await transcribeAudio(audioBuffer);
             console.log(`[Server] Audio Chat: Mock transcribed text (first 50 chars): "${transcribedText.substring(0, Math.min(transcribedText.length, 50))}..."`);
-            
+
             console.log("[Server] Audio Chat: Calling getGroqChatCompletion with transcribed text...");
             // For audio, we typically want text reply for a chat interface
-            const grokReply = await getGroqChatCompletion(transcribedText, false); 
+            const grokReply = await getGroqChatCompletion(transcribedText, false);
             console.log(`[Server] Grok Chat: Received Groq reply (first 50 chars): "${String(grokReply).substring(0, Math.min(String(grokReply).length, 50))}..."`);
 
             // If grokReply is an object (due to a weather-like query from audio), convert to string

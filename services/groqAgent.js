@@ -32,7 +32,7 @@ async function getGroqChatCompletion(message, returnJson = false, systemPrompt =
                 { role: "system", content: systemPrompt },
                 { role: "user", content: message },
             ],
-            model: "llama3-8b-8192", // You can choose other models
+            model: "llama-3.1-8b-instant", // Updated to supported model
             temperature: returnJson ? 0.1 : 0.7, // Lower temperature for more structured JSON
             max_tokens: returnJson ? 1000 : 500, // More tokens if expecting a complex JSON
         };

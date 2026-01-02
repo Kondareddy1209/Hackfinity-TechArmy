@@ -7,16 +7,14 @@
   <title>Sign Up • Agent Seller</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Old CSS styles... (unchanged) */
+    /* Base styles */
     * {
-      box-sizing: border-box; /* Prevent text selection zoom on mobile */
+      box-sizing: border-box;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-      /* Prevent touch callout */
       -webkit-touch-callout: none;
-      /* Prevent highlight */
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -38,10 +36,8 @@
       overflow: hidden;
       background: linear-gradient(to right, #32CD32 0%, #a0e7e5 100%);
       position: relative;
-      /* Prevent zoom on mobile */
       touch-action: pan-y pinch-zoom;
       -ms-touch-action: pan-y pinch-zoom;
-      /* Prevent overscroll */
       overscroll-behavior: none;
       -webkit-overflow-scrolling: touch;
     }
@@ -187,11 +183,11 @@
       }
     }
 
-    /* Auth Container Styling (updated for dual panel) */
+    /* Auth Container Styling - Desktop (Dual Panel) */
     .auth-container-wrapper {
       position: relative;
       display: flex;
-      max-width: 900px; /* Wider container for dual panels */
+      max-width: 900px;
       width: 95%;
       margin: 20px;
       border-radius: 12px;
@@ -205,7 +201,7 @@
     }
 
     .auth-form-panel {
-      width: 50%; /* Form takes half the space */
+      width: 50%;
       padding: 18px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -214,7 +210,7 @@
     }
 
     .auth-overview-panel {
-      width: 50%; /* Overview takes the other half */
+      width: 50%;
       padding: 30px;
       color: white;
       display: flex;
@@ -255,12 +251,11 @@
     }
     
     .feature-list li i {
-        color: #fde047; /* Yellow checkmark icon */
+        color: #fde047;
         margin-right: 15px;
     }
 
-
-    /* Old Auth Container Styling (replaced by dual panels) */
+    /* Auth Container Styling */
     .auth-container {
         width: 100%;
         max-width: unset;
@@ -472,6 +467,50 @@
       user-select: none;
     }
 
+    /* Google signin section */
+    .google-signin-section {
+      margin-top: 15px;
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .google-signin-section p {
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .google-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .google-btn:hover {
+      border-color: #4285f4;
+      box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
     /* Interactive mouse effect */
     .interactive-wave {
       position: absolute;
@@ -521,90 +560,129 @@
       }
     }
 
-    /* Mobile-specific optimizations with enhanced zoom prevention */
+    /* Mobile-specific optimizations */
     @media (max-width: 768px) {
       body {
-        padding: 20px 15px;
-        align-items: center;
+        padding: 10px;
+        align-items: flex-start;
         justify-content: center;
         overflow-y: auto;
         overflow-x: hidden;
         min-height: 100vh;
         background: linear-gradient(135deg, #32CD32 0%, #a0e7e5 100%);
-        /* Enhanced zoom prevention */
         touch-action: pan-y;
         -ms-touch-action: pan-y;
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
-        /* Prevent any zoom gestures */
         -webkit-text-size-adjust: 100%;
         -ms-text-size-adjust: 100%;
       }
 
-      /* Disable wave animations on mobile for better performance */
+      /* Hide desktop animations on mobile for better performance */
       .wave-layer {
         display: none;
       }
 
-      /* Disable particles on mobile */
       .particle-system {
         display: none;
       }
 
-      /* Disable mouse wave on mobile */
       .interactive-wave {
         display: none;
       }
 
-      .auth-container {
+      /* Mobile Layout: Stack panels vertically */
+      .auth-container-wrapper {
+        flex-direction: column;
+        max-width: 100%;
         width: 100%;
-        max-width: 350px;
-        margin: 20px 0;
-        padding: 18px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 
-                    0 0 0 1px rgba(255, 255, 255, 0.2);
-        transform: none;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        /* Force no zoom on container */
-        touch-action: pan-y;
+        margin: 0;
+        box-shadow: none;
+        background: transparent;
+        backdrop-filter: none;
+        border: none;
+        border-radius: 0;
       }
 
-      .auth-container:hover {
-        transform: none;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-                    0 0 0 1px rgba(255, 255, 255, 0.2);
+      /* Overview panel becomes top section on mobile */
+      .auth-overview-panel {
+        width: 100%;
+        padding: 20px 15px;
+        background: linear-gradient(to right, #34d399, #10b981);
+        text-align: center;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: 0;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.9em;
+        margin-bottom: 15px;
+        line-height: 1.4;
+      }
+
+      .feature-list {
+        max-width: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .feature-list li {
+        font-size: 0.85em;
+        margin-bottom: 0;
+        justify-content: flex-start;
+        text-align: left;
+      }
+
+      .feature-list li i {
+        margin-right: 10px;
+        font-size: 1em;
+        flex-shrink: 0;
+      }
+
+      /* Form panel becomes bottom section on mobile */
+      .auth-form-panel {
+        width: 100%;
+        padding: 25px 15px;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 0 0 12px 12px;
+      }
+
+      .auth-container {
+        padding: 0;
       }
 
       h2 {
-        font-size: 19px;
-        margin: 5px 0 10px;
+        font-size: 20px;
+        margin: 0 0 20px;
         color: #2c5530;
       }
 
       .form-group {
-        margin-bottom: 6px;
+        margin-bottom: 16px;
       }
 
       label {
-        font-size: 12px;
-        margin-bottom: 1px;
-        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 6px;
+        font-weight: 600;
         color: #333;
       }
 
       input, select {
-        padding: 7px 34px 7px 9px;
-        /* Force 16px font size to prevent zoom */
+        padding: 14px 40px 14px 16px;
         font-size: 16px !important;
-        height: 36px;
-        border-radius: 5px;
-        border: 1.5px solid #ddd;
-        background: rgba(255, 255, 255, 0.9);
-        transition: all 0.3s ease;
-        /* Prevent zoom on input */
+        height: 50px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        background: rgba(255, 255, 255, 0.95);
         touch-action: manipulation;
         -webkit-text-size-adjust: 100%;
       }
@@ -612,136 +690,140 @@
       input:focus, select:focus {
         border-color: #4A90E2;
         box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-        transform: translateY(-1px);
-        /* Ensure no zoom on focus */
+        transform: none;
         font-size: 16px !important;
         zoom: 1;
         -webkit-text-size-adjust: 100%;
       }
 
       .password-group .toggle-pass {
-        right: 8px;
-        top: 26px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: #4A90E2;
-        font-size: 12px;
-        transition: color 0.3s ease;
-        padding: 0;
-        height: auto;
-        line-height: 1;
+        right: 16px;
+        top: 38px;
+        font-size: 16px;
+        padding: 8px;
         touch-action: manipulation;
       }
 
-      .password-group .toggle-pass:hover {
-        color: #357ab8;
-      }
-
-      .password-group .toggle-pass:active {
-        transform: none;
-        background: none;
-      }
-
       .password-group small {
-        font-size: 9px;
-        margin-top: 2px;
-        margin-bottom: 3px;
+        font-size: 12px;
+        margin-top: 6px;
+        margin-bottom: 5px;
         color: #666;
       }
 
       #capsAlert {
-        font-size: 12px;
-        margin-top: 5px;
-        padding: 3px 6px;
-        border-radius: 3px;
+        font-size: 13px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
       }
 
       .form-actions {
-        flex-direction: row;
+        flex-direction: column;
         gap: 15px;
-        margin-top: 12px;
-        margin-bottom: 5px;
-        align-items: center;
-        justify-content: space-between;
+        margin-top: 25px;
+        margin-bottom: 10px;
+        align-items: stretch;
       }
 
       button {
-        padding: 6px 12px;
-        font-size: 10px;
-        font-weight: normal;
-        border-radius: 20px;
-        min-height: auto;
-        width: auto;
-        height: auto;
+        padding: 16px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        width: 100%;
         touch-action: manipulation;
       }
 
       button:active {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
       }
 
       .link {
-        padding: 6px 12px;
-        font-size: 10px;
-        font-weight: normal;
-        border-radius: 5px;
+        padding: 16px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
         text-align: center;
-        min-height: auto;
-        display: inline-block;
-        width: auto;
-        height: auto;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
         touch-action: manipulation;
       }
 
       .link:active {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
       }
 
       .error-msg {
-        font-size: 10px;
-        margin: -3px 0 3px;
-        text-align: left;
-        padding: 0;
-        background: none;
-        border-radius: 0;
-        border-left: none;
+        font-size: 12px;
+        margin: 5px 0 10px;
+        text-align: center;
+      }
+
+      .google-signin-section {
+        margin-top: 20px;
+        padding-top: 20px;
+      }
+
+      .google-signin-section p {
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
+      .google-btn {
+        padding: 16px 20px;
+        font-size: 16px;
+        max-width: 100%;
+        border-radius: 8px;
       }
     }
 
     /* Very small mobile screens */
-    @media (max-width: 480px) {
+    @media (max-width: 375px) {
       body {
-        padding: 15px 10px;
-        touch-action: pan-y;
+        padding: 8px;
       }
 
-      .auth-container {
-        padding: 20px 15px;
-        margin: 5px 0;
+      .auth-overview-panel {
+        padding: 18px 12px;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.4em;
+        margin-bottom: 6px;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.85em;
+        margin-bottom: 12px;
+      }
+
+      .feature-list li {
+        font-size: 0.8em;
+      }
+
+      .auth-form-panel {
+        padding: 20px 12px;
       }
 
       h2 {
-        font-size: 22px;
+        font-size: 18px;
         margin-bottom: 16px;
       }
 
-      .form-group {
-        margin-bottom: 14px;
+      input, select {
+        height: 46px;
+        padding: 12px 35px 12px 14px;
       }
 
-      input,
-      select {
-        padding: 12px 36px 12px 14px;
-        height: 48px;
-        /* Force 16px to prevent zoom */
-        font-size: 16px !important;
+      .password-group .toggle-pass {
+        right: 14px;
+        top: 36px;
       }
 
-      button,
-      .link {
-        padding: 14px 20px;
-        min-height: 48px;
+      button, .link, .google-btn {
+        padding: 14px 16px;
         font-size: 15px;
       }
     }
@@ -749,44 +831,79 @@
     /* Landscape orientation on mobile */
     @media (max-height: 600px) and (orientation: landscape) {
       body {
-        padding: 10px;
+        padding: 5px;
         align-items: center;
-        touch-action: pan-y;
       }
 
-      .auth-container {
-        margin: 10px 0;
-        max-height: 90vh;
+      .auth-container-wrapper {
+        margin: 5px auto;
+        max-height: 95vh;
         overflow-y: auto;
       }
 
+      .auth-overview-panel {
+        padding: 12px 15px;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.3em;
+        margin-bottom: 4px;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.8em;
+        margin-bottom: 8px;
+      }
+
+      .feature-list li {
+        font-size: 0.75em;
+        margin-bottom: 4px;
+      }
+
+      .auth-form-panel {
+        padding: 15px;
+      }
+
       h2 {
-        font-size: 20px;
-        margin-bottom: 12px;
+        font-size: 16px;
+        margin-bottom: 8px;
       }
 
       .form-group {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
 
-      input,
-      select {
-        height: 42px;
+      input, select {
+        height: 40px;
         padding: 10px 32px 10px 12px;
-        /* Force 16px to prevent zoom */
         font-size: 16px !important;
       }
 
-      button,
-      .link {
-        padding: 12px 20px;
-        min-height: 42px;
+      button, .link, .google-btn {
+        padding: 10px 15px;
         font-size: 14px;
       }
 
       .form-actions {
-        margin-top: 15px;
+        margin-top: 10px;
         gap: 8px;
+      }
+
+      .google-signin-section {
+        margin-top: 15px;
+        padding-top: 15px;
+      }
+    }
+    
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
   </style>
@@ -812,7 +929,7 @@
   </div>
 
   <div class="auth-container-wrapper">
-      <!-- Left side: The Overview Panel -->
+      <!-- Overview Panel (Top on mobile, Left on desktop) -->
       <div class="auth-overview-panel">
           <h2>Welcome to Agent Seller</h2>
           <p>Your all-in-one platform for digital catalog management and AI-powered sales. Create, manage, and sell with the power of intelligent automation.</p>
@@ -836,15 +953,12 @@
           </ul>
       </div>
 
-      <!-- Right side: The Signup Form -->
+      <!-- Form Panel (Bottom on mobile, Right on desktop) -->
       <div class="auth-form-panel">
           <div class="auth-container">
               <h2>Create Account</h2>
-              <% if (error) { %>
-              <p class="error-msg" style="text-align: center;" id="errorMsg"><%= error %></p>
-              <% } else { %>
-                <p class="error-msg" style="text-align: center; display:none;" id="errorMsg"></p>
-              <% } %>
+              <p class="error-msg" style="text-align: center; display:none;" id="errorMsg"></p>
+              
               <form id="signupForm" action="/auth/signup" method="POST">
                 <div class="form-group">
                   <label for="firstName">First Name</label>
@@ -893,7 +1007,15 @@
     
               <div class="google-signin-section">
                   <p>Or sign up with:</p>
-                  <div id="g_id_signin_button"></div> 
+                  <button class="google-btn" id="googleSignInBtn">
+                      <svg width="20" height="20" viewBox="0 0 24 24">
+                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                      </svg>
+                      Continue with Google
+                  </button>
               </div>
           </div>
       </div>
@@ -904,6 +1026,26 @@
     // Make sure errorMsg div is available for JS to use
     const errorMsgDiv = document.getElementById('errorMsg');
     
+    // Google Sign-In functionality
+    let googleSignInInitialized = false;
+    
+    function initializeGoogleSignIn() {
+      if (googleSignInInitialized) return;
+      
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual Google Client ID
+          callback: handleGoogleSignIn,
+          auto_select: false,
+          cancel_on_tap_outside: false
+        });
+        googleSignInInitialized = true;
+      } else {
+        // Retry after a short delay if Google API isn't loaded yet
+        setTimeout(initializeGoogleSignIn, 100);
+      }
+    }
+
     async function handleGoogleSignIn(response) {
         console.log("Google ID Token received:", response.credential);
 
@@ -945,25 +1087,23 @@
         }
     }
 
-    // Render the Google button dynamically
-    document.getElementById('g_id_signin_button').innerHTML = `
-        <div id="g_id_onload"
-             data-client_id="<%= process.env.GOOGLE_CLIENT_ID %>"
-             data-callback="handleGoogleSignIn"
-             data-auto_prompt="false"
-             data-auto_select="true">
-        </div>
-        <div class="g_id_signin"
-             data-type="standard"
-             data-size="large"
-             data-theme="outline"
-             data-text="signup_with"
-             data-shape="rectangular"
-             data-logo_alignment="left">
-        </div>
-    `;
+    // Custom Google Sign-In button click handler
+    document.getElementById('googleSignInBtn').addEventListener('click', function() {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.prompt();
+      } else {
+        console.error('Google Sign-In API not loaded');
+        if (errorMsgDiv) {
+          errorMsgDiv.textContent = 'Google Sign-In is not available. Please try again later.';
+          errorMsgDiv.style.display = 'block';
+        }
+      }
+    });
 
-    // Old form functionality
+    // Initialize Google Sign-In when the page loads
+    window.addEventListener('load', initializeGoogleSignIn);
+
+    // Password toggle functionality
     const pwInput = document.getElementById('password');
     const toggle = document.getElementById('togglePass');
     if (pwInput && toggle) {
@@ -973,6 +1113,7 @@
       });
     }
 
+    // Caps Lock detection
     const capsAlert = document.getElementById('capsAlert');
     if (pwInput && capsAlert) {
       pwInput.addEventListener('keydown', e => {
@@ -983,6 +1124,7 @@
       });
     }
 
+    // Form validation
     document.getElementById('signupForm').addEventListener('submit', function (e) {
       const fields = ['firstName', 'lastName', 'email', 'mobile', 'password', 'gender'];
       let isValid = true;
@@ -1009,7 +1151,7 @@
           e.stopPropagation();
           return false;
         }
-    }, { passive: false });
+      }, { passive: false });
 
       let lastTouchEnd = 0;
       document.addEventListener('touchend', function(e) {
@@ -1046,6 +1188,7 @@
           }
         });
       });
+
       document.addEventListener('contextmenu', function(e) {
         if (window.innerWidth <= 768) {
           e.preventDefault();
@@ -1053,6 +1196,7 @@
           return false;
         }
       }, { passive: false });
+
       document.addEventListener('wheel', function(e) {
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
@@ -1060,6 +1204,7 @@
           return false;
         }
       }, { passive: false });
+
       document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
           e.preventDefault();
@@ -1067,6 +1212,7 @@
           return false;
         }
       }, { passive: false });
+
       window.addEventListener('orientationchange', function() {
         setTimeout(() => {
           const viewport = document.querySelector('meta[name="viewport"]');
@@ -1087,6 +1233,7 @@
       });
     }
 
+    // Create floating particles (desktop only)
     function createParticles() {
       const particleContainer = document.getElementById('particles');
       if (!particleContainer) return;
@@ -1115,6 +1262,7 @@
       }
     }
 
+    // Setup mouse interaction (desktop only)
     function setupMouseInteraction() {
       if (window.innerWidth <= 768) return;
       const mouseWave = document.getElementById('mouseWave');
@@ -1122,6 +1270,7 @@
       
       let mouseX = window.innerWidth / 2;
       let mouseY = window.innerHeight / 2;
+      
       document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -1131,14 +1280,17 @@
         mouseWave.style.opacity = '1';
         mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
       });
+      
       document.addEventListener('mouseleave', () => {
         mouseWave.style.opacity = '0';
         mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
       });
+      
       mouseWave.style.left = mouseX + 'px';
       mouseWave.style.top = mouseY + 'px';
     }
 
+    // Setup form animations (desktop only)
     function setupFormAnimations() {
       const inputs = document.querySelectorAll('input, select');
       inputs.forEach(input => {
@@ -1154,6 +1306,7 @@
       });
     }
 
+    // Setup mobile-specific enhancements
     function setupMobileEnhancements() {
       if (window.innerWidth <= 768) {
         let initialViewportHeight = window.innerHeight;
@@ -1186,6 +1339,7 @@
             }
           }
         });
+
         const inputs = document.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
           input.addEventListener('touchstart', function(e) {
@@ -1201,6 +1355,7 @@
             }, 300);
           });
         });
+
         const container = document.querySelector('.auth-container-wrapper');
         if (container) {
           container.addEventListener('touchstart', function(e) {
@@ -1210,6 +1365,7 @@
               return false;
             }
           }, { passive: false });
+          
           container.addEventListener('touchmove', function(e) {
             if (e.touches.length > 1) {
               e.preventDefault();
@@ -1221,14 +1377,17 @@
       }
     }
 
+    // Initialize everything when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
       preventZoom();
       createParticles();
       setupMouseInteraction();
       setupFormAnimations();
       setupMobileEnhancements();
+      initializeGoogleSignIn();
     });
 
+    // Performance optimization - pause animations when page is hidden
     document.addEventListener('visibilitychange', () => {
       const waves = document.querySelectorAll('.wave-layer');
       if (document.hidden) {
@@ -1238,6 +1397,7 @@
       }
     });
 
+    // Handle orientation changes
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
         const viewport = document.querySelector('meta[name="viewport"]');
@@ -1251,6 +1411,7 @@
       }, 100);
     });
 
+    // Zoom prevention check
     setInterval(() => {
       if (window.innerWidth <= 768) {
         const currentZoom = Math.round(window.devicePixelRatio * 100) / 100;

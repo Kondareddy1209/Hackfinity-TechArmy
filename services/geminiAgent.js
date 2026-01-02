@@ -13,7 +13,8 @@ if (!API_KEY) {
 // IMPORTANT: Use the actual model name that works for you.
 // From your `listModels` output, "models/gemini-pro" or "models/gemini-1.5-pro-latest"
 // are good candidates.
-const GEMINI_MODEL_NAME = "models/gemini-pro"; // Or "models/gemini-1.5-pro-latest"
+// Update model name to not include 'models/' prefix, SDK handles it.
+const GEMINI_MODEL_NAME = "gemini-1.5-flash";
 
 // Initialize the Google Generative AI client only if API key exists
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
@@ -22,28 +23,35 @@ const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
  * Generates a concise product description using the Google Gemini AI.
  * @param {string} productName - The name of the product.
  * @param {string} keywords - Comma-separated keywords related to the product.
+ * @param {string} tone - The desired tone of the description (e.g., Professional, Fun).
+ * @param {string} language - The language for the description.
  * @returns {Promise<string>} The generated product description or an error message.
  */
-async function generateProductDescription(productName, keywords) {
-    if (!genAI) {
-        return "AI agent not configured: Google API Key is missing or invalid.";
-    }
+async function generateProductDescription(productName, keywords, tone = 'Professional', language = 'English') {
+  if (!genAI) {
+    return "AI agent not configured: Google API Key is missing or invalid.";
+  }
 
+  const tryGenerate = async (modelName) => {
+    const model = genAI.getGenerativeModel({ model: modelName });
+    const prompt = `Generate a concise and engaging product description for a product named "${productName}". Focus on these keywords: ${keywords}. The tone should be ${tone}. The description MUST be written in ${language}. Keep it under 100 words.`;
+    console.log(`Sending prompt to Gemini (${modelName}): "${prompt}"`);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  };
+
+  try {
+    return await tryGenerate(GEMINI_MODEL_NAME);
+  } catch (error) {
+    console.warn(`Gemini generation failed with ${GEMINI_MODEL_NAME}. Trying fallback 'gemini-pro'. Error:`, error.message);
     try {
-        const model = genAI.getGenerativeModel({ model: GEMINI_MODEL_NAME });
-        const prompt = `Generate a concise and engaging product description for a product named "${productName}". Focus on these keywords: ${keywords}. Keep it under 100 words.`;
-
-        console.log(`Sending prompt to Gemini: "${prompt}"`); // Log the prompt
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        return text;
-
-    } catch (error) {
-        console.error("Error generating product description with Gemini:", error.message);
-        return "Failed to generate description. Please try again later. (AI Error: " + error.message + ")";
+      return await tryGenerate("gemini-pro");
+    } catch (fallbackError) {
+      console.error("Error generating product description with Gemini (Fallback):", fallbackError.message);
+      return "Failed to generate description. Please try again later. (AI Error: " + fallbackError.message + ")";
     }
+  }
 }
 
 /**
