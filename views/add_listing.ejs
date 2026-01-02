@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product Listing • Agent Seller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Your original CSS styles (including original button sizes) */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Enhanced form styling with reduced container */
+        .form-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid #e2e8f0;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input {
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+            background: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Button animations */
+        .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            /* Reverted original button sizes */
+            padding: 16px; 
+            font-size: 1rem; 
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+
+        /* Voice input styling */
+        .mic-button {
+            /* Reverted mic button size */
+            width: 48px; 
+            height: 48px; 
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .mic-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .mic-button.recording {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation: pulse-glow 1.5s infinite;
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+                transform: scale(1.05);
+            }
+        }
+
+        /* Message styling */
+        .message {
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .message.hidden {
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* File upload styling */
+        .file-input-wrapper {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .original-url-input {
+            cursor: pointer;
+            background-color: #f8fafc;
+        }
+
+        .original-url-input.has-file-selected {
+            font-weight: 500;
+            color: #16a34a;
+            border-color: #16a34a;
+            background-color: #f0fdf4;
+        }
+
+        .dragover-highlight {
+            border-color: #22c55e !important;
+            background-color: #f0fdf4 !important;
+            transform: scale(1.02);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 16px 12px;
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .input-with-mic {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .input-with-mic input,
+            .input-with-mic textarea {
+                width: 100%;
+            }
+
+            .mic-button {
+                align-self: flex-end;
+                width: 48px;
+                height: 48px;
+            }
+
+            .form-buttons {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+                line-height: 2rem;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .btn {
+            position: relative;
+        }
+
+        .loading .btn::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Enhanced focus visibility */
+        .form-input:focus,
+        .btn:focus,
+        .mic-button:focus {
+            outline: 2px solid #22c55e;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation placeholder -->
+    <div class="bg-gray-800 text-white p-4 text-center">
+        <h1 class="text-xl font-bold">Agent Seller Navigation</h1>
+    </div>
+
+    <div class="container mx-auto px-4 py-6">
+        <div class="form-container max-w-2xl mx-auto rounded-xl shadow-lg p-6">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
+                    <i data-lucide="plus-circle" class="w-6 h-6 text-green-600"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Add New Product Listing</h2>
+                <p class="text-gray-600">Share your products with our community</p>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <form id="addListingForm" class="space-y-6" novalidate>
+                <div class="form-group">
+                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Product Name <span class="text-red-500">*</span>
+                    </label>
+                    <div class="input-with-mic flex gap-3">
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            required 
+                            class="form-input flex-1 px-3 py-2.5 rounded-lg"
+                            placeholder="e.g., Hand-woven Basket"
+                            maxlength="100"
+                        >
+                        <button 
+                            type="button" 
+                            id="micName" 
+                            class="mic-button flex items-center justify-center w-10 h-10 rounded-lg text-white border-none cursor-pointer"
+                            title="Speak product name"
+                            aria-label="Voice input for product name"
+                        >
+                            <i data-lucide="mic" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p id="nameStatus" class="text-xs text-gray-500 mt-1 min-h-[16px]"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <div class="input-with-mic flex gap-3">
+                        <textarea 
+                            id="description" 
+                            name="description" 
+                            rows="3" 
+                            required 
+                            class="form-input flex-1 px-3 py-2.5 rounded-lg resize-vertical"
+                            placeholder="Describe your product, its features, and benefits..."
+                            maxlength="500"
+                        ></textarea>
+                        <button 
+                            type="button" 
+                            id="micDescription" 
+                            class="mic-button flex items-center justify-center w-10 h-10 rounded-lg text-white border-none cursor-pointer"
+                            title="Speak description"
+                            aria-label="Voice input for description"
+                        >
+                            <i data-lucide="mic" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <p id="descriptionStatus" class="text-xs text-gray-500 mt-1 min-h-[16px]"></p>
+                    <p id="charCount" class="text-xs text-gray-400 mt-1">0/500 characters</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Price ($) <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg">$</span>
+                            <input 
+                                type="number" 
+                                id="price" 
+                                name="price" 
+                                step="0.01" 
+                                min="0" 
+                                max="999999.99"
+                                required 
+                                class="form-input w-full pl-7 pr-3 py-2.5 rounded-lg"
+                                placeholder="25.99"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Category <span class="text-red-500">*</span>
+                        </label>
+                        <select id="category" name="category" required class="form-input w-full px-3 py-2.5 rounded-lg">
+                            <option value="">Select a Category</option>
+                            <option value="Agriculture">🌱 Agriculture</option>
+                            <option value="Handicrafts">🎨 Handicrafts</option>
+                            <option value="Food & Groceries">🍎 Food & Groceries</option>
+                            <option value="Retail">🛍️ Retail</option>
+                            <option value="Other">📦 Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="imageUpload" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Product Image
+                        <span class="text-gray-500 font-normal">(Optional)</span>
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input 
+                            type="file" 
+                            id="imageUpload" 
+                            name="image" 
+                            accept="image/jpeg,image/png,image/gif"
+                            class="hidden"
+                        >
+                        <input 
+                            type="text" 
+                            id="imageFileNameDisplay" 
+                            class="form-input w-full px-3 py-2.5 rounded-lg original-url-input"
+                            placeholder="Click to upload image or paste URL"
+                            readonly
+                        >
+                    </div>
+                    <p id="imageStatus" class="text-xs text-gray-500 mt-1 min-h-[16px]"></p>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactInfo" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Contact Information
+                    </label>
+                    <input 
+                        type="text" 
+                        id="contactInfo" 
+                        name="contactInfo" 
+                        class="form-input w-full px-3 py-2.5 rounded-lg"
+                        placeholder="e.g., +1234567890, email@example.com"
+                        maxlength="200"
+                    >
+                </div>
+
+                <div class="form-buttons flex flex-col-reverse md:flex-row justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+                    <a href="/user_dashboard" class="btn btn-secondary flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-semibold text-center no-underline">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                    <button type="submit" class="btn btn-primary flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-white font-semibold border-none cursor-pointer">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>Add Listing</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer placeholder -->
+    <div class="bg-gray-100 p-4 text-center text-gray-600 mt-8">
+        <p>&copy; 2025 Agent Seller. All rights reserved.</p>
+    </div>
+
+    <script type="module">
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // App state
+        let isSubmitting = false;
+        let selectedImageFile = null;
+        let isListening = false;
+
+        // DOM Elements
+        const form = document.getElementById('addListingForm');
+        const messageContainer = document.getElementById('messageContainer');
+        const nameInput = document.getElementById('name');
+        const descriptionInput = document.getElementById('description');
+        const priceInput = document.getElementById('price');
+        const categorySelect = document.getElementById('category');
+        const charCount = document.getElementById('charCount');
+        const contactInfoInput = document.getElementById('contactInfo');
+        const imageUpload = document.getElementById('imageUpload');
+        const imageFileNameDisplay = document.getElementById('imageFileNameDisplay');
+        const imageStatus = document.getElementById('imageStatus');
+        const micNameBtn = document.getElementById('micName');
+        const micDescriptionBtn = document.getElementById('micDescription');
+        const nameStatus = document.getElementById('nameStatus');
+        const descriptionStatus = document.getElementById('descriptionStatus');
+
+        // Utility Functions
+        function showMessage(message, type = 'success') {
+            messageContainer.innerHTML = '';
+            if (message && type !== 'hidden') {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                messageDiv.textContent = message;
+                messageContainer.appendChild(messageDiv);
+                messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function setLoading(loading) {
+            isSubmitting = loading;
+            const container = document.querySelector('.form-container');
+            if (loading) {
+                container.classList.add('loading');
+            } else {
+                container.classList.remove('loading');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function handleFileSelect(file) {
+            showMessage('', 'hidden');
+            
+            if (!file.type.startsWith('image/')) {
+                showMessage('Please select an image file (PNG, JPG, GIF)', 'error');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                showMessage('File size must be less than 10MB', "error");
+                return;
+            }
+
+            selectedImageFile = file;
+            imageFileNameDisplay.value = `File: ${file.name} (${formatFileSize(file.size)})`;
+            imageFileNameDisplay.classList.add('has-file-selected');
+            imageFileNameDisplay.readOnly = true;
+        }
+
+        function removeFile() {
+            selectedImageFile = null;
+            imageUpload.value = '';
+            imageFileNameDisplay.value = '';
+            imageFileNameDisplay.classList.remove('has-file-selected');
+            imageFileNameDisplay.readOnly = false;
+            imageFileNameDisplay.placeholder = 'Click to upload image or paste URL';
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Voice Recognition Setup
+        function setupVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                micNameBtn.style.display = 'none';
+                micDescriptionBtn.style.display = 'none';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            function createRecognition(targetInput, statusElement, micButton) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                micButton.addEventListener('click', () => {
+                    if (isListening) return;
+
+                    isListening = true;
+                    micButton.classList.add('recording');
+                    statusElement.textContent = 'Listening...';
+                    
+                    recognition.start();
+                });
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    if (targetInput.tagName === 'TEXTAREA') {
+                        targetInput.value += (targetInput.value ? ' ' : '') + transcript;
+                    } else {
+                        targetInput.value = transcript;
+                    }
+                    targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    statusElement.textContent = 'Voice input successful!';
+                    setTimeout(() => statusElement.textContent = '', 3000);
+                };
+
+                recognition.onerror = (event) => {
+                    statusElement.textContent = 'Voice recognition error. Please try again.';
+                    setTimeout(() => statusElement.textContent = '', 3000);
+                };
+
+                recognition.onend = () => {
+                    isListening = false;
+                    micButton.classList.remove('recording');
+                };
+            }
+
+            createRecognition(nameInput, nameStatus, micNameBtn);
+            createRecognition(descriptionInput, descriptionStatus, micDescriptionBtn);
+        }
+
+        // Form Validation
+        function validateForm() {
+            const name = nameInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const price = parseFloat(priceInput.value);
+            const category = categorySelect.value;
+
+            showMessage('', 'hidden');
+
+            if (!name) {
+                nameInput.focus();
+                showMessage("Please enter a product name.", "error");
+                return false;
+            }
+
+            if (!description) {
+                descriptionInput.focus();
+                showMessage("Please enter a product description.", "error");
+                return false;
+            }
+
+            if (isNaN(price) || price < 0) {
+                priceInput.focus();
+                showMessage("Please enter a valid price.", "error");
+                return false;
+            }
+
+            if (!category) {
+                categorySelect.focus();
+                showMessage("Please select a category.", "error");
+                return false;
+            }
+
+            return true;
+        }
+
+        // Event Listeners
+        imageFileNameDisplay.addEventListener('click', () => {
+            if (!selectedImageFile) {
+                imageUpload.click();
+            }
+        });
+
+        imageFileNameDisplay.addEventListener('input', () => {
+            if (imageFileNameDisplay.value.trim() && selectedImageFile) {
+                selectedImageFile = null;
+                imageUpload.value = '';
+                imageFileNameDisplay.classList.remove('has-file-selected');
+                imageFileNameDisplay.readOnly = false;
+            }
+        });
+
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelect(file);
+            } else {
+                removeFile();
+            }
+        });
+
+        // Character count for description
+        descriptionInput.addEventListener('input', () => {
+            const count = descriptionInput.value.length;
+            charCount.textContent = `${count}/500 characters`;
+            
+            if (count > 450) {
+                charCount.className = "text-xs text-red-500 mt-1";
+            } else if (count > 400) {
+                charCount.className = "text-xs text-yellow-500 mt-1";
+            } else {
+                charCount.className = "text-xs text-gray-400 mt-1";
+            }
+        });
+
+        // Drag and drop for image upload
+        const imageFormGroup = form.querySelector('.form-group:has(#imageUpload)');
+        if (imageFormGroup) {
+            imageFormGroup.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageFormGroup.classList.add('dragover-highlight');
+            });
+
+            imageFormGroup.addEventListener('dragleave', () => {
+                imageFormGroup.classList.remove('dragover-highlight');
+            });
+
+            imageFormGroup.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageFormGroup.classList.remove('dragover-highlight');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+        }
+
+        // Form Submission
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (isSubmitting) return;
+            if (!validateForm()) return;
+
+            setLoading(true);
+
+            try {
+                const formData = new FormData();
+                formData.append('name', nameInput.value.trim());
+                formData.append('description', descriptionInput.value.trim());
+                formData.append('price', parseFloat(priceInput.value));
+                formData.append('category', categorySelect.value);
+                formData.append('contactInfo', contactInfoInput.value.trim());
+                
+                if (selectedImageFile) {
+                    formData.append('image', selectedImageFile);
+                } else if (imageFileNameDisplay.value.trim() && isValidUrl(imageFileNameDisplay.value.trim())) {
+                    formData.append('imageUrl', imageFileNameDisplay.value.trim());
+                } else {
+                    formData.append('imageUrl', '/images/default_product.png');
+                }
+                
+                console.log('Submitting form data...');
+                
+                const response = await fetch('/user/listings', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const htmlResponse = await response.text();
+                    console.error('Non-JSON response received:', htmlResponse);
+                    throw new Error('Server returned an HTML page instead of JSON. Check server logs.');
+                }
+                
+                const result = await response.json();
+                console.log('Response result:', result);
+
+                if (response.ok) {
+                    console.log("✅ Listing added successfully:", result.listing);
+                    showMessage("🎉 Product listing created successfully! Your product is now live.", 'success');
+
+                    form.reset();
+                    charCount.textContent = "0/500 characters";
+                    charCount.className = "text-xs text-gray-400 mt-1";
+                    nameStatus.textContent = "";
+                    descriptionStatus.textContent = "";
+                    removeFile();
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                } else {
+                    console.error("❌ Error adding listing:", result);
+                    const errorMessage = result.error || result.message || 'Unknown error occurred';
+                    showMessage(`Failed to create listing: ${errorMessage}`, "error");
+                }
+            } catch (error) {
+                console.error("❌ Error during listing submission:", error);
+                
+                if (error.message.includes('Failed to fetch')) {
+                    showMessage("Network error: Cannot connect to server. Please check your internet connection.", "error");
+                } else if (error.message.includes('JSON')) {
+                    showMessage("Server error: The server returned an invalid response. Please try again or contact support.", "error");
+                } else {
+                    showMessage(`Error: ${error.message}`, "error");
+                }
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Initialize
+        setupVoiceRecognition();
+
+        // Initialize tooltips and accessibility
+        document.addEventListener('DOMContentLoaded', () => {
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            requiredFields.forEach(field => {
+                field.setAttribute('aria-required', 'true');
+            });
+        });
+    </script>
+</body>
+</html>

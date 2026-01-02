@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+       
+    <meta charset="UTF-8">
+       
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Product Catalog • Agent Seller</title>
+       
+    <script src="https://cdn.tailwindcss.com"></script>
+       
+    <script src="https://unpkg.com/lucide@latest"></script>
+        <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card-header {
+            background-color: #e0f2f7;
+            /* light blue */
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #cce7ee;
+        }
+
+        .product-card-header h3 {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .product-card-body {
+            padding: 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card-body p {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .product-card-footer {
+            padding: 16px;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .product-card-footer button {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .product-card-footer .edit-btn {
+            background-color: #3b82f6;
+            /* blue-500 */
+            color: white;
+        }
+
+        .product-card-footer .edit-btn:hover {
+            background-color: #2563eb;
+            /* blue-600 */
+            transform: translateY(-1px);
+        }
+
+        .product-card-footer .delete-btn {
+            background-color: #ef4444;
+            /* red-500 */
+            color: white;
+        }
+
+        .product-card-footer .delete-btn:hover {
+            background-color: #dc2626;
+            /* red-600 */
+            transform: translateY(-1px);
+        }
+
+        .no-products-message {
+            text-align: center;
+            padding: 40px;
+            font-style: italic;
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .back-to-dashboard-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+            padding: 12px 24px;
+            background-color: #6b7280;
+            /* gray-500 */
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .back-to-dashboard-link:hover {
+            background-color: #4b5563;
+            /* gray-600 */
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen flex flex-col justify-between">
+
+            <%- include('partials/navbar') %>
+
+                        <div class="flex-grow p-6 max-w-6xl mx-auto w-full">
+                        <h2 class="text-3xl font-bold text-center text-green-700 mb-8 mt-4">Your Digital Product Catalog
+            </h2>
+                        <p class="text-center text-lg text-gray-600 mb-10">Manage all the product descriptions you've
+                generated.</p>
+
+                        <% if (products && products.length> 0) { %>
+                                <div class="catalog-grid">
+                                        <% products.forEach(product=> { %>
+                                                <div class="product-card">
+                                                        <div class="product-card-header">
+                                                                <h3 class="text-xl">
+                                                                        <%= product.name %>
+                                                                        </h3>
+                                                                <span class="text-sm text-gray-600">Added: <%= new      
+                                                                          Date(product.generatedAt).toLocaleDateString()
+                                        %></span>
+                                                            </div>
+                                                        <div class="product-card-body">
+                                                                <p>
+                                                                        <%= product.description %>
+                                                                        </p>
+                                                                <% if (product.keywords && product.keywords.length> 0) {
+                                    %>
+                                                                        <p class="text-sm text-gray-500 mt-auto">
+                                        Keywords: <%= product.keywords.join(', ') %></p>
+                            <% } %>
+                        </div>
+                        <div class="product-card-footer">
+                            <button class="edit-btn" data-id="<%= product.id %>">
+                                <i data-lucide="edit" class="w-4 h-4"></i> Edit
+                            </button>
+                            <button class="delete-btn" data-id="<%= product.id %>">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="no-products-message">
+                <p>You haven' t added any products to your catalog yet.</p>
+                                                                                        <p>Start by generating a
+                                                description on the <a                                                  
+                                                      href="/user/product-generator"                                    
+                                                                    class="text-green-600 hover:underline">Product
+                                                    Description
+                                                                                                        Generator</a>
+                                                page!</p>
+                                                                        </div>
+                                                        <% } %>
+
+                                                                <div class="flex justify-center">
+                                                                        <a href="/user_dashboard"
+                                        class="back-to-dashboard-link">
+                                                                                <i data-lucide="arrow-left"
+                                            class="w-5 h-5"></i> Back to Dashboard
+                                                                            </a>
+                                                                    </div>
+                                                        </div>
+
+                                                                        <%- include('partials/footer') %>
+
+                                                       
+                            <script type="module">
+                                import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+                                import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+                                import { getFirestore, collection, query, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+                                // Initialize Lucide icons
+                                lucide.createIcons();
+
+                                // Firebase configuration (provided by the environment)
+                                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+                                // Initialize Firebase
+                                const app = initializeApp(firebaseConfig);
+                                const db = getFirestore(app);
+                                const auth = getAuth(app);
+
+                                let userId = null;
+                                let isAuthReady = false;
+
+                                // Authenticate with Firebase
+                                onAuthStateChanged(auth, async (user) => {
+                                    if (user) {
+                                        userId = user.uid;
+                                        console.log("Firebase authenticated. User ID:", userId);
+                                        isAuthReady = true;
+                                        // No need to call loadCatalog here, as the products are passed from the server
+                                        // However, we need to set up listeners for delete/edit buttons
+                                        setupEventListeners();
+                                    } else {
+                                        try {
+                                            if (initialAuthToken) {
+                                                await signInWithCustomToken(auth, initialAuthToken);
+                                            } else {
+                                                await signInAnonymously(auth);
+                                            }
+                                        } catch (error) {
+                                            console.error("Firebase authentication failed:", error);
+                                            // Handle error, e.g., redirect to login
+                                            window.location.href = '/auth/login?error=' + encodeURIComponent('Authentication failed. Please log in again.');
+                                        }
+                                    }
+                                });
+
+                                // Function to set up event listeners for delete and edit buttons
+                                const setupEventListeners = () => {
+                                    document.querySelectorAll('.delete-btn').forEach(button => {
+                                        button.addEventListener('click', async (event) => {
+                                            const idToDelete = event.currentTarget.dataset.id;
+                                            if (confirm('Are you sure you want to delete this product from your catalog?')) {
+                                                await deleteProductFromCatalog(idToDelete);
+                                            }
+                                        });
+                                    });
+
+                                    document.querySelectorAll('.edit-btn').forEach(button => {
+                                        button.addEventListener('click', (event) => {
+                                            const idToEdit = event.currentTarget.dataset.id;
+                                            // alert(`Edit functionality for product ID: ${idToEdit} is not yet implemented. You would typically be redirected to a form to modify this product.`);
+                                            // Redirect to the edit page
+                                            window.location.href = `/user/my-catalog/edit/${idToEdit}`;
+                                        });
+                                    });
+                                };
+
+                                // Function to delete a product from Firestore
+                                const deleteProductFromCatalog = async (id) => {
+                                    if (!userId) {
+                                        console.error("User not authenticated for deletion.");
+                                        alert("You must be logged in to delete products.");
+                                        return;
+                                    }
+                                    try {
+                                        await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/products`, id));
+                                        console.log("Product deleted successfully:", id);
+                                        // The onSnapshot in dashboardRoutes will automatically update the view
+                                    } catch (error) {
+                                        console.error("Error deleting product:", error);
+                                        alert("Failed to delete product: " + error.message);
+                                    }
+                                };
+
+                                // Call setupEventListeners after the initial render by EJS
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    lucide.createIcons();
+                                    setupEventListeners();
+                                });
+                            </script>
+</body>
+
+</html>

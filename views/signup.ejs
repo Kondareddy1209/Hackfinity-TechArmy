@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <title>Sign Up • Agent Seller</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Base styles */
+    * {
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Allow text selection only for inputs */
+    input, select, textarea {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: linear-gradient(to right, #32CD32 0%, #a0e7e5 100%);
+      position: relative;
+      touch-action: pan-y pinch-zoom;
+      -ms-touch-action: pan-y pinch-zoom;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* 3D Wave Animation Background */
+    .wave-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      perspective: 1000px;
+      z-index: -1;
+      pointer-events: none;
+      touch-action: none;
+    }
+
+    .wave-layer {
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      left: -10%;
+      top: -10%;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .wave-layer:nth-child(1) {
+      animation: wave3d 8s ease-in-out infinite;
+      opacity: 0.4;
+    }
+
+    .wave-layer:nth-child(2) {
+      animation: wave3d 12s ease-in-out infinite reverse;
+      opacity: 0.3;
+      animation-delay: -2s;
+    }
+
+    .wave-layer:nth-child(3) {
+      animation: wave3d 15s ease-in-out infinite;
+      opacity: 0.2;
+      animation-delay: -4s;
+    }
+
+    .wave {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        rgba(255, 255, 255, 0.1) 100%);
+      border-radius: 50%;
+      transform: rotateX(70deg) rotateY(0deg);
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    .wave::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.2) 0%, 
+        rgba(255, 255, 255, 0.05) 70%, 
+        transparent 100%);
+      border-radius: 50%;
+      animation: ripple 4s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes wave3d {
+      0%, 100% {
+        transform: rotateX(70deg) rotateY(0deg) translateZ(0px) scale(1);
+      }
+      25% {
+        transform: rotateX(60deg) rotateY(90deg) translateZ(50px) scale(1.1);
+      }
+      50% {
+        transform: rotateX(80deg) rotateY(180deg) translateZ(0px) scale(0.9);
+      }
+      75% {
+        transform: rotateX(65deg) rotateY(270deg) translateZ(-30px) scale(1.05);
+      }
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0.8);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.3;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Floating Particles */
+    .particle-system {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      touch-action: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        transform: translateY(-100px) translateX(var(--drift)) scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* Auth Container Styling - Desktop (Dual Panel) */
+    .auth-container-wrapper {
+      position: relative;
+      display: flex;
+      max-width: 900px;
+      width: 95%;
+      margin: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .auth-form-panel {
+      width: 50%;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .auth-overview-panel {
+      width: 50%;
+      padding: 30px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(to bottom right, #34d399, #10b981);
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    .auth-overview-panel h2 {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .auth-overview-panel p {
+        font-size: 1.1em;
+        font-weight: 300;
+        margin-bottom: 25px;
+    }
+    
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1em;
+    }
+    
+    .feature-list li i {
+        color: #fde047;
+        margin-right: 15px;
+    }
+
+    /* Auth Container Styling */
+    .auth-container {
+        width: 100%;
+        max-width: unset;
+        background: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        border: none;
+        padding: 0;
+        display: block;
+    }
+
+    h2 {
+      margin: 5px 0 10px;
+      text-align: center;
+      color: #2c5530;
+      font-size: 19px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .form-group {
+      margin-bottom: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 1px;
+      display: block;
+      color: #333;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 7px 34px 7px 9px;
+      font-size: 13px;
+      border: 1.5px solid #ddd;
+      border-radius: 5px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      touch-action: manipulation;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #4A90E2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+      transform: translateY(-1px);
+      font-size: 16px;
+    }
+
+    input:invalid:focus,
+    input:invalid:not(:placeholder-shown) {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+
+    input:valid {
+      border-color: #2ecc71;
+    }
+
+    .password-group {
+      position: relative;
+    }
+
+    .password-group .toggle-pass {
+      position: absolute;
+      right: 8px;
+      top: 26px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4A90E2;
+      font-size: 12px;
+      transition: color 0.3s ease;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .password-group .toggle-pass:hover {
+      color: #357ab8;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      margin-bottom: 5px;
+      gap: 15px;
+    }
+
+    button[type="submit"]:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      font-size: 10px;
+      color: white;
+      background: linear-gradient(135deg, #4A90E2, #357ab8);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s ease;
+      pointer-events: none;
+    }
+
+    button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #357ab8, #2c5aa0);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+    button:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .link {
+      padding: 6px 12px;
+      font-size: 10px;
+      color: white;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      border-radius: 20px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .link:hover {
+      background: linear-gradient(135deg, #27ae60, #219a52);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    }
+
+    .error-msg,
+    #errorMsg {
+      color: #e74c3c;
+      font-size: 10px;
+      height: 1em;
+      margin: -3px 0 3px;
+      text-align: left;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    input.shake {
+      animation: shake 0.3s;
+      border-color: #e74c3c !important;
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      20%, 60% {
+        transform: translateX(-6px);
+      }
+      40%, 80% {
+        transform: translateX(6px);
+      }
+    }
+
+    .password-group small {
+      font-size: 9px;
+      color: #666;
+      display: block;
+      margin-top: 2px;
+      margin-bottom: 3px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    #capsAlert {
+      color: #e74c3c;
+      font-size: 12px;
+      margin-top: 5px;
+      padding: 3px 6px;
+      background: rgba(231, 76, 60, 0.1);
+      border-radius: 3px;
+      border-left: 3px solid #e74c3c;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* Google signin section */
+    .google-signin-section {
+      margin-top: 15px;
+      text-align: center;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .google-signin-section p {
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .google-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .google-btn:hover {
+      border-color: #4285f4;
+      box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .google-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Interactive mouse effect */
+    .interactive-wave {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      touch-action: none;
+    }
+
+    .mouse-wave {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .mouse-wave::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 30%;
+      height: 30%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.3;
+      }
+    }
+
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+        align-items: flex-start;
+        justify-content: center;
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #32CD32 0%, #a0e7e5 100%);
+        touch-action: pan-y;
+        -ms-touch-action: pan-y;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+
+      /* Hide desktop animations on mobile for better performance */
+      .wave-layer {
+        display: none;
+      }
+
+      .particle-system {
+        display: none;
+      }
+
+      .interactive-wave {
+        display: none;
+      }
+
+      /* Mobile Layout: Stack panels vertically */
+      .auth-container-wrapper {
+        flex-direction: column;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+        background: transparent;
+        backdrop-filter: none;
+        border: none;
+        border-radius: 0;
+      }
+
+      /* Overview panel becomes top section on mobile */
+      .auth-overview-panel {
+        width: 100%;
+        padding: 20px 15px;
+        background: linear-gradient(to right, #34d399, #10b981);
+        text-align: center;
+        border-radius: 12px 12px 0 0;
+        margin-bottom: 0;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.9em;
+        margin-bottom: 15px;
+        line-height: 1.4;
+      }
+
+      .feature-list {
+        max-width: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .feature-list li {
+        font-size: 0.85em;
+        margin-bottom: 0;
+        justify-content: flex-start;
+        text-align: left;
+      }
+
+      .feature-list li i {
+        margin-right: 10px;
+        font-size: 1em;
+        flex-shrink: 0;
+      }
+
+      /* Form panel becomes bottom section on mobile */
+      .auth-form-panel {
+        width: 100%;
+        padding: 25px 15px;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 0 0 12px 12px;
+      }
+
+      .auth-container {
+        padding: 0;
+      }
+
+      h2 {
+        font-size: 20px;
+        margin: 0 0 20px;
+        color: #2c5530;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      label {
+        font-size: 14px;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      input, select {
+        padding: 14px 40px 14px 16px;
+        font-size: 16px !important;
+        height: 50px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+        background: rgba(255, 255, 255, 0.95);
+        touch-action: manipulation;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      input:focus, select:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        transform: none;
+        font-size: 16px !important;
+        zoom: 1;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      .password-group .toggle-pass {
+        right: 16px;
+        top: 38px;
+        font-size: 16px;
+        padding: 8px;
+        touch-action: manipulation;
+      }
+
+      .password-group small {
+        font-size: 12px;
+        margin-top: 6px;
+        margin-bottom: 5px;
+        color: #666;
+      }
+
+      #capsAlert {
+        font-size: 13px;
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 6px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 25px;
+        margin-bottom: 10px;
+        align-items: stretch;
+      }
+
+      button {
+        padding: 16px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        width: 100%;
+        touch-action: manipulation;
+      }
+
+      button:active {
+        transform: translateY(-1px);
+      }
+
+      .link {
+        padding: 16px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        text-align: center;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        touch-action: manipulation;
+      }
+
+      .link:active {
+        transform: translateY(-1px);
+      }
+
+      .error-msg {
+        font-size: 12px;
+        margin: 5px 0 10px;
+        text-align: center;
+      }
+
+      .google-signin-section {
+        margin-top: 20px;
+        padding-top: 20px;
+      }
+
+      .google-signin-section p {
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
+      .google-btn {
+        padding: 16px 20px;
+        font-size: 16px;
+        max-width: 100%;
+        border-radius: 8px;
+      }
+    }
+
+    /* Very small mobile screens */
+    @media (max-width: 375px) {
+      body {
+        padding: 8px;
+      }
+
+      .auth-overview-panel {
+        padding: 18px 12px;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.4em;
+        margin-bottom: 6px;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.85em;
+        margin-bottom: 12px;
+      }
+
+      .feature-list li {
+        font-size: 0.8em;
+      }
+
+      .auth-form-panel {
+        padding: 20px 12px;
+      }
+
+      h2 {
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
+      input, select {
+        height: 46px;
+        padding: 12px 35px 12px 14px;
+      }
+
+      .password-group .toggle-pass {
+        right: 14px;
+        top: 36px;
+      }
+
+      button, .link, .google-btn {
+        padding: 14px 16px;
+        font-size: 15px;
+      }
+    }
+
+    /* Landscape orientation on mobile */
+    @media (max-height: 600px) and (orientation: landscape) {
+      body {
+        padding: 5px;
+        align-items: center;
+      }
+
+      .auth-container-wrapper {
+        margin: 5px auto;
+        max-height: 95vh;
+        overflow-y: auto;
+      }
+
+      .auth-overview-panel {
+        padding: 12px 15px;
+      }
+
+      .auth-overview-panel h2 {
+        font-size: 1.3em;
+        margin-bottom: 4px;
+      }
+
+      .auth-overview-panel p {
+        font-size: 0.8em;
+        margin-bottom: 8px;
+      }
+
+      .feature-list li {
+        font-size: 0.75em;
+        margin-bottom: 4px;
+      }
+
+      .auth-form-panel {
+        padding: 15px;
+      }
+
+      h2 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      .form-group {
+        margin-bottom: 8px;
+      }
+
+      input, select {
+        height: 40px;
+        padding: 10px 32px 10px 12px;
+        font-size: 16px !important;
+      }
+
+      button, .link, .google-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+
+      .form-actions {
+        margin-top: 10px;
+        gap: 8px;
+      }
+
+      .google-signin-section {
+        margin-top: 15px;
+        padding-top: 15px;
+      }
+    }
+    
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wave-container">
+    <div class="wave-layer">
+      <div class="wave"></div>
+    </div>
+    <div class="wave-layer">
+      <div class="wave"></div>
+    </div>
+    <div class="wave-layer">
+      <div class="wave"></div>
+    </div>
+  </div>
+
+  <div class="particle-system" id="particles"></div>
+  
+  <div class="interactive-wave">
+    <div class="mouse-wave" id="mouseWave"></div>
+  </div>
+
+  <div class="auth-container-wrapper">
+      <!-- Overview Panel (Top on mobile, Left on desktop) -->
+      <div class="auth-overview-panel">
+          <h2>Welcome to Agent Seller</h2>
+          <p>Your all-in-one platform for digital catalog management and AI-powered sales. Create, manage, and sell with the power of intelligent automation.</p>
+          <ul class="feature-list">
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>AI-powered product descriptions</span>
+              </li>
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>Voice-controlled product search</span>
+              </li>
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>Secure multi-language support</span>
+              </li>
+              <li>
+                  <i class="fas fa-check-circle"></i>
+                  <span>Easy bulk product uploads</span>
+              </li>
+          </ul>
+      </div>
+
+      <!-- Form Panel (Bottom on mobile, Right on desktop) -->
+      <div class="auth-form-panel">
+          <div class="auth-container">
+              <h2>Create Account</h2>
+              <p class="error-msg" style="text-align: center; display:none;" id="errorMsg"></p>
+              
+              <form id="signupForm" action="/auth/signup" method="POST">
+                <div class="form-group">
+                  <label for="firstName">First Name</label>
+                  <input id="firstName" name="firstName" type="text" required>
+                </div>
+    
+                <div class="form-group">
+                  <label for="lastName">Last Name</label>
+                  <input id="lastName" name="lastName" type="text" required>
+                </div>
+    
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input id="email" name="email" type="email" required>
+                </div>
+    
+                <div class="form-group">
+                  <label for="mobile">Mobile Number</label>
+                  <input id="mobile" name="mobile" type="tel" pattern="[0-9]{10}" title="Enter a 10-digit mobile number"
+                    required>
+                </div>
+    
+                <div class="form-group password-group">
+                  <label for="password">Password</label>
+                  <input id="password" name="password" type="password" required minlength="6">
+                  <button type="button" id="togglePass" class="toggle-pass">👁️</button>
+                  <small>(min 6 characters)</small>
+                  <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
+                </div>
+    
+                <div class="form-group">
+                  <label for="gender">Gender</label>
+                  <select name="gender" id="gender" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+    
+                <div class="form-actions">
+                  <button type="submit">Send OTP</button>
+                  <a href="/auth" class="link">Already have an account? Login</a>
+                </div>
+              </form>
+    
+              <div class="google-signin-section">
+                  <p>Or sign up with:</p>
+                  <button class="google-btn" id="googleSignInBtn">
+                      <svg width="20" height="20" viewBox="0 0 24 24">
+                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                      </svg>
+                      Continue with Google
+                  </button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    // Make sure errorMsg div is available for JS to use
+    const errorMsgDiv = document.getElementById('errorMsg');
+    
+    // Google Sign-In functionality
+    let googleSignInInitialized = false;
+    
+    function initializeGoogleSignIn() {
+      if (googleSignInInitialized) return;
+      
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual Google Client ID
+          callback: handleGoogleSignIn,
+          auto_select: false,
+          cancel_on_tap_outside: false
+        });
+        googleSignInInitialized = true;
+      } else {
+        // Retry after a short delay if Google API isn't loaded yet
+        setTimeout(initializeGoogleSignIn, 100);
+      }
+    }
+
+    async function handleGoogleSignIn(response) {
+        console.log("Google ID Token received:", response.credential);
+
+        try {
+            const res = await fetch('/auth/google', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_token: response.credential })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                console.log("Backend response for Google sign-in:", data);
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    window.location.href = '/user_dashboard';
+                }
+            } else {
+                console.error("Error from backend during Google sign-in:", data.error || data.message);
+                if (errorMsgDiv) {
+                    errorMsgDiv.textContent = data.error || data.message || 'Google sign-up failed. Please try again.';
+                    errorMsgDiv.style.display = 'block';
+                } else {
+                    alert(data.error || data.message || 'Google sign-up failed. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error("Network error during Google sign-in:", error);
+            if (errorMsgDiv) {
+                errorMsgDiv.textContent = 'Network error during Google sign-up. Please check your connection.';
+                errorMsgDiv.style.display = 'block';
+            } else {
+                alert('Network error during Google sign-up. Please check your connection.');
+            }
+        }
+    }
+
+    // Custom Google Sign-In button click handler
+    document.getElementById('googleSignInBtn').addEventListener('click', function() {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.prompt();
+      } else {
+        console.error('Google Sign-In API not loaded');
+        if (errorMsgDiv) {
+          errorMsgDiv.textContent = 'Google Sign-In is not available. Please try again later.';
+          errorMsgDiv.style.display = 'block';
+        }
+      }
+    });
+
+    // Initialize Google Sign-In when the page loads
+    window.addEventListener('load', initializeGoogleSignIn);
+
+    // Password toggle functionality
+    const pwInput = document.getElementById('password');
+    const toggle = document.getElementById('togglePass');
+    if (pwInput && toggle) {
+      toggle.addEventListener('click', () => {
+        pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
+        toggle.innerHTML = pwInput.type === 'password' ? '👁️' : '🙈';
+      });
+    }
+
+    // Caps Lock detection
+    const capsAlert = document.getElementById('capsAlert');
+    if (pwInput && capsAlert) {
+      pwInput.addEventListener('keydown', e => {
+        if (e.getModifierState && e.getModifierState('CapsLock')) capsAlert.hidden = false;
+      });
+      pwInput.addEventListener('keyup', e => {
+        if (!e.getModifierState || !e.getModifierState('CapsLock')) capsAlert.hidden = true;
+      });
+    }
+
+    // Form validation
+    document.getElementById('signupForm').addEventListener('submit', function (e) {
+      const fields = ['firstName', 'lastName', 'email', 'mobile', 'password', 'gender'];
+      let isValid = true;
+      for (const id of fields) {
+        const input = document.getElementById(id);
+        if (!input.value.trim()) {
+          isValid = false;
+          input.reportValidity();
+          break;
+        }
+      }
+      if (!isValid) {
+        e.preventDefault();
+        const firstInvalid = document.querySelector('#signupForm :invalid');
+        if (firstInvalid) firstInvalid.focus();
+      }
+    });
+
+    // Enhanced mobile-specific zoom prevention
+    function preventZoom() {
+      document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(e) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        lastTouchEnd = now;
+      }, { passive: false });
+
+      const inputs = document.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        input.addEventListener('touchstart', function(e) {
+          e.stopPropagation();
+        }, { passive: true });
+
+        input.addEventListener('focus', function() {
+          if (window.innerWidth <= 768) {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+              viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+            }
+          }
+        });
+
+        input.addEventListener('blur', function() {
+          if (window.innerWidth <= 768) {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+              viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+            }
+          }
+        });
+      });
+
+      document.addEventListener('contextmenu', function(e) {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+
+      document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+
+      document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, { passive: false });
+
+      window.addEventListener('orientationchange', function() {
+        setTimeout(() => {
+          const viewport = document.querySelector('meta[name="viewport"]');
+          if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+          }
+          window.scrollTo(0, 0);
+        }, 100);
+      });
+
+      window.addEventListener('resize', function() {
+        if (window.innerWidth <= 768) {
+          const viewport = document.querySelector('meta[name="viewport"]');
+          if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+          }
+        }
+      });
+    }
+
+    // Create floating particles (desktop only)
+    function createParticles() {
+      const particleContainer = document.getElementById('particles');
+      if (!particleContainer) return;
+      
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) return;
+
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        particle.style.left = Math.random() * 100 + '%';
+        
+        const drift = (Math.random() - 0.5) * 150;
+        particle.style.setProperty('--drift', drift + 'px');
+        
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        
+        const size = Math.random() * 2 + 1;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        
+        particleContainer.appendChild(particle);
+      }
+    }
+
+    // Setup mouse interaction (desktop only)
+    function setupMouseInteraction() {
+      if (window.innerWidth <= 768) return;
+      const mouseWave = document.getElementById('mouseWave');
+      if (!mouseWave) return;
+      
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        mouseWave.style.left = mouseX + 'px';
+        mouseWave.style.top = mouseY + 'px';
+        mouseWave.style.opacity = '1';
+        mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
+      });
+      
+      document.addEventListener('mouseleave', () => {
+        mouseWave.style.opacity = '0';
+        mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+      
+      mouseWave.style.left = mouseX + 'px';
+      mouseWave.style.top = mouseY + 'px';
+    }
+
+    // Setup form animations (desktop only)
+    function setupFormAnimations() {
+      const inputs = document.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        if (window.innerWidth > 768) {
+          input.addEventListener('focus', () => {
+            input.style.transform = 'translateY(-2px)';
+          });
+          
+          input.addEventListener('blur', () => {
+            input.style.transform = 'translateY(0)';
+          });
+        }
+      });
+    }
+
+    // Setup mobile-specific enhancements
+    function setupMobileEnhancements() {
+      if (window.innerWidth <= 768) {
+        let initialViewportHeight = window.innerHeight;
+        let isKeyboardOpen = false;
+        
+        window.addEventListener('resize', () => {
+          const currentHeight = window.innerHeight;
+          const heightDifference = initialViewportHeight - currentHeight;
+          
+          if (heightDifference > 150) {
+            if (!isKeyboardOpen) {
+              isKeyboardOpen = true;
+              document.body.style.height = currentHeight + 'px';
+              document.body.style.overflow = 'hidden';
+              
+              const viewport = document.querySelector('meta[name="viewport"]');
+              if (viewport) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+              }
+            }
+          } else {
+            if (isKeyboardOpen) {
+              isKeyboardOpen = false;
+              document.body.style.height = '';
+              document.body.style.overflow = '';
+              const viewport = document.querySelector('meta[name="viewport"]');
+              if (viewport) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+              }
+            }
+          }
+        });
+
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          input.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+          }, { passive: true });
+
+          input.addEventListener('focus', function() {
+            setTimeout(() => {
+              this.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+              });
+            }, 300);
+          });
+        });
+
+        const container = document.querySelector('.auth-container-wrapper');
+        if (container) {
+          container.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+          }, { passive: false });
+          
+          container.addEventListener('touchmove', function(e) {
+            if (e.touches.length > 1) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+          }, { passive: false });
+        }
+      }
+    }
+
+    // Initialize everything when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      preventZoom();
+      createParticles();
+      setupMouseInteraction();
+      setupFormAnimations();
+      setupMobileEnhancements();
+      initializeGoogleSignIn();
+    });
+
+    // Performance optimization - pause animations when page is hidden
+    document.addEventListener('visibilitychange', () => {
+      const waves = document.querySelectorAll('.wave-layer');
+      if (document.hidden) {
+        waves.forEach(wave => wave.style.animationPlayState = 'paused');
+      } else {
+        waves.forEach(wave => wave.style.animationPlayState = 'running');
+      }
+    });
+
+    // Handle orientation changes
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+        }
+        window.scrollTo(0, 0);
+        if (window.innerWidth <= 768) {
+          setupMobileEnhancements();
+        }
+      }, 100);
+    });
+
+    // Zoom prevention check
+    setInterval(() => {
+      if (window.innerWidth <= 768) {
+        const currentZoom = Math.round(window.devicePixelRatio * 100) / 100;
+        if (currentZoom !== 1) {
+          const viewport = document.querySelector('meta[name="viewport"]');
+          if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+          }
+        }
+      }
+    }, 1000);
+  </script>
+</body>
+
+</html>

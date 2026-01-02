@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌱 Our Team • Agent Seller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .hero-section {
+            background: rgba(248, 250, 252, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 24px;
+            margin: 2rem auto;
+            max-width: 1200px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .hero-title {
+            background: linear-gradient(135deg, #1e293b, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            color: #64748b;
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .team-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .team-member-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+        }
+
+        .team-member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(226, 232, 240, 0.4), transparent);
+            transition: left 0.6s;
+        }
+
+        .team-member-card:hover::before {
+            left: 100%;
+        }
+
+        .team-member-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .team-member-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem auto;
+            border: 3px solid transparent;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 3px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-member-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .team-member-card:hover .team-member-avatar {
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .team-member-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-member-role {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-member-bio {
+            font-size: 0.85rem;
+            color: #4a5568;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+            flex-grow: 1;
+        }
+
+        .team-member-socials {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+            padding-top: 1rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .social-link::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd);
+            background-size: 400% 400%;
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            animation: gradientShift 3s ease infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes glowPulse {
+            0% {
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.4), 0 0 60px rgba(102, 126, 234, 0.2);
+                transform: translateY(-2px) scale(1.05);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(102, 126, 234, 0.8), 0 0 60px rgba(102, 126, 234, 0.6), 0 0 90px rgba(102, 126, 234, 0.4);
+                transform: translateY(-4px) scale(1.08);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.6), 0 0 40px rgba(102, 126, 234, 0.4), 0 0 60px rgba(102, 126, 234, 0.2);
+                transform: translateY(-2px) scale(1.05);
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .social-link:hover::before {
+            left: 100%;
+        }
+
+        .social-link:hover::after {
+            opacity: 1;
+        }
+
+        .social-link:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        .social-link:active {
+            position: relative;
+        }
+
+        .social-link:active::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: translate(-50%, -50%);
+            animation: ripple 0.6s linear;
+        }
+
+        .contributions-section {
+            background: rgba(248, 250, 252, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin: 4rem auto;
+            max-width: 1200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .contributions-title {
+            font-size: clamp(1.5rem, 3vw, 1.75rem);
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .contributions-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .contributions-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 16px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .contributions-list li:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(8px);
+        }
+
+        .contributions-list li::before {
+            content: '✨';
+            font-size: 1.2rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .contributions-list li span {
+            color: #2d3748;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .back-to-dashboard {
+            display: flex;
+            justify-content: center;
+            margin: 3rem 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .back-link::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd);
+            background-size: 400% 400%;
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            animation: gradientShift 3s ease infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-link:hover::before {
+            left: 100%;
+        }
+
+        .back-link:hover::after {
+            opacity: 1;
+        }
+
+        .back-link:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        .back-link:active::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: translate(-50%, -50%);
+            animation: ripple 0.6s linear;
+        }
+
+        /* Mobile specific styles */
+        @media (max-width: 1024px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                margin: 1rem;
+                padding: 2rem 1rem;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 0;
+            }
+
+            .team-member-card {
+                padding: 1.5rem;
+                min-height: auto;
+            }
+
+            .team-member-socials {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
+            .social-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.75rem;
+                min-width: 90px;
+            }
+
+            .contributions-section {
+                margin: 2rem 1rem;
+                padding: 2rem 1rem;
+            }
+
+            .contributions-list li {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .contributions-list li::before {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .team-container {
+                padding: 1rem 0.5rem;
+            }
+
+            .team-member-avatar {
+                width: 80px;
+                height: 80px;
+            }
+
+            .team-member-name {
+                font-size: 1.1rem;
+            }
+
+            .back-link {
+                padding: 0.875rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .team-member-socials {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .social-link {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        /* Animation for page load */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .team-member-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .team-member-card:nth-child(1) { animation-delay: 0.1s; }
+        .team-member-card:nth-child(2) { animation-delay: 0.2s; }
+        .team-member-card:nth-child(3) { animation-delay: 0.3s; }
+        .team-member-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Touch feedback for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .social-link:active {
+                transform: scale(0.95);
+                animation: glowPulse 0.3s ease-in-out;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-title">Meet Our Team</h1>
+        <p class="hero-subtitle">
+            We are a dedicated group of innovators and problem-solvers, collaborating to build Agent Seller – your comprehensive platform for digital catalog management and AI-powered assistance.
+        </p>
+    </div>
+
+    <div class="team-container">
+        <!-- Team Grid -->
+        <div class="team-grid">
+            <!-- A.T. Kondareddy -->
+            <div class="team-member-card">
+                <div class="team-member-avatar">
+                    <img src="https://github.com/Kondareddy1209.png" alt="A.T. Kondareddy's Avatar" onerror="this.src='https://ui-avatars.com/api/?name=A.T.+Kondareddy&background=667eea&color=fff&size=120'">
+                </div>
+                <h3 class="team-member-name">A.T. Kondareddy</h3>
+                <p class="team-member-role">Cloud & Cybersecurity Enthusiast</p>
+                <p class="team-member-bio">Focused on cloud infrastructure, security, and ML integration for sustainability.</p>
+                <div class="team-member-socials">
+                    <a href="https://www.linkedin.com/in/ambavaram-tirumala-kondareddy/" target="_blank" class="social-link">
+                        <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn
+                    </a>
+                    <a href="https://github.com/Kondareddy1209" target="_blank" class="social-link">
+                        <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Katika Sahil -->
+            <div class="team-member-card">
+                <div class="team-member-avatar">
+                    <img src="https://github.com/sahi-sahils.png" alt="Katika Sahil's Avatar" onerror="this.src='https://ui-avatars.com/api/?name=Katika+Sahil&background=667eea&color=fff&size=120'">
+                </div>
+                <h3 class="team-member-name">Katika Sahil</h3>
+                <p class="team-member-role">Full Stack Developer</p>
+                <p class="team-member-bio">Passionate about building secure and scalable web apps.</p>
+                <div class="team-member-socials">
+                    <a href="https://www.linkedin.com/in/sahil-katika/" target="_blank" class="social-link">
+                        <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn
+                    </a>
+                    <a href="https://github.com/sahi-sahils" target="_blank" class="social-link">
+                        <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- E. Poojitha -->
+            <div class="team-member-card">
+                <div class="team-member-avatar">
+                    <img src="https://github.com/192211190.png" alt="E. Poojitha's Avatar" onerror="this.src='https://ui-avatars.com/api/?name=E.+Poojitha&background=667eea&color=fff&size=120'">
+                </div>
+                <h3 class="team-member-name">E. Poojitha</h3>
+                <p class="team-member-role">Data Analyst & UI Designer</p>
+                <p class="team-member-bio">Loves analyzing energy trends and designing intuitive user experiences.</p>
+                <div class="team-member-socials">
+                    <a href="https://www.linkedin.com/in/elisetty-poojitha-ab35012b0" target="_blank" class="social-link">
+                        <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn
+                    </a>
+                    <a href="https://github.com/192211190" target="_blank" class="social-link">
+                        <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- N. Sagar -->
+            <div class="team-member-card">
+                <div class="team-member-avatar">
+                    <img src="https://github.com/sagar7121.png" alt="N. Sagar's Avatar" onerror="this.src='https://ui-avatars.com/api/?name=N.+Sagar&background=667eea&color=fff&size=120'">
+                </div>
+                <h3 class="team-member-name">N. Sagar</h3>
+                <p class="team-member-role">Backend & Integration Lead</p>
+                <p class="team-member-bio">Specialized in OCR parsing, API integration, and server optimization.</p>
+                <div class="team-member-socials">
+                    <a href="https://www.linkedin.com/in/sagarn7121" target="_blank" class="social-link">
+                        <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn
+                    </a>
+                    <a href="https://github.com/sagar7121" target="_blank" class="social-link">
+                        <i data-lucide="github" class="w-4 h-4"></i> GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contributions Section -->
+        <div class="contributions-section">
+            <h2 class="contributions-title">Our Collective Contributions to Agent Seller</h2>
+            <ul class="contributions-list">
+                <li><span>Developed the secure user authentication system (email/password, Google Sign-in, OTP verification, password reset).</span></li>
+                <li><span>Designed and implemented the responsive user and admin dashboards for intuitive navigation.</span></li>
+                <li><span>Built the robust product management features, including adding, editing, and bulk uploading via Excel.</span></li>
+                <li><span>Integrated advanced AI capabilities (Gemini & Groq) for product description generation and interactive chat.</span></li>
+                <li><span>Created dynamic product catalog displays with search, filter, voice, and image recognition functionalities.</span></li>
+                <li><span>Ensured secure data storage and management with MongoDB Atlas and Firebase Firestore.</span></li>
+                <li><span>Developed a clean, modern, and responsive UI/UX for a seamless user experience across devices.</span></li>
+                <li><span>Implemented real-time data updates and efficient API integrations for optimal performance.</span></li>
+            </ul>
+        </div>
+
+        <!-- Back to Dashboard -->
+        <div class="back-to-dashboard">
+            <a href="/user_dashboard" class="back-link">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            
+            // Add smooth scroll behavior
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Add intersection observer for animations
+            const cards = document.querySelectorAll('.team-member-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+
+            // Enhanced touch and click effects for social links
+            const socialLinks = document.querySelectorAll('.social-link, .back-link');
+            
+            socialLinks.forEach(link => {
+                // Add ripple effect on click/touch
+                link.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple-effect');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+
+                // Enhanced touch feedback for mobile
+                link.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+
+                link.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+
+        // Add CSS for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .ripple-effect {
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.6);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                pointer-events: none;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

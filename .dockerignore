@@ -1,0 +1,23 @@
+# Ignore node_modules directory, as dependencies will be installed inside the container
+node_modules/
+
+# Ignore npm debug logs
+npm-debug.log
+
+# Ignore environment variables file - CRUCIAL FOR SECURITY
+.env
+
+# Ignore Git-related files and directories
+.git/
+.gitignore
+
+# Ignore the Dockerfile itself and this README, as they are not part of the app runtime
+Dockerfile
+README.md
+
+# Ignore any log files
+*.log
+
+# Ignore temporary directories that might be created by your application
+tmp/
+temp_uploads/

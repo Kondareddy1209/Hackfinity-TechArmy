@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Verify OTP • Agent Seller</title>
+    <style>
+        /* --- Base Styles for the OTP verification page --- */
+        * {
+            box-sizing: border-box;
+            /* Prevent text selection zoom on mobile */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            /* Prevent touch callout */
+            -webkit-touch-callout: none;
+            /* Prevent highlight */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Allow text selection only for inputs */
+        input,
+        select,
+        textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* New background gradient for OTP page */
+            background: linear-gradient(to right, #6A5ACD 0%, #8A2BE2 100%); /* SlateBlue to BlueViolet */
+            position: relative;
+            /* Prevent zoom on mobile */
+            touch-action: pan-y pinch-zoom;
+            -ms-touch-action: pan-y pinch-zoom;
+            /* Prevent overscroll */
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 3D Wave Animation Background */
+        .wave-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 1000px;
+            z-index: -1;
+            /* Prevent interaction */
+            pointer-events: none;
+            touch-action: none;
+        }
+
+        .wave-layer {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            left: -10%;
+            top: -10%;
+            transform-style: preserve-3d;
+            pointer-events: none;
+        }
+
+        .wave-layer:nth-child(1) {
+            animation: wave3d 8s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        .wave-layer:nth-child(2) {
+            animation: wave3d 12s ease-in-out infinite reverse;
+            opacity: 0.3;
+            animation-delay: -2s;
+        }
+
+        .wave-layer:nth-child(3) {
+            animation: wave3d 15s ease-in-out infinite;
+            opacity: 0.2;
+            animation-delay: -4s;
+        }
+
+        .wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            /* New wave gradient for OTP page */
+            background: linear-gradient(45deg,
+                    rgba(173, 216, 230, 0.1) 0%,
+                    /* LightBlue */
+                    rgba(173, 216, 230, 0.3) 50%,
+                    /* LightBlue */
+                    rgba(173, 216, 230, 0.1) 100%);
+            border-radius: 50%;
+            transform: rotateX(70deg) rotateY(0deg);
+            filter: blur(2px);
+            pointer-events: none;
+        }
+
+        .wave::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 60%;
+            height: 60%;
+            /* New ripple gradient for OTP page */
+            background: radial-gradient(circle,
+                    rgba(255, 255, 255, 0.2) 0%,
+                    rgba(255, 255, 255, 0.05) 70%,
+                    transparent 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple 4s ease-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes wave3d {
+            0%,
+            100% {
+                transform: rotateX(70deg) rotateY(0deg) translateZ(0px) scale(1);
+            }
+            25% {
+                transform: rotateX(60deg) rotateY(90deg) translateZ(50px) scale(1.1);
+            }
+            50% {
+                transform: rotateX(80deg) rotateY(180deg) translateZ(0px) scale(0.9);
+            }
+            75% {
+                transform: rotateX(65deg) rotateY(270deg) translateZ(-30px) scale(1.05);
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Floating Particles */
+        .particle-system {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            touch-action: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            /* New particle color for OTP page */
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                transform: translateY(-100px) translateX(var(--drift)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Auth Container Styling */
+        .auth-container {
+            width: 320px;
+            padding: 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            /* Prevent zoom interaction */
+            touch-action: pan-y;
+            animation: fadeIn 0.8s ease-out; /* Fade-in animation for the container */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.3);
+        }
+
+        .auth-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.1) 0%,
+                    rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 12px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .auth-container * {
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            margin: 5px 0 10px;
+            text-align: center;
+            color: #483D8B; /* DarkSlateBlue for heading */
+            font-size: 24px; /* Slightly larger for OTP page */
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            -webkit-user-select: none;
+            user-select: none;
+            animation: slideInFromTop 0.6s ease-out; /* Animation for heading */
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px; /* Increased margin for better spacing */
+        }
+
+        label {
+            font-size: 14px; /* Slightly larger label */
+            font-weight: bold;
+            margin-bottom: 6px; /* Increased margin below label */
+            display: block;
+            color: #333;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd; /* Lighter border */
+            border-radius: 8px; /* Slightly more rounded */
+            font-size: 18px; /* Larger font size for OTP input */
+            text-align: center;
+            letter-spacing: 5px; /* Increased letter spacing for OTP readability */
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            -webkit-appearance: none; /* Remove default styling on iOS */
+            appearance: none;
+            touch-action: manipulation;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #7B68EE; /* MediumSlateBlue for focus */
+            box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+            transform: translateY(-1px);
+            font-size: 16px !important; /* Force font size to prevent zoom */
+        }
+
+        input[type="text"].shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; /* Smoother shake animation */
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+            border-color: #e74c3c !important;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            font-size: 14px;
+            color: white;
+            /* New button gradient for OTP page */
+            background: linear-gradient(135deg, #7B68EE 0%, #8A2BE2 100%); /* MediumSlateBlue to BlueViolet */
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            font-weight: 600; /* Bolder button text */
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+            pointer-events: none;
+        }
+
+        button:hover:not(:disabled) {
+            /* Adjusted hover gradient */
+            background: linear-gradient(135deg, #6A5ACD, #7B68EE);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(123, 104, 238, 0.3);
+        }
+
+        button:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 20px;
+            text-align: center;
+            animation: slideInFromBottom 0.3s ease-out;
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-success {
+            color: #27ae60;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: slideInFromTop 0.3s ease-out;
+        }
+
+        .resend-container {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e1e5e9;
+            text-align: center;
+        }
+
+        .resend-link {
+            color: #7B68EE; /* MediumSlateBlue for link */
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+            color: #6A5ACD; /* Darker on hover */
+        }
+
+        /* Interactive mouse effect */
+        .interactive-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            touch-action: none;
+        }
+
+        .mouse-wave {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Slightly more visible border */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .mouse-wave::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30%;
+            height: 30%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent); /* Slightly brighter core */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.3;
+            }
+        }
+
+
+        /* --- Media Queries for Responsiveness --- */
+
+        /* Mobile-specific optimizations with enhanced zoom prevention */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+                align-items: center;
+                justify-content: center;
+                overflow-y: auto;
+                overflow-x: hidden;
+                min-height: 100vh;
+                background: linear-gradient(135deg, #6A5ACD 0%, #8A2BE2 100%);
+                /* Ensure background is consistent */
+                /* Enhanced zoom prevention */
+                touch-action: pan-y;
+                -ms-touch-action: pan-y;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                /* Prevent any zoom gestures */
+                -webkit-text-size-adjust: 100%;
+                -ms-text-size-adjust: 100%;
+            }
+
+            /* Disable animations on mobile for better performance */
+            .wave-layer,
+            .particle-system,
+            .interactive-wave {
+                display: none;
+            }
+
+            .auth-container {
+                width: 100%;
+                max-width: 350px;
+                margin: 20px 0;
+                padding: 25px 20px; /* Slightly more padding for mobile */
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.98); /* Slightly less transparent */
+                backdrop-filter: blur(8px); /* Slightly less blur for performance */
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+                transform: none;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                /* Force no zoom on container */
+                touch-action: pan-y;
+            }
+
+            .auth-container:hover {
+                transform: none;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            h2 {
+                font-size: 22px;
+                margin-bottom: 15px;
+            }
+
+            p {
+                font-size: 13px;
+                margin-bottom: 25px;
+            }
+
+            label {
+                font-size: 13px;
+                margin-bottom: 5px;
+            }
+
+            input[type="text"] {
+                padding: 10px;
+                font-size: 16px !important;
+                /* Force 16px to prevent zoom */
+                height: 40px;
+                border-radius: 6px;
+                letter-spacing: 4px;
+                touch-action: manipulation;
+            }
+
+            input[type="text"]:focus {
+                font-size: 16px !important;
+                zoom: 1;
+                -webkit-text-size-adjust: 100%;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 13px;
+                border-radius: 6px;
+                min-height: auto;
+                width: 100%;
+                height: auto;
+                touch-action: manipulation;
+            }
+
+            .error-msg,
+            .message-success {
+                font-size: 12px;
+                margin-top: 5px;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+
+            .resend-container {
+                margin-top: 20px;
+                padding-top: 20px;
+            }
+
+            .resend-link {
+                font-size: 13px;
+            }
+        }
+
+        /* Very small mobile screens */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px 10px;
+                touch-action: pan-y;
+            }
+
+            .auth-container {
+                padding: 20px 15px;
+                margin: 5px 0;
+            }
+
+            h2 {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+
+            p {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 12px;
+            }
+
+            input[type="text"] {
+                padding: 9px;
+                height: 38px;
+                font-size: 16px !important;
+                letter-spacing: 3px;
+            }
+
+            button {
+                padding: 9px 12px;
+                min-height: 38px;
+                font-size: 12px;
+            }
+
+            .error-msg,
+            .message-success {
+                font-size: 11px;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+                align-items: center;
+                touch-action: pan-y;
+            }
+
+            .auth-container {
+                margin: 10px 0;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            h2 {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+
+            p {
+                font-size: 13px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            input[type="text"] {
+                height: 40px;
+                padding: 10px;
+                font-size: 16px !important;
+            }
+
+            button {
+                padding: 10px 15px;
+                min-height: 40px;
+                font-size: 13px;
+            }
+
+            .resend-container {
+                margin-top: 15px;
+                padding-top: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wave-container">
+        <div class="wave-layer">
+            <div class="wave"></div>
+        </div>
+        <div class="wave-layer">
+            <div class="wave"></div>
+        </div>
+        <div class="wave-layer">
+            <div class="wave"></div>
+        </div>
+    </div>
+
+    <div class="particle-system" id="particles"></div>
+
+    <div class="interactive-wave">
+        <div class="mouse-wave" id="mouseWave"></div>
+    </div>
+
+    <div class="auth-container">
+        <h2>Verify OTP</h2>
+        <p>We've sent a 6-digit code to <strong id="displayEmail"></strong></p>
+
+        <% if (error) { %>
+            <p id="serverError" class="error-msg">
+                <%= error %>
+            </p>
+        <% } else { %>
+            <p id="serverError" class="error-msg"></p>
+        <% } %>
+
+        <% if (message) { %>
+            <p id="successMessage" class="message-success">
+                <%= message %>
+            </p>
+        <% } else { %>
+            <p id="successMessage" class="message-success"></p>
+        <% } %>
+
+        <form id="otpForm" action="/auth/verify-otp" method="POST" novalidate>
+            <input type="hidden" name="username" id="hiddenUsername" value="<%= username %>">
+            <input type="hidden" name="isPasswordReset" id="isPasswordResetInput"
+                value="<%= typeof isPasswordReset !== 'undefined' && isPasswordReset ? 'true' : 'false' %>">
+
+            <div class="form-group">
+                <label for="otp">OTP Code</label>
+                <input id="otp" name="otp" type="text" minlength="6" maxlength="6" placeholder="123456" required
+                    autocomplete="one-time-code">
+            </div>
+            <p id="otpError" class="error-msg"></p>
+
+            <button type="submit" id="verifyBtn" disabled>Verify & Continue</button>
+        </form>
+
+        <div class="resend-container">
+            <a href="#" class="resend-link" id="resendLink">Didn't receive the code? Resend OTP</a>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced zoom prevention for mobile
+        function preventZoom() {
+            // Prevent pinch zoom
+            document.addEventListener('touchstart', function (e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, { passive: false });
+
+            // Prevent double-tap zoom
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (e) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                lastTouchEnd = now;
+            }, { passive: false });
+
+            // Prevent zoom on input focus
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('touchstart', function (e) {
+                    e.stopPropagation();
+                }, { passive: true });
+
+                input.addEventListener('focus', function () {
+                    // Force minimum scale to prevent zoom
+                    if (window.innerWidth <= 768) {
+                        const viewport = document.querySelector('meta[name="viewport"]');
+                        if (viewport) {
+                            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                        }
+                    }
+                });
+
+                input.addEventListener('blur', function () {
+                    // Reset viewport after blur
+                    if (window.innerWidth <= 768) {
+                        const viewport = document.querySelector('meta[name="viewport"]');
+                        if (viewport) {
+                            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                        }
+                    }
+                });
+            });
+
+            // Prevent context menu which can lead to zoom
+            document.addEventListener('contextmenu', function (e) {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, { passive: false });
+
+            // Prevent wheel zoom
+            document.addEventListener('wheel', function (e) {
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, { passive: false });
+
+            // Prevent keyboard zoom shortcuts
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, { passive: false });
+
+            // Force scale reset on orientation change
+            window.addEventListener('orientationchange', function () {
+                setTimeout(function () {
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                    }
+                    window.scrollTo(0, 0);
+                }, 100);
+            });
+
+            // Prevent zoom on window resize
+            window.addEventListener('resize', function () {
+                if (window.innerWidth <= 768) {
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                    }
+                }
+            });
+        }
+
+        // OTP page specific script
+        const otpInput = document.getElementById('otp');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const otpError = document.getElementById('otpError');
+        const serverError = document.getElementById('serverError');
+        const successMessage = document.getElementById('successMessage');
+        const isPasswordResetInput = document.getElementById('isPasswordResetInput');
+        const otpForm = document.getElementById('otpForm');
+        const resendLink = document.getElementById('resendLink');
+        const displayEmail = document.getElementById('displayEmail');
+        const hiddenUsername = document.getElementById('hiddenUsername');
+
+        // Set the email from the server-side passed 'username'
+        if (displayEmail && hiddenUsername) {
+             displayEmail.textContent = hiddenUsername.value;
+        }
+
+        // Enable button when 6 digits entered
+        if (otpInput && verifyBtn && otpError && serverError && successMessage) {
+            otpInput.addEventListener('input', () => {
+                otpError.textContent = '';
+                serverError.textContent = '';
+                successMessage.textContent = '';
+
+                const val = otpInput.value.replace(/\D/g, ''); // Remove non-digits
+                otpInput.value = val; // Update input with cleaned value
+
+                verifyBtn.disabled = val.length !== 6;
+            });
+        }
+
+        // Handle form submission
+        if (otpForm && otpInput && verifyBtn) {
+            otpForm.addEventListener('submit', e => {
+                const val = otpInput.value;
+                if (!/^\d{6}$/.test(val)) {
+                    e.preventDefault(); // Prevent actual submission if client-side validation fails
+                    otpError.textContent = 'Please enter exactly 6 digits.';
+                    otpInput.classList.add('shake');
+                    setTimeout(() => otpInput.classList.remove('shake'), 500); // Increased shake duration for visibility
+                    return;
+                }
+                verifyBtn.disabled = true; // Disable button to prevent double clicks
+                verifyBtn.textContent = 'Verifying...';
+            });
+        }
+
+        // Handle resend OTP
+        if (resendLink && successMessage && serverError && otpInput && verifyBtn) {
+            resendLink.addEventListener('click', e => {
+                e.preventDefault();
+                resendLink.textContent = 'Sending...';
+                // Disable resend link temporarily to prevent multiple clicks
+                resendLink.style.pointerEvents = 'none';
+
+                // --- SIMULATED RESEND (REPLACE WITH ACTUAL AJAX CALL IN PRODUCTION) ---
+                setTimeout(() => {
+                    successMessage.textContent = 'New OTP sent successfully! (Check your email)';
+                    serverError.textContent = ''; // Clear any previous errors
+                    otpInput.value = ''; // Clear OTP input
+                    verifyBtn.disabled = true;
+                    resendLink.textContent = "Didn't receive the code? Resend OTP";
+                    resendLink.style.pointerEvents = 'auto'; // Re-enable link
+                }, 1500); // Simulate network delay
+                // --- END OF SIMULATED RESEND ---
+            });
+        }
+
+        // Auto-focus on OTP input
+        if (otpInput) {
+            otpInput.focus();
+        }
+
+        // Check for messages/errors passed from the server on page load
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMessage = urlParams.get('error');
+        const successMessageParam = urlParams.get('message');
+        if (serverError && errorMessage) {
+            serverError.textContent = decodeURIComponent(errorMessage);
+        } else if (successMessage && successMessageParam) {
+            successMessage.textContent = decodeURIComponent(successMessageParam);
+        }
+
+
+        // Enhanced 3D Wave Animation System (disabled on mobile for performance)
+        function createParticles() {
+            const particleContainer = document.getElementById('particles');
+            if (!particleContainer) return;
+
+            // Disable particles on mobile for better performance and zoom prevention
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) return;
+
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                particle.style.left = Math.random() * 100 + '%';
+
+                const drift = (Math.random() - 0.5) * 150;
+                particle.style.setProperty('--drift', drift + 'px');
+
+                particle.style.animationDelay = Math.random() * 8 + 's';
+
+                const size = Math.random() * 2 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        function setupMouseInteraction() {
+            // Disable on mobile for better performance and zoom prevention
+            if (window.innerWidth <= 768) return;
+
+            const mouseWave = document.getElementById('mouseWave');
+            if (!mouseWave) return;
+
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+
+                mouseWave.style.left = mouseX + 'px';
+                mouseWave.style.top = mouseY + 'px';
+                mouseWave.style.opacity = '1';
+                mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
+            });
+
+            document.addEventListener('mouseleave', () => {
+                mouseWave.style.opacity = '0';
+                mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
+            });
+
+            mouseWave.style.left = mouseX + 'px';
+            mouseWave.style.top = mouseY + 'px';
+        }
+
+        function setupFormAnimations() {
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                // Only add hover animations on desktop
+                if (window.innerWidth > 768) {
+                    input.addEventListener('focus', () => {
+                        input.style.transform = 'translateY(-2px)';
+                    });
+
+                    input.addEventListener('blur', () => {
+                        input.style.transform = 'translateY(0)';
+                    });
+                }
+            });
+        }
+
+        // Enhanced mobile-specific zoom prevention
+        function setupMobileEnhancements() {
+            if (window.innerWidth <= 768) {
+                // Handle virtual keyboard without zoom
+                let initialViewportHeight = window.innerHeight;
+                let isKeyboardOpen = false;
+
+                window.addEventListener('resize', () => {
+                    const currentHeight = window.innerHeight;
+                    const heightDifference = initialViewportHeight - currentHeight;
+
+                    // If keyboard is likely open (height reduced significantly)
+                    if (heightDifference > 150) {
+                        if (!isKeyboardOpen) {
+                            isKeyboardOpen = true;
+                            document.body.style.height = currentHeight + 'px';
+                            document.body.style.overflow = 'hidden';
+
+                            // Force viewport to prevent zoom during keyboard open
+                            const viewport = document.querySelector('meta[name="viewport"]');
+                            if (viewport) {
+                                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                            }
+                        }
+                    } else {
+                        if (isKeyboardOpen) {
+                            isKeyboardOpen = false;
+                            document.body.style.height = '';
+                            document.body.style.overflow = '';
+
+                            // Maintain zoom prevention after keyboard close
+                            const viewport = document.querySelector('meta[name="viewport"]');
+                            if (viewport) {
+                                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                            }
+                        }
+                    }
+                });
+
+                // Additional zoom prevention on input interaction
+                const inputs = document.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('touchstart', function (e) {
+                        e.stopPropagation();
+                    }, { passive: true });
+
+                    input.addEventListener('focus', function () {
+                        // Scroll input into view without zoom
+                        setTimeout(() => {
+                            this.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+                        }, 300);
+                    });
+                });
+
+                // Prevent any accidental zoom gestures on the container
+                const container = document.querySelector('.auth-container');
+                if (container) {
+                    container.addEventListener('touchstart', function (e) {
+                        if (e.touches.length > 1) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    }, { passive: false });
+
+                    container.addEventListener('touchmove', function (e) {
+                        if (e.touches.length > 1) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        }
+                    }, { passive: false });
+                }
+            }
+        }
+
+        // Initialize all functions
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize zoom prevention first
+            preventZoom();
+
+            // Then initialize other features
+            createParticles();
+            setupMouseInteraction();
+            setupFormAnimations();
+            setupMobileEnhancements();
+        });
+
+        // Performance optimization
+        document.addEventListener('visibilitychange', () => {
+            const waves = document.querySelectorAll('.wave-layer');
+            if (document.hidden) {
+                waves.forEach(wave => wave.style.animationPlayState = 'paused');
+            } else {
+                waves.forEach(wave => wave.style.animationPlayState = 'running');
+            }
+        });
+
+        // Enhanced orientation change handling with zoom prevention
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                // Force viewport reset to prevent zoom
+                const viewport = document.querySelector('meta[name="viewport"]');
+                if (viewport) {
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                }
+
+                // Scroll to top to reset position
+                window.scrollTo(0, 0);
+
+                // Re-initialize mobile enhancements if needed
+                if (window.innerWidth <= 768) {
+                    setupMobileEnhancements();
+                }
+            }, 100);
+        });
+
+        // Additional safeguard: Monitor and reset zoom level
+        setInterval(() => {
+            if (window.innerWidth <= 768) {
+                // Check if page has been zoomed and reset if necessary
+                const currentZoom = Math.round(window.devicePixelRatio * 100) / 100;
+                if (currentZoom !== 1) {
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
+                    }
+                }
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>

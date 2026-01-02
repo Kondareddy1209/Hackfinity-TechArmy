@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile • Agent Seller</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content-wrapper {
+            flex-grow: 1;
+            padding: 24px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .profile-container {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* --- IMPORTANT: Adjusted padding for inputs based on icon position --- */
+        /* Default for inputs without icons or with left icons (should be adjusted if default is right) */
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="password"],
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px; /* Base padding for inputs */
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Inputs that will have an icon on the right */
+        .form-group .input-has-icon-right {
+            padding-right: 48px; /* Room for icon (w-5 h-5 = 20px) + space */
+            padding-left: 15px; /* Standard left padding */
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Profile picture styling */
+        .profile-picture-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #d1d5db;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-overlay {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .upload-overlay:hover {
+            transform: scale(1.1);
+            background-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Button styling - unified with btn-common */
+        .btn-common {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            text-decoration: none;
+            width: auto;
+        }
+
+        .btn-primary {
+            background-color: #22c55e;
+        }
+
+        .btn-primary:hover {
+            background-color: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-edit-mode {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-edit-mode:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-edit-mode:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Profile info cards */
+        .profile-info-card {
+            background: #f9fafb;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Message styling (consistent with prior provided code) */
+        .message {
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading state */
+        .loading .btn-primary {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .loading .btn-primary span {
+            visibility: hidden;
+        }
+
+        .loading .btn-primary::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Validation styling */
+        .form-group.field-valid .form-input {
+            border-color: #10b981;
+        }
+
+        .form-group.field-invalid .form-input {
+            border-color: #ef4444;
+        }
+
+        /* Focus styles for accessibility */
+        .form-input:focus,
+        .btn-common:focus,
+        .upload-overlay:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* Page transition */
+        .page {
+            display: none;
+            width: 100%;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .main-content-wrapper {
+                padding: 16px;
+            }
+
+            .profile-container {
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .profile-buttons {
+                flex-direction: column-reverse;
+                gap: 12px;
+            }
+
+            .btn-common {
+                width: 100%;
+                padding: 14px 24px;
+            }
+
+            .profile-picture {
+                width: 100px;
+                height: 100px;
+            }
+
+            .upload-overlay {
+                width: 32px;
+                height: 32px;
+                bottom: 4px;
+                right: 4px;
+            }
+
+            /* Adjust mobile input padding for right icons */
+            .form-group .input-has-icon-right {
+                padding-right: 40px; /* Smaller padding on mobile */
+                padding-left: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+    <%- include('partials/navbar') %>
+
+    <div class="main-content-wrapper">
+
+        <div id="viewProfilePage" class="page active">
+            <div class="profile-container">
+                <div class="text-center mb-8">
+                    <div class="flex items-center justify-center mb-4">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mr-3">My Profile</h2>
+                        <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                            <i data-lucide="user-circle" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-lg">View and manage your account information</p>
+                </div>
+
+                <div class="flex flex-col items-center mb-8">
+                    <div class="profile-picture-container mb-4">
+                        <img id="viewProfilePicture" src="<%= user.profilePicture || '/images/default_image.png' %>"
+                            alt="Profile Picture" class="profile-picture">
+                    </div>
+                    <h3 id="viewFullName" class="text-2xl font-bold text-gray-800 mb-2">
+                        <%= user.firstName || '' %>
+                        <%= user.lastName || '' %>
+                    </h3>
+                    <p id="viewEmail" class="text-gray-600 mb-4">
+                        <%= user.email %>
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="profile-info-card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800">Personal Information</h4>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">First Name:</span>
+                                <span id="viewFirstName" class="font-medium text-gray-800">
+                                    <%= user.firstName || 'N/A' %>
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Last Name:</span>
+                                <span id="viewLastName" class="font-medium text-gray-800">
+                                    <%= user.lastName || 'N/A' %>
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Gender:</span>
+                                <span id="viewGender" class="font-medium text-gray-800">
+                                    <% if (user.gender==='Male' ) { %>👨 Male
+                                    <% } else if (user.gender==='Female' ) { %>👩 Female
+                                    <% } else if (user.gender==='Other' ) { %>🏳️‍⚧️ Other
+                                    <% } else if (user.gender==='Prefer not to say' ) { %>🤐 Prefer not to say
+                                    <% } else { %>N/A
+                                    <% } %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-card">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i data-lucide="phone" class="w-5 h-5 text-green-600"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-800">Contact Information</h4>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Email:</span>
+                                <span id="viewEmailDetails" class="font-medium text-gray-800 text-sm">
+                                    <%= user.email %>
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Mobile:</span>
+                                <span id="viewMobile" class="font-medium text-gray-800">
+                                    <%= user.mobile || 'N/A' %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="profile-buttons flex flex-col-reverse md:flex-row justify-end gap-4 pt-8 border-t border-gray-200">
+                    <a href="/user_dashboard" class="btn btn-secondary btn-common flex items-center justify-center">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span>Back to Dashboard</span>
+                    </a>
+                    <button id="editProfileBtn"
+                        class="btn btn-edit-mode btn-common flex items-center justify-center">
+                        <i data-lucide="edit" class="w-5 h-5"></i>
+                        <span>Edit Profile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="editProfilePage" class="page">
+            <div class="profile-container">
+                <div class="text-center mb-8">
+                    <div class="flex items-center justify-center mb-4">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mr-3">Edit Your Profile</h2>
+                        <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                            <i data-lucide="edit" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-lg">Update your personal information</p>
+                </div>
+
+                <div id="messageContainer">
+                    <% if (locals.message) { %>
+                    <div class="message message-success">
+                        <%= message %>
+                    </div>
+                    <% } %>
+                    <% if (locals.error) { %>
+                    <div class="message message-error">
+                        <%= error %>
+                    </div>
+                    <% } %>
+                </div>
+
+                <form id="profileForm" class="space-y-8" enctype="multipart/form-data" novalidate>
+                    <div class="flex flex-col items-center mb-8">
+                        <div class="profile-picture-container mb-4">
+                            <img id="profilePreview" src="<%= user.profilePicture || '/images/default_image.png' %>"
+                                alt="Profile Picture" class="profile-picture">
+                            <label for="profilePicture" class="upload-overlay" title="Change profile picture">
+                                <i data-lucide="camera" class="w-5 h-5"></i>
+                            </label>
+                            <input type="file" id="profilePicture" name="profilePicture" accept="image/*"
+                                class="hidden">
+                        </div>
+                        <p class="text-sm text-gray-500 text-center max-w-xs">
+                            Click the camera icon to upload a new profile picture.
+                            <br>Supported formats: JPG, PNG, GIF (Max 5MB)
+                        </p>
+                        <div id="uploadStatus" class="text-xs text-center mt-2 min-h-[16px]"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-3">
+                                First Name <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="firstName" name="firstName" required minlength="2"
+                                    maxlength="50" class="form-input w-full px-4 py-3 rounded-xl"
+                                    placeholder="Enter your first name" value="<%= user.firstName || '' %>">
+                                <span class="field-validation-icon"></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Minimum 2 characters</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName" class="block text-sm font-semibold text-gray-700 mb-3">
+                                Last Name <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="lastName" name="lastName" required minlength="2"
+                                    maxlength="50" class="form-input w-full px-4 py-3 rounded-xl"
+                                    placeholder="Enter your last name" value="<%= user.lastName || '' %>">
+                                <span class="field-validation-icon"></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Minimum 2 characters</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-3">
+                            Email Address <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i data-lucide="mail" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <input type="email" id="email" name="email" required readonly
+                                class="form-input w-full pl-4 pr-12 py-3 rounded-xl bg-gray-50 cursor-not-allowed input-has-icon-right"
+                                placeholder="your.email@example.com" value="<%= user.email || '' %>"
+                                title="Email cannot be changed here">
+                            <span class="field-validation-icon"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                            Email cannot be changed directly. Contact support if needed.
+                        </p>
+                        <div id="emailValidation" class="text-xs mt-1 min-h-[16px]"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mobile" class="block text-sm font-semibold text-gray-700 mb-3">
+                            Mobile Number <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i data-lucide="phone" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <input type="tel" id="mobile" name="mobile" required pattern="[0-9]{10}" maxlength="10"
+                                class="form-input w-full pl-4 pr-12 py-3 rounded-xl input-has-icon-right" placeholder="1234567890"
+                                value="<%= user.mobile || '' %>">
+                            <span class="field-validation-icon"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Enter 10-digit mobile number without spaces or dashes
+                        </p>
+                        <div id="mobileValidation" class="text-xs mt-1 min-h-[16px]"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender" class="block text-sm font-semibold text-gray-700 mb-3">
+                            Gender <span class="text-red-500">*</span>
+                        </label>
+                        <div class="select-wrapper relative">
+                            <select id="gender" name="gender" required
+                                class="form-input w-full px-4 py-3 rounded-xl appearance-none cursor-pointer">
+                                <option value="">Select your gender</option>
+                                <option value="Male" <%=user.gender==='Male' ? 'selected' : '' %>>👨 Male</option>
+                                <option value="Female" <%=user.gender==='Female' ? 'selected' : '' %>>👩 Female
+                                </option>
+                                <option value="Other" <%=user.gender==='Other' ? 'selected' : '' %>>🏳️‍⚧️ Other
+                                </option>
+                                <option value="Prefer not to say" <%=user.gender==='Prefer not to say' ? 'selected'
+                                    : '' %>>🤐 Prefer not to say</option>
+                            </select>
+                            <span class="field-validation-icon"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-3">
+                            New Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i data-lucide="lock" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <input type="password" id="password" name="password" minlength="8"
+                                class="form-input w-full pl-4 pr-12 py-3 rounded-xl input-has-icon-right"
+                                placeholder="Leave blank to keep current password">
+                            <span class="field-validation-icon"></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Minimum 8 characters (leave blank if not changing)</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-3">
+                            Confirm New Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-gray-400"></i>
+                            </div>
+                            <input type="password" id="confirmPassword" name="confirmPassword"
+                                class="form-input w-full pl-4 pr-12 py-3 rounded-xl input-has-icon-right" placeholder="Confirm new password">
+                            <span class="field-validation-icon"></span>
+                        </div>
+                        <div id="passwordMatchValidation" class="text-xs mt-1 min-h-[16px]"></div>
+                    </div>
+                    <div
+                        class="profile-buttons flex flex-col-reverse md:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
+                        <button type="button" id="cancelEditBtn"
+                            class="btn btn-secondary btn-common flex items-center justify-center">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                            <span>Cancel</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-common flex items-center justify-center">
+                            <i data-lucide="save" class="w-5 h-5"></i>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <div id="user-data" data-user='<%- JSON.stringify(user) %>' style="display: none;"></div>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            const serverUserData = JSON.parse(document.getElementById('user-data').dataset.user);
+
+            const viewProfilePage = document.getElementById('viewProfilePage');
+            const editProfilePage = document.getElementById('editProfilePage');
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+            const profileForm = document.getElementById('profileForm');
+            const profilePictureInput = document.getElementById('profilePicture');
+            const profilePreview = document.getElementById('profilePreview');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const messageContainer = document.getElementById('messageContainer');
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const emailInput = document.getElementById('email');
+            const mobileInput = document.getElementById('mobile');
+            const mobileValidation = document.getElementById('mobileValidation');
+            const genderSelect = document.getElementById('gender');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const passwordMatchValidation = document.getElementById('passwordMatchValidation');
+
+            const viewFirstName = document.getElementById('viewFirstName');
+            const viewLastName = document.getElementById('viewLastName');
+            const viewFullName = document.getElementById('viewFullName');
+            const viewEmail = document.getElementById('viewEmail');
+            const viewEmailDetails = document.getElementById('viewEmailDetails');
+            const viewMobile = document.getElementById('viewMobile');
+            const viewGender = document.getElementById('viewGender');
+            const viewProfilePicture = document.getElementById('viewProfilePicture');
+
+            let isSubmitting = false;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlMessage = urlParams.get('message');
+            const urlError = urlParams.get('error');
+
+            if (urlMessage) {
+                showMessage(decodeURIComponent(urlMessage), 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+                showViewProfile();
+            } else if (urlError) {
+                showMessage(decodeURIComponent(urlError), 'error');
+                showEditProfile();
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                showViewProfile();
+            }
+
+            function showViewProfile() {
+                viewProfilePage.classList.add('active');
+                editProfilePage.classList.remove('active');
+                updateViewProfileData();
+                clearMessages();
+                console.log('Switched to view profile');
+            }
+
+            function showEditProfile() {
+                editProfilePage.classList.add('active');
+                viewProfilePage.classList.remove('active');
+                populateEditForm();
+                clearMessages();
+                console.log('Switched to edit profile');
+            }
+
+            function updateViewProfileData() {
+                viewFirstName.textContent = serverUserData.firstName || 'N/A';
+                viewLastName.textContent = serverUserData.lastName || 'N/A';
+                viewFullName.textContent = `${serverUserData.firstName || ''} ${serverUserData.lastName || ''}`.trim();
+                viewEmail.textContent = serverUserData.email || 'N/A';
+                viewEmailDetails.textContent = serverUserData.email || 'N/A';
+                viewMobile.textContent = serverUserData.mobile || 'N/A';
+                viewProfilePicture.src = serverUserData.profilePicture || '/images/default_image.png';
+
+                const genderEmojis = {
+                    'Male': '👨 Male',
+                    'Female': '👩 Female',
+                    'Other': '🏳️‍⚧️ Other',
+                    'Prefer not to say': '🤐 Prefer not to say'
+                };
+                viewGender.innerHTML = genderEmojis[serverUserData.gender] || serverUserData.gender || 'N/A';
+            }
+
+            function populateEditForm() {
+                firstNameInput.value = serverUserData.firstName || '';
+                lastNameInput.value = serverUserData.lastName || '';
+                emailInput.value = serverUserData.email || '';
+                mobileInput.value = serverUserData.mobile || '';
+                genderSelect.value = serverUserData.gender || '';
+                profilePreview.src = serverUserData.profilePicture || '/images/default_image.png';
+
+                passwordInput.value = '';
+                confirmPasswordInput.value = '';
+
+                clearAllValidation();
+                uploadStatus.textContent = '';
+                profilePictureInput.value = '';
+                validatePrefilledFields();
+            }
+
+            function clearAllValidation() {
+                [firstNameInput, lastNameInput, mobileInput, genderSelect, passwordInput, confirmPasswordInput].forEach(input => {
+                    clearValidationStyling(input);
+                });
+                passwordMatchValidation.textContent = '';
+            }
+
+            function clearValidationStyling(input) {
+                const formGroup = input.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.remove('field-valid', 'field-invalid');
+                }
+                input.classList.remove('field-valid', 'field-invalid'); // Clear styling on the input itself
+            }
+
+            function validatePrefilledFields() {
+                firstNameInput.dispatchEvent(new Event('input'));
+                lastNameInput.dispatchEvent(new Event('input'));
+                mobileInput.dispatchEvent(new Event('input'));
+                genderSelect.dispatchEvent(new Event('change'));
+            }
+
+            editProfileBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showEditProfile();
+            });
+            cancelEditBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showViewProfile();
+            });
+
+            function clearMessages() {
+                messageContainer.innerHTML = '';
+            }
+
+            function showMessage(text, type = 'success') {
+                clearMessages();
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type === 'success' ? 'message-success' : 'message-error'}`;
+                messageDiv.innerHTML = `
+                    <div class="flex items-center justify-center gap-2">
+                        <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i>
+                        <span>${text}</span>
+                    </div>
+                `;
+                messageContainer.appendChild(messageDiv);
+                lucide.createIcons();
+
+                if (type === 'success') {
+                    setTimeout(() => {
+                        messageDiv.style.opacity = '0';
+                        setTimeout(() => messageDiv.remove(), 300);
+                    }, 5000);
+                }
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            function setLoading(loading) {
+                isSubmitting = loading;
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                if (loading) {
+                    form.classList.add('loading');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span>Saving Changes...</span>';
+                    }
+                } else {
+                    form.classList.remove('loading');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i><span>Save Changes</span>';
+                        lucide.createIcons();
+                    }
+                }
+            }
+
+            function addValidationStyling(inputElement, isValid) {
+                // Apply styling directly to the input element itself
+                inputElement.classList.remove('field-valid', 'field-invalid');
+                if (inputElement.value.trim().length > 0 || inputElement.type === 'password') {
+                    inputElement.classList.add(isValid ? 'field-valid' : 'field-invalid');
+                }
+            }
+
+            firstNameInput.addEventListener('input', function () {
+                addValidationStyling(this, this.value.trim().length >= 2);
+            });
+            firstNameInput.addEventListener('blur', function () {
+                if (this.value.trim().length === 0) {
+                    clearValidationStyling(this);
+                }
+            });
+
+            lastNameInput.addEventListener('input', function () {
+                addValidationStyling(this, this.value.trim().length >= 2);
+            });
+            lastNameInput.addEventListener('blur', function () {
+                if (this.value.trim().length === 0) {
+                    clearValidationStyling(this);
+                }
+            });
+
+            mobileInput.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                const isValid = /^[0-9]{10}$/.test(this.value);
+                addValidationStyling(this, isValid);
+
+                if (this.value.length === 0) {
+                    mobileValidation.textContent = '';
+                } else if (this.value.length < 10) {
+                    mobileValidation.innerHTML = '<span class="text-amber-600">⚠️ Enter 10 digits</span>';
+                } else if (this.value.length === 10) {
+                    mobileValidation.innerHTML = '<span class="text-green-600">✅ Valid mobile number</span>';
+                }
+            });
+            mobileInput.addEventListener('blur', function () {
+                if (this.value.length === 0) {
+                    mobileValidation.textContent = '';
+                    clearValidationStyling(this);
+                }
+            });
+
+            genderSelect.addEventListener('change', function () {
+                addValidationStyling(this, this.value !== '');
+            });
+            genderSelect.addEventListener('blur', function () {
+                if (this.value === '') {
+                    clearValidationStyling(this);
+                }
+            });
+
+            passwordInput.addEventListener('input', function() {
+                const isValid = this.value.length === 0 || this.value.length >= 8;
+                addValidationStyling(this, isValid);
+                validatePasswordMatch();
+            });
+            passwordInput.addEventListener('blur', function() {
+                 if (this.value.length === 0) {
+                    clearValidationStyling(this);
+                }
+            });
+
+            confirmPasswordInput.addEventListener('input', function() {
+                validatePasswordMatch();
+            });
+            confirmPasswordInput.addEventListener('blur', function() {
+                if (this.value.length === 0) {
+                    passwordMatchValidation.textContent = '';
+                    clearValidationStyling(this);
+                }
+            });
+
+            function validatePasswordMatch() {
+                if (!passwordInput.value && !confirmPasswordInput.value) {
+                    passwordMatchValidation.textContent = '';
+                    clearValidationStyling(passwordInput);
+                    clearValidationStyling(confirmPasswordInput);
+                    return true;
+                }
+                
+                const passwordsMatch = passwordInput.value === confirmPasswordInput.value;
+                addValidationStyling(confirmPasswordInput, passwordsMatch);
+                
+                if (passwordInput.value.length === 0 && confirmPasswordInput.value.length > 0) {
+                    passwordMatchValidation.innerHTML = '<span class="text-red-500">New password is empty.</span>';
+                    return false;
+                } else if (passwordInput.value.length > 0 && confirmPasswordInput.value.length === 0) {
+                     passwordMatchValidation.innerHTML = '<span class="text-red-500">Please confirm new password.</span>';
+                     return false;
+                } else if (passwordInput.value.length > 0 && passwordInput.value.length < 8) {
+                    passwordMatchValidation.innerHTML = '<span class="text-red-500">New password needs 8+ characters.</span>';
+                    return false;
+                }
+                else if (!passwordsMatch) {
+                    passwordMatchValidation.innerHTML = '<span class="text-red-500">Passwords do not match.</span>';
+                    return false;
+                } else {
+                    passwordMatchValidation.innerHTML = '<span class="text-green-600">Passwords match. ✅</span>';
+                    return true;
+                }
+            }
+
+
+            function validateFormOnSubmit() {
+                let isValid = true;
+                clearMessages();
+
+                const firstName = firstNameInput.value.trim();
+                const lastName = lastNameInput.value.trim();
+                const mobile = mobileInput.value.trim();
+                const gender = genderSelect.value;
+                
+                if (!firstName || firstName.length < 2) {
+                    showMessage('First name must be at least 2 characters long.', 'error');
+                    addValidationStyling(firstNameInput, false);
+                    firstNameInput.focus();
+                    isValid = false;
+                } else {
+                    addValidationStyling(firstNameInput, true);
+                }
+
+                if (isValid && (!lastName || lastName.length < 2)) {
+                    showMessage('Last name must be at least 2 characters long.', 'error');
+                    addValidationStyling(lastNameInput, false);
+                    lastNameInput.focus();
+                    isValid = false;
+                } else if (isValid) {
+                    addValidationStyling(lastNameInput, true);
+                }
+
+                if (isValid && (!mobile || !/^[0-9]{10}$/.test(mobile))) {
+                    showMessage('Please enter a valid 10-digit mobile number.', 'error');
+                    addValidationStyling(mobileInput, false);
+                    mobileInput.focus();
+                    isValid = false;
+                } else if (isValid) {
+                    addValidationStyling(mobileInput, true);
+                }
+
+                if (isValid && !gender) {
+                    showMessage('Please select your gender.', 'error');
+                    addValidationStyling(genderSelect, false);
+                    genderSelect.focus();
+                    isValid = false;
+                } else if (isValid) {
+                    addValidationStyling(genderSelect, true);
+                }
+
+                if (isValid && (passwordInput.value || confirmPasswordInput.value)) {
+                    if (!validatePasswordMatch()) {
+                        showMessage('Please fix password errors.', 'error');
+                        passwordInput.focus();
+                        isValid = false;
+                    } else if (passwordInput.value.length > 0 && passwordInput.value.length < 8) {
+                        showMessage('New password must be at least 8 characters long.', 'error');
+                        addValidationStyling(passwordInput, false);
+                        passwordInput.focus();
+                        isValid = false;
+                    }
+                }
+                
+                if (!isValid) {
+                    messageContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                return isValid;
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (isSubmitting) return;
+
+                if (!validateFormOnSubmit()) {
+                    return;
+                }
+
+                setLoading(true);
+
+                const formData = new FormData();
+                formData.append('firstName', firstNameInput.value.trim());
+                formData.append('lastName', lastNameInput.value.trim());
+                formData.append('mobile', mobileInput.value.trim());
+                formData.append('gender', genderSelect.value);
+
+                if (passwordInput.value) {
+                    formData.append('password', passwordInput.value);
+                    formData.append('confirmPassword', confirmPasswordInput.value);
+                }
+
+                if (profilePictureInput.files.length > 0) {
+                    formData.append('profilePicture', profilePictureInput.files[0]);
+                }
+                
+                try {
+                    const response = await fetch('/dashboard/profile', { 
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        showMessage(result.message || 'Profile updated successfully!', 'success');
+                        
+                        if (result.data) {
+                            serverUserData.firstName = result.data.firstName;
+                            serverUserData.lastName = result.data.lastName;
+                            serverUserData.mobile = result.data.mobile;
+                            serverUserData.gender = result.data.gender;
+                            serverUserData.profilePicture = result.data.profilePicture;
+                        }
+
+                        const userNameSpans = document.querySelectorAll('.navbar-user-info span, .mobile-profile-link span');
+                        userNameSpans.forEach(span => span.textContent = serverUserData.firstName + (serverUserData.lastName ? ' ' + serverUserData.lastName : '') || serverUserData.email);
+                        
+                        const avatarImages = document.querySelectorAll('.navbar-user-info img, .profile-avatar, .mobile-profile-link img');
+                        avatarImages.forEach(img => img.src = serverUserData.profilePicture);
+
+                        passwordInput.value = '';
+                        confirmPasswordInput.value = '';
+                        profilePictureInput.value = '';
+                        uploadStatus.textContent = '';
+                        clearAllValidation();
+
+                        setTimeout(() => {
+                            showViewProfile();
+                        }, 1500);
+                    } else {
+                        showMessage(result.error || result.message || 'Failed to update profile. Please try again.', 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Network error during profile update:', error);
+                    showMessage('Network error: Could not connect to the server. ' + error.message, 'error');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'submit' && e.target.type !== 'file') {
+                    e.preventDefault();
+                    const currentActivePage = document.querySelector('.page.active');
+                    if (!currentActivePage) return;
+
+                    const formElements = Array.from(currentActivePage.querySelectorAll(
+                        'input:not([readonly]):not([type="hidden"]):not([type="file"]):not(:disabled), select:not(:disabled), button[type="button"]:not(:disabled)'
+                    ));
+                    const currentIndex = formElements.indexOf(document.activeElement);
+                    const nextInput = formElements[currentIndex + 1];
+                    if (nextInput) {
+                        nextInput.focus();
+                    } else {
+                        const submitButton = currentActivePage.querySelector('button[type="submit"]');
+                        if (submitButton && !submitButton.disabled) {
+                            submitButton.focus();
+                        }
+                    }
+                }
+            });
+
+            const urlParamsFromEJS = new URLSearchParams(window.location.search);
+            const userExists = typeof user !== 'undefined' && user;
+            
+            if (userExists) {
+                populateEditForm();
+                updateViewProfileData();
+            }
+
+            const initialUrlError = urlParamsFromEJS.get('error');
+            const initialUrlMessage = urlParamsFromEJS.get('message');
+
+            if (initialUrlError) {
+                showEditProfile();
+                showMessage(decodeURIComponent(initialUrlError), 'error');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (initialUrlMessage) {
+                showViewProfile();
+                showMessage(decodeURIComponent(initialUrlMessage), 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                showViewProfile();
+            }
+        });
+    </script>
+</body>
+
+</html>

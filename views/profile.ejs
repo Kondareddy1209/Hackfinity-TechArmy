@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile • Agent Seller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+        }
+        .profile-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 700px;
+            width: 100%;
+        }
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #4CAF50;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box; /* Include padding in width */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group input[type="file"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+        .profile-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            width: 100%;
+        }
+        .profile-btn:hover {
+            background-color: #5cb85c;
+            transform: translateY(-2px);
+        }
+        .profile-btn:active {
+            transform: translateY(0);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.2s ease;
+        }
+        .back-link:hover {
+            color: #4CAF50;
+        }
+        .message-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 600;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .profile-card {
+                margin: 15px;
+                padding: 20px;
+            }
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            .profile-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile Avatar" class="profile-avatar" id="currentAvatar">
+            <h2 class="text-2xl font-bold text-gray-800"><%= user.firstName || user.email %>'s Profile</h2>
+            <p class="text-gray-500"><%= user.email %></p>
+        </div>
+
+        <form id="profileEditForm">
+            <input type="hidden" name="userId" value="<%= user._id %>">
+
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" value="<%= user.firstName || '' %>" placeholder="Enter your first name">
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" value="<%= user.lastName || '' %>" placeholder="Enter your last name">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="<%= user.email || '' %>" placeholder="Enter your email" readonly>
+                <p class="text-sm text-gray-500 mt-1">Email cannot be changed directly here.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="newProfilePicture">Change Profile Picture</label>
+                <input type="file" id="newProfilePicture" name="profilePicture" accept="image/*">
+                <p class="text-sm text-gray-500 mt-1">Max file size 2MB (JPG, PNG).</p>
+            </div>
+
+            <div class="form-group">
+                <label for="password">New Password</label>
+                <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
+                <p class="text-sm text-gray-500 mt-1">Enter a new password if you wish to change it.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm New Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your new password">
+            </div>
+
+            <button type="submit" class="profile-btn" id="saveProfileBtn">Save Changes</button>
+
+            <div id="messageBox" class="message-box"></div>
+        </form>
+
+        <a href="/user_dashboard" class="back-link">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons(); // Initialize Lucide icons
+
+            const profileEditForm = document.getElementById('profileEditForm');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const newProfilePictureInput = document.getElementById('newProfilePicture');
+            const currentAvatar = document.getElementById('currentAvatar');
+            const messageBox = document.getElementById('messageBox');
+            const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+            // Client-side image preview
+            newProfilePictureInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) { // Max 2MB
+                        displayMessage('File size exceeds 2MB. Please choose a smaller image.', 'error');
+                        this.value = ''; // Clear the input
+                        currentAvatar.src = "<%= user.profilePicture || '/images/default_image.png' %>"; // Revert preview
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentAvatar.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    currentAvatar.src = "<%= user.profilePicture || '/images/default_image.png' %>"; // Revert to current if no file selected
+                }
+            });
+
+            profileEditForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                displayMessage('', ''); // Clear previous messages
+                saveProfileBtn.disabled = true;
+                saveProfileBtn.textContent = 'Saving...';
+
+                // Password validation
+                if (passwordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+                    displayMessage('New password and confirm password do not match.', 'error');
+                    saveProfileBtn.disabled = false;
+                    saveProfileBtn.textContent = 'Save Changes';
+                    return;
+                }
+
+                const formData = new FormData(profileEditForm);
+                // Remove password fields if empty to avoid sending empty strings to backend
+                if (!passwordInput.value) {
+                    formData.delete('password');
+                    formData.delete('confirmPassword');
+                }
+                // Handle file input manually to ensure it's included if selected
+                if (newProfilePictureInput.files.length === 0) {
+                    formData.delete('profilePicture'); // Remove if no new file selected
+                }
+
+
+                // Backend Integration Point: Send formData to your backend API
+                // Example using fetch API:
+                try {
+                    const response = await fetch('/api/profile/update', { // Adjust this API endpoint to your backend route
+                        method: 'PUT', // or 'POST' depending on your API design
+                        body: formData // FormData handles multipart/form-data for file uploads
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        displayMessage(data.message || 'Profile updated successfully!', 'success');
+                        // Optional: Update displayed username/avatar in navbar without full page reload
+                        // This assumes your navbar is a partial included in the main layout
+                        // And that data.user contains updated info
+                        // E.g., document.querySelector('.navbar-user-info span').textContent = data.user.firstName || data.user.username;
+                        // E.g., document.querySelector('.navbar-user-info img').src = data.user.profilePicture;
+                        if (passwordInput.value) { // Clear password fields after successful change
+                            passwordInput.value = '';
+                            confirmPasswordInput.value = '';
+                        }
+                        newProfilePictureInput.value = ''; // Clear file input
+                    } else {
+                        displayMessage(data.message || 'Failed to update profile.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    displayMessage('Network error or server unavailable. Please try again.', 'error');
+                } finally {
+                    saveProfileBtn.disabled = false;
+                    saveProfileBtn.textContent = 'Save Changes';
+                }
+            });
+
+            function displayMessage(message, type) {
+                messageBox.textContent = message;
+                messageBox.className = 'message-box'; // Reset classes
+                if (type) {
+                    messageBox.classList.add(type);
+                    messageBox.style.display = 'block';
+                } else {
+                    messageBox.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
