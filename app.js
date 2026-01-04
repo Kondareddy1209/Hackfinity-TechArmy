@@ -107,6 +107,30 @@ app.get('/team', (req, res) => {
 });
 
 
+// Basic Health Check Route
+app.get('/health', async (req, res) => {
+    try {
+        const dbStatus = mongoose.connection.readyState;
+        let statusText = 'Unknown';
+        switch (dbStatus) {
+            case 0: statusText = 'Disconnected'; break;
+            case 1: statusText = 'Connected'; break;
+            case 2: statusText = 'Connecting'; break;
+            case 3: statusText = 'Disconnecting'; break;
+        }
+        res.status(200).json({
+            status: 'UP',
+            database: statusText,
+            timestamp: new Date()
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'DOWN',
+            error: error.message
+        });
+    }
+});
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('MongoDB connected successfully');

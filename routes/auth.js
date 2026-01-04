@@ -37,7 +37,12 @@ router.get('/', (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render('login', { error: null, message: null });
+    console.log('[DEBUG] Google Client ID in Env:', process.env.GOOGLE_CLIENT_ID ? 'Exists' : 'Missing');
+    res.render('login', {
+        error: null,
+        message: null,
+        googleClientId: process.env.GOOGLE_CLIENT_ID
+    });
 });
 
 router.get('/signup', (req, res) => {
@@ -169,7 +174,12 @@ router.post('/google', async (req, res) => {
         res.status(200).json({ success: true, message: 'Google sign-in successful', redirectUrl });
 
     } catch (error) {
-        console.error('[GOOGLE SIGNIN ERROR] Error during Google ID token verification or user operation:', error);
+        console.error('[GOOGLE SIGNIN ERROR] Detailed Error:', error);
+
+        if (error.response) {
+            console.error('[GOOGLE SIGNIN] Google API Error Data:', error.response.data);
+        }
+
         if (error.code === 11000) { // Mongoose/MongoDB duplicate key error
             const field = Object.keys(error.keyValue)[0]; // Get the field that caused the duplicate error
             const value = error.keyValue[field];
@@ -179,7 +189,7 @@ router.post('/google', async (req, res) => {
                 return res.status(409).json({ success: false, error: 'This Google account is already linked to another user. Please contact support.' });
             }
         }
-        res.status(500).json({ success: false, error: 'Google sign-in failed due to a server error. Please try again.' });
+        res.status(500).json({ success: false, error: 'Google sign-in failed. Check server logs for details.' });
     }
 });
 
@@ -236,7 +246,7 @@ router.post('/signup', async (req, res) => {
                 user.gender = gender;
                 // Only update password if a new one is provided or if the existing one is missing
                 if (password && (!user.password || !(await user.matchPassword(password)))) { // Check if new password is different or if no password exists
-                     user.password = password; // Pre-save hook will hash it
+                    user.password = password; // Pre-save hook will hash it
                 }
                 user.isVerified = false; // Remains false until OTP verification
                 user.provider = 'email'; // Ensure provider is 'email'
@@ -470,9 +480,9 @@ router.post('/login', async (req, res) => {
 
         // If it's a Google-signed up user and they try traditional login without a password
         if (user.googleId && !user.password) {
-             return res.render('login', { error: 'This account was created with Google. Please use the "Sign in with Google" button.', message: null });
+            return res.render('login', { error: 'This account was created with Google. Please use the "Sign in with Google" button.', message: null });
         }
-        
+
         // If it's a traditional user with no password (should ideally not happen due to schema's required:true)
         if (!user.password && !user.googleId) {
             console.warn(`[LOGIN] User ${email} found with no password and no googleId. Incomplete or corrupted account?`);
