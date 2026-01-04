@@ -15,7 +15,6 @@
       height: 100%;
       margin: 0;
       padding: 0;
-      overflow: hidden;
     }
 
     body {
@@ -27,6 +26,8 @@
       align-items: center;
       position: relative;
       box-sizing: border-box;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* 3D Wave Background */
@@ -474,44 +475,185 @@
 
     @media (max-width: 768px) {
       body {
-        padding: 10px;
+        padding: 15px;
+        align-items: flex-start;
+        min-height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .auth-container {
-        max-width: 350px;
-        padding: 20px;
+        max-width: 100%;
+        padding: 0;
       }
 
       .auth-container-wrapper {
         flex-direction: column;
-        margin: 0;
+        max-width: 480px;
+        width: calc(100% - 20px);
+        margin: 20px 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        position: relative;
       }
 
       .auth-form-panel {
         width: 100%;
-        border-radius: 0;
+        padding: 30px 20px;
+        border-radius: 0 0 16px 16px;
         box-shadow: none;
+        background: rgba(255, 255, 255, 0.98);
       }
 
       .auth-overview-panel {
         width: 100%;
+        padding: 25px 20px;
+        border-radius: 16px 16px 0 0;
+      }
+
+      h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        font-size: 14px;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      input {
+        padding: 14px 40px 14px 16px;
+        font-size: 16px !important;
+        height: 52px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+      }
+
+      input:focus {
+        box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
+      }
+
+      .password-group .toggle-pass {
+        right: 16px;
+        font-size: 18px;
+        padding: 10px;
+      }
+
+      button {
+        padding: 16px 24px;
+        font-size: 16px;
+        border-radius: 10px;
+        min-height: 52px;
+      }
+
+      .link {
+        padding: 16px 24px;
+        font-size: 15px;
+        border-radius: 10px;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .google-btn {
+        padding: 16px 24px;
+        border-radius: 10px;
+        min-height: 52px;
+      }
+
+      .error-msg, #errorMsg, .caps-alert {
+        font-size: 13px;
+        margin: 8px 0 12px;
+      }
+
+      .message-success, .message-error {
+        font-size: 14px;
+        padding: 12px 16px;
+        margin-bottom: 18px;
       }
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 375px) {
       body {
-        padding: 5px;
+        padding: 10px;
       }
 
-      .auth-container {
-        width: 100%;
-        padding: 15px;
-        border-radius: 8px;
+      .auth-container-wrapper {
+        margin: 15px 5px;
+        width: calc(100% - 10px);
+      }
+
+      .auth-form-panel {
+        padding: 25px 15px;
+      }
+
+      .auth-overview-panel {
+        padding: 20px 15px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      input {
+        height: 48px;
+        padding: 12px 36px 12px 14px;
+      }
+
+      .password-group .toggle-pass {
+        right: 14px;
+        font-size: 16px;
+        padding: 8px;
+      }
+
+      button, .link, .google-btn {
+        padding: 14px 18px;
+        font-size: 15px;
+        min-height: 48px;
+      }
+    }
+
+    /* Landscape mode adjustments */
+    @media (max-height: 600px) and (orientation: landscape) {
+      body {
+        padding: 10px;
+        align-items: center;
+      }
+
+      .auth-container-wrapper {
+        margin: 10px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .auth-overview-panel {
+        padding: 15px 20px;
+      }
+
+      .auth-form-panel {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
       }
     }
   </style>
 </head>
-
 <body>
   <div class="wave-container">
     <div class="wave-layer">
@@ -562,19 +704,19 @@
       <div class="auth-container">
         <h2>User Login</h2>
 
-        <% if (typeof error !=='undefined' && error) { %>
+        <% if (typeof error !== 'undefined' && error) { %>
           <div class="message-error" id="errorMsg">
             <%= error %>
           </div>
-          <% } else { %>
-            <div class="message-error" id="errorMsg" style="display:none;"></div>
-            <% } %>
+        <% } else { %>
+          <div class="message-error" id="errorMsg" style="display:none;"></div>
+        <% } %>
 
-              <% if (typeof message !=='undefined' && message) { %>
-                <div class="message-success">
-                  <%= message %>
-                </div>
-                <% } %>
+        <% if (typeof message !== 'undefined' && message) { %>
+          <div class="message-success">
+            <%= message %>
+          </div>
+        <% } %>
 
                   <form id="loginForm" action="/auth/login" method="POST" novalidate>
                     <div class="form-group">

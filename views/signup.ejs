@@ -335,11 +335,18 @@
       border: none;
       cursor: pointer;
       color: #4A90E2;
-      font-size: 12px;
+      font-size: 16px;
       transition: color 0.3s ease;
       touch-action: manipulation;
       -webkit-user-select: none;
       user-select: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      min-height: 32px;
     }
 
     .password-group .toggle-pass:hover {
@@ -563,8 +570,8 @@
     /* Mobile-specific optimizations */
     @media (max-width: 768px) {
       body {
-        padding: 10px;
-        align-items: flex-start;
+        padding: 15px;
+        align-items: center;
         justify-content: center;
         overflow-y: auto;
         overflow-x: hidden;
@@ -594,36 +601,36 @@
       /* Mobile Layout: Stack panels vertically */
       .auth-container-wrapper {
         flex-direction: column;
-        max-width: 100%;
-        width: 100%;
-        margin: 0;
-        box-shadow: none;
-        background: transparent;
-        backdrop-filter: none;
-        border: none;
-        border-radius: 0;
+        max-width: 480px;
+        width: calc(100% - 20px);
+        margin: 20px 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
       }
 
       /* Overview panel becomes top section on mobile */
       .auth-overview-panel {
         width: 100%;
-        padding: 20px 15px;
+        padding: 25px 20px;
         background: linear-gradient(to right, #34d399, #10b981);
         text-align: center;
-        border-radius: 12px 12px 0 0;
+        border-radius: 16px 16px 0 0;
         margin-bottom: 0;
       }
 
       .auth-overview-panel h2 {
-        font-size: 1.6em;
-        margin-bottom: 8px;
+        font-size: 1.8em;
+        margin-bottom: 10px;
         font-weight: 600;
       }
 
       .auth-overview-panel p {
-        font-size: 0.9em;
-        margin-bottom: 15px;
-        line-height: 1.4;
+        font-size: 0.95em;
+        margin-bottom: 18px;
+        line-height: 1.5;
       }
 
       .feature-list {
@@ -631,28 +638,28 @@
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
       }
 
       .feature-list li {
-        font-size: 0.85em;
+        font-size: 0.9em;
         margin-bottom: 0;
         justify-content: flex-start;
         text-align: left;
       }
 
       .feature-list li i {
-        margin-right: 10px;
-        font-size: 1em;
+        margin-right: 12px;
+        font-size: 1.1em;
         flex-shrink: 0;
       }
 
       /* Form panel becomes bottom section on mobile */
       .auth-form-panel {
         width: 100%;
-        padding: 25px 15px;
+        padding: 30px 20px;
         background: rgba(255, 255, 255, 0.98);
-        border-radius: 0 0 12px 12px;
+        border-radius: 0 0 16px 16px;
       }
 
       .auth-container {
@@ -660,13 +667,13 @@
       }
 
       h2 {
-        font-size: 20px;
+        font-size: 22px;
         margin: 0 0 20px;
         color: #2c5530;
       }
 
       .form-group {
-        margin-bottom: 16px;
+        margin-bottom: 18px;
       }
 
       label {
@@ -679,8 +686,8 @@
       input, select {
         padding: 14px 40px 14px 16px;
         font-size: 16px !important;
-        height: 50px;
-        border-radius: 8px;
+        height: 52px;
+        border-radius: 10px;
         border: 2px solid #ddd;
         background: rgba(255, 255, 255, 0.95);
         touch-action: manipulation;
@@ -689,7 +696,7 @@
 
       input:focus, select:focus {
         border-color: #4A90E2;
-        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
         transform: none;
         font-size: 16px !important;
         zoom: 1;
@@ -699,9 +706,14 @@
       .password-group .toggle-pass {
         right: 16px;
         top: 38px;
-        font-size: 16px;
-        padding: 8px;
+        font-size: 20px;
+        padding: 8px 12px;
         touch-action: manipulation;
+        min-width: 44px;
+        min-height: 44px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        backdrop-filter: blur(5px);
       }
 
       .password-group small {
@@ -714,25 +726,26 @@
       #capsAlert {
         font-size: 13px;
         margin-top: 8px;
-        padding: 8px 12px;
-        border-radius: 6px;
+        padding: 10px 14px;
+        border-radius: 8px;
       }
 
       .form-actions {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
         margin-top: 25px;
         margin-bottom: 10px;
         align-items: stretch;
       }
 
       button {
-        padding: 16px 20px;
+        padding: 16px 24px;
         font-size: 16px;
         font-weight: 600;
-        border-radius: 8px;
+        border-radius: 10px;
         width: 100%;
         touch-action: manipulation;
+        min-height: 52px;
       }
 
       button:active {
@@ -740,15 +753,19 @@
       }
 
       .link {
-        padding: 16px 20px;
-        font-size: 14px;
+        padding: 16px 24px;
+        font-size: 15px;
         font-weight: 500;
-        border-radius: 8px;
+        border-radius: 10px;
         text-align: center;
         display: block;
         width: 100%;
         box-sizing: border-box;
         touch-action: manipulation;
+        min-height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .link:active {
@@ -756,9 +773,10 @@
       }
 
       .error-msg {
-        font-size: 12px;
-        margin: 5px 0 10px;
+        font-size: 13px;
+        margin: 8px 0 12px;
         text-align: center;
+        padding: 8px;
       }
 
       .google-signin-section {
@@ -772,59 +790,70 @@
       }
 
       .google-btn {
-        padding: 16px 20px;
+        padding: 16px 24px;
         font-size: 16px;
         max-width: 100%;
-        border-radius: 8px;
+        border-radius: 10px;
+        min-height: 52px;
       }
     }
 
     /* Very small mobile screens */
     @media (max-width: 375px) {
       body {
-        padding: 8px;
+        padding: 10px;
+      }
+
+      .auth-container-wrapper {
+        margin: 15px 5px;
+        width: calc(100% - 10px);
       }
 
       .auth-overview-panel {
-        padding: 18px 12px;
+        padding: 20px 15px;
       }
 
       .auth-overview-panel h2 {
-        font-size: 1.4em;
-        margin-bottom: 6px;
+        font-size: 1.5em;
+        margin-bottom: 8px;
       }
 
       .auth-overview-panel p {
-        font-size: 0.85em;
-        margin-bottom: 12px;
+        font-size: 0.9em;
+        margin-bottom: 14px;
       }
 
       .feature-list li {
-        font-size: 0.8em;
+        font-size: 0.85em;
       }
 
       .auth-form-panel {
-        padding: 20px 12px;
+        padding: 25px 15px;
       }
 
       h2 {
-        font-size: 18px;
-        margin-bottom: 16px;
+        font-size: 20px;
+        margin-bottom: 18px;
       }
 
       input, select {
-        height: 46px;
-        padding: 12px 35px 12px 14px;
+        height: 48px;
+        padding: 12px 36px 12px 14px;
       }
 
       .password-group .toggle-pass {
         right: 14px;
         top: 36px;
+        font-size: 18px;
+        padding: 6px 10px;
+        min-width: 40px;
+        min-height: 40px;
       }
 
       button, .link, .google-btn {
-        padding: 14px 16px;
+        padding: 14px 18px;
         font-size: 15px;
+        min-height: 48px;
       }
     }
 
@@ -1108,9 +1137,20 @@
     const toggle = document.getElementById('togglePass');
     if (pwInput && toggle) {
       toggle.addEventListener('click', () => {
-        pwInput.type = pwInput.type === 'password' ? 'text' : 'password';
-        toggle.innerHTML = pwInput.type === 'password' ? '👁️' : '🙈';
+        const isPassword = pwInput.type === 'password';
+        pwInput.type = isPassword ? 'text' : 'password';
+        toggle.innerHTML = isPassword ? '🙈' : '👁️';
+        toggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        
+        // Add visual feedback
+        toggle.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+          toggle.style.transform = 'scale(1)';
+        }, 100);
       });
+      
+      // Set initial aria-label
+      toggle.setAttribute('aria-label', 'Show password');
     }
 
     // Caps Lock detection
@@ -1262,7 +1302,7 @@
       }
     }
 
-    // Setup mouse interaction (desktop only)
+    // Setup mouse interaction (desktop only)I
     function setupMouseInteraction() {
       if (window.innerWidth <= 768) return;
       const mouseWave = document.getElementById('mouseWave');
