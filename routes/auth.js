@@ -46,7 +46,7 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/signup', (req, res) => {
-    res.render('signup', { error: null, message: null });
+    res.render('signup', { error: null, message: null, googleClientId: process.env.GOOGLE_CLIENT_ID });
 });
 
 router.get('/verify-otp', (req, res) => {
@@ -290,13 +290,13 @@ router.post('/signup', async (req, res) => {
         try {
             await transporter.sendMail(mailOptions);
             console.log(`[SIGNUP] OTP ${otpCode} sent to ${user.email}`);
+            // Redirect to OTP verification page ONLY after successful email send
+            res.redirect(`/auth/verify-otp?email=${encodeURIComponent(user.email)}`);
         } catch (emailError) {
             console.error('[SIGNUP ERROR] Email send failed:', emailError);
-            // Decide if you want to block signup if email fails (e.g., if OTP is critical for verification)
-            // For now, it will proceed to redirect, but email won't be sent.
+            // Inform the user that email failed
+            return res.render('signup', { error: 'Registration incomplete: Failed to send OTP email. Please check your email address or contact support.', message: null });
         }
-        // Redirect to OTP verification page after successful signup/OTP resend
-        res.redirect(`/auth/verify-otp?email=${encodeURIComponent(user.email)}`);
 
     } catch (error) {
         console.error('[SIGNUP ERROR] Error during signup or sending OTP:', error);
