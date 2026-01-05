@@ -342,30 +342,41 @@
       position: relative;
     }
 
+    .password-group .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
     .password-group .toggle-pass {
       position: absolute;
-      right: 8px;
-      top: 26px;
+      right: 12px;
       background: none;
       border: none;
       cursor: pointer;
-      color: #4A90E2;
-      font-size: 16px;
-      transition: color 0.3s ease;
-      touch-action: manipulation;
-      -webkit-user-select: none;
-      user-select: none;
-      padding: 4px 8px;
-      border-radius: 4px;
+      color: #6b7280;
+      /* Neutral gray for better visibility */
+      font-size: 18px;
+      /* Slightly larger icon */
+      transition: color 0.2s ease;
+      padding: 8px;
+      /* Larger touch target */
+      border-radius: 50%;
+      /* Circular touch effect */
       display: flex;
       align-items: center;
       justify-content: center;
-      min-width: 32px;
-      min-height: 32px;
+      z-index: 2;
     }
 
     .password-group .toggle-pass:hover {
-      color: #357ab8;
+      background-color: rgba(0, 0, 0, 0.05);
+      color: #333;
+    }
+
+    /* Ensure text doesn't overlap with the button */
+    .password-group input {
+      padding-right: 45px !important;
     }
 
     .form-actions {
@@ -729,17 +740,11 @@
         -webkit-text-size-adjust: 100%;
       }
 
+      /* No specific overrides needed for toggle-pass as standard relative positioning works now */
       .password-group .toggle-pass {
-        right: 16px;
-        top: 38px;
+        /* Ensure touch target is large enough on mobile */
+        padding: 12px;
         font-size: 20px;
-        padding: 8px 12px;
-        touch-action: manipulation;
-        min-width: 44px;
-        min-height: 44px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 6px;
-        backdrop-filter: blur(5px);
       }
 
       .password-group small {
@@ -868,13 +873,9 @@
         padding: 12px 36px 12px 14px;
       }
 
+      /* Clean up small mobile overrides */
       .password-group .toggle-pass {
-        right: 14px;
-        top: 36px;
         font-size: 18px;
-        padding: 6px 10px;
-        min-width: 40px;
-        min-height: 40px;
       }
 
       button,
@@ -1056,8 +1057,12 @@
 
                   <div class="form-group password-group">
                     <label for="password">Password</label>
-                    <input id="password" name="password" type="password" required minlength="6">
-                    <button type="button" id="togglePass" class="toggle-pass">👁️</button>
+                    <div class="input-wrapper">
+                      <input id="password" name="password" type="password" required minlength="6">
+                      <button type="button" id="togglePass" class="toggle-pass" aria-label="Show password">
+                        <i class="far fa-eye"></i>
+                      </button>
+                    </div>
                     <small>(min 6 characters)</small>
                     <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
                   </div>
@@ -1184,10 +1189,19 @@
     const pwInput = document.getElementById('password');
     const toggle = document.getElementById('togglePass');
     if (pwInput && toggle) {
-      toggle.addEventListener('click', () => {
+      toggle.addEventListener('click', (e) => {
+        // Prevent focus loss if possible, though mostly cosmetic
+        e.preventDefault();
+
         const isPassword = pwInput.type === 'password';
         pwInput.type = isPassword ? 'text' : 'password';
-        toggle.innerHTML = isPassword ? '🙈' : '👁️';
+
+        // Update Icon
+        const icon = toggle.querySelector('i');
+        if (icon) {
+          icon.className = isPassword ? 'far fa-eye-slash' : 'far fa-eye';
+        }
+
         toggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
 
         // Add visual feedback
