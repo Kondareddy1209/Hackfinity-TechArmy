@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
   <title>Sign Up • Agent Seller</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
@@ -19,7 +20,9 @@
     }
 
     /* Allow text selection only for inputs */
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       -webkit-user-select: text;
       -moz-user-select: text;
       -ms-user-select: text;
@@ -86,10 +89,10 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: linear-gradient(45deg, 
-        rgba(255, 255, 255, 0.1) 0%, 
-        rgba(255, 255, 255, 0.3) 50%, 
-        rgba(255, 255, 255, 0.1) 100%);
+      background: linear-gradient(45deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.3) 50%,
+          rgba(255, 255, 255, 0.1) 100%);
       border-radius: 50%;
       transform: rotateX(70deg) rotateY(0deg);
       filter: blur(2px);
@@ -103,25 +106,30 @@
       left: 20%;
       width: 60%;
       height: 60%;
-      background: radial-gradient(circle, 
-        rgba(255, 255, 255, 0.2) 0%, 
-        rgba(255, 255, 255, 0.05) 70%, 
-        transparent 100%);
+      background: radial-gradient(circle,
+          rgba(255, 255, 255, 0.2) 0%,
+          rgba(255, 255, 255, 0.05) 70%,
+          transparent 100%);
       border-radius: 50%;
       animation: ripple 4s ease-out infinite;
       pointer-events: none;
     }
 
     @keyframes wave3d {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: rotateX(70deg) rotateY(0deg) translateZ(0px) scale(1);
       }
+
       25% {
         transform: rotateX(60deg) rotateY(90deg) translateZ(50px) scale(1.1);
       }
+
       50% {
         transform: rotateX(80deg) rotateY(180deg) translateZ(0px) scale(0.9);
       }
+
       75% {
         transform: rotateX(65deg) rotateY(270deg) translateZ(-30px) scale(1.05);
       }
@@ -132,10 +140,12 @@
         transform: scale(0.8);
         opacity: 1;
       }
+
       50% {
         transform: scale(1.2);
         opacity: 0.3;
       }
+
       100% {
         transform: scale(1.5);
         opacity: 0;
@@ -165,18 +175,23 @@
     }
 
     @keyframes float {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: translateY(100vh) translateX(0) scale(0);
         opacity: 0;
       }
+
       10% {
         opacity: 1;
         transform: scale(1);
       }
+
       90% {
         opacity: 1;
         transform: scale(1);
       }
+
       100% {
         transform: translateY(-100px) translateX(var(--drift)) scale(0);
         opacity: 0;
@@ -221,50 +236,50 @@
       background: linear-gradient(to bottom right, #34d399, #10b981);
       animation: fadeIn 0.8s ease-out;
     }
-    
+
     .auth-overview-panel h2 {
-        font-size: 2.5em;
-        font-weight: 700;
-        margin-bottom: 10px;
+      font-size: 2.5em;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
     .auth-overview-panel p {
-        font-size: 1.1em;
-        font-weight: 300;
-        margin-bottom: 25px;
+      font-size: 1.1em;
+      font-weight: 300;
+      margin-bottom: 25px;
     }
-    
+
     .feature-list {
-        list-style: none;
-        padding: 0;
-        text-align: left;
-        width: 100%;
-        max-width: 350px;
-        margin: 0 auto;
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto;
     }
 
     .feature-list li {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-        font-size: 1em;
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 1em;
     }
-    
+
     .feature-list li i {
-        color: #fde047;
-        margin-right: 15px;
+      color: #fde047;
+      margin-right: 15px;
     }
 
     /* Auth Container Styling */
     .auth-container {
-        width: 100%;
-        max-width: unset;
-        background: none;
-        box-shadow: none;
-        backdrop-filter: none;
-        border: none;
-        padding: 0;
-        display: block;
+      width: 100%;
+      max-width: unset;
+      background: none;
+      box-shadow: none;
+      backdrop-filter: none;
+      border: none;
+      padding: 0;
+      display: block;
     }
 
     h2 {
@@ -441,13 +456,19 @@
     }
 
     @keyframes shake {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: translateX(0);
       }
-      20%, 60% {
+
+      20%,
+      60% {
         transform: translateX(-6px);
       }
-      40%, 80% {
+
+      40%,
+      80% {
         transform: translateX(6px);
       }
     }
@@ -557,10 +578,13 @@
     }
 
     @keyframes pulse {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
       }
+
       50% {
         transform: translate(-50%, -50%) scale(1.5);
         opacity: 0.3;
@@ -683,7 +707,8 @@
         color: #333;
       }
 
-      input, select {
+      input,
+      select {
         padding: 14px 40px 14px 16px;
         font-size: 16px !important;
         height: 52px;
@@ -694,7 +719,8 @@
         -webkit-text-size-adjust: 100%;
       }
 
-      input:focus, select:focus {
+      input:focus,
+      select:focus {
         border-color: #4A90E2;
         box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
         transform: none;
@@ -836,7 +862,8 @@
         margin-bottom: 18px;
       }
 
-      input, select {
+      input,
+      select {
         height: 48px;
         padding: 12px 36px 12px 14px;
       }
@@ -850,7 +877,9 @@
         min-height: 40px;
       }
 
-      button, .link, .google-btn {
+      button,
+      .link,
+      .google-btn {
         padding: 14px 18px;
         font-size: 15px;
         min-height: 48px;
@@ -902,13 +931,16 @@
         margin-bottom: 8px;
       }
 
-      input, select {
+      input,
+      select {
         height: 40px;
         padding: 10px 32px 10px 12px;
         font-size: 16px !important;
       }
 
-      button, .link, .google-btn {
+      button,
+      .link,
+      .google-btn {
         padding: 10px 15px;
         font-size: 14px;
       }
@@ -923,13 +955,14 @@
         padding-top: 15px;
       }
     }
-    
+
 
     @keyframes fadeIn {
       from {
         opacity: 0;
         transform: translateY(20px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -952,118 +985,133 @@
   </div>
 
   <div class="particle-system" id="particles"></div>
-  
+
   <div class="interactive-wave">
     <div class="mouse-wave" id="mouseWave"></div>
   </div>
 
   <div class="auth-container-wrapper">
-      <!-- Overview Panel (Top on mobile, Left on desktop) -->
-      <div class="auth-overview-panel">
-          <h2>Welcome to Agent Seller</h2>
-          <p>Your all-in-one platform for digital catalog management and AI-powered sales. Create, manage, and sell with the power of intelligent automation.</p>
-          <ul class="feature-list">
-              <li>
-                  <i class="fas fa-check-circle"></i>
-                  <span>AI-powered product descriptions</span>
-              </li>
-              <li>
-                  <i class="fas fa-check-circle"></i>
-                  <span>Voice-controlled product search</span>
-              </li>
-              <li>
-                  <i class="fas fa-check-circle"></i>
-                  <span>Secure multi-language support</span>
-              </li>
-              <li>
-                  <i class="fas fa-check-circle"></i>
-                  <span>Easy bulk product uploads</span>
-              </li>
-          </ul>
-      </div>
+    <!-- Overview Panel (Top on mobile, Left on desktop) -->
+    <div class="auth-overview-panel">
+      <h2>Welcome to Agent Seller</h2>
+      <p>Your all-in-one platform for digital catalog management and AI-powered sales. Create, manage, and sell with the
+        power of intelligent automation.</p>
+      <ul class="feature-list">
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>AI-powered product descriptions</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Voice-controlled product search</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Secure multi-language support</span>
+        </li>
+        <li>
+          <i class="fas fa-check-circle"></i>
+          <span>Easy bulk product uploads</span>
+        </li>
+      </ul>
+    </div>
 
-      <!-- Form Panel (Bottom on mobile, Right on desktop) -->
-      <div class="auth-form-panel">
-          <div class="auth-container">
-              <h2>Create Account</h2>
+    <!-- Form Panel (Bottom on mobile, Right on desktop) -->
+    <div class="auth-form-panel">
+      <div class="auth-container">
+        <h2>Create Account</h2>
+        <% if (typeof error !=='undefined' && error) { %>
+          <p class="error-msg" style="text-align: center; display:block;" id="errorMsg">
+            <%= error %>
+          </p>
+          <% } else if (typeof message !=='undefined' && message) { %>
+            <p class="error-msg" style="text-align: center; color: green; display:block;" id="errorMsg">
+              <%= message %>
+            </p>
+            <% } else { %>
               <p class="error-msg" style="text-align: center; display:none;" id="errorMsg"></p>
-              
-              <form id="signupForm" action="/auth/signup" method="POST">
-                <div class="form-group">
-                  <label for="firstName">First Name</label>
-                  <input id="firstName" name="firstName" type="text" required>
-                </div>
-    
-                <div class="form-group">
-                  <label for="lastName">Last Name</label>
-                  <input id="lastName" name="lastName" type="text" required>
-                </div>
-    
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input id="email" name="email" type="email" required>
-                </div>
-    
-                <div class="form-group">
-                  <label for="mobile">Mobile Number</label>
-                  <input id="mobile" name="mobile" type="tel" pattern="[0-9]{10}" title="Enter a 10-digit mobile number"
-                    required>
-                </div>
-    
-                <div class="form-group password-group">
-                  <label for="password">Password</label>
-                  <input id="password" name="password" type="password" required minlength="6">
-                  <button type="button" id="togglePass" class="toggle-pass">👁️</button>
-                  <small>(min 6 characters)</small>
-                  <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
-                </div>
-    
-                <div class="form-group">
-                  <label for="gender">Gender</label>
-                  <select name="gender" id="gender" required>
-                    <option value="">Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-    
-                <div class="form-actions">
-                  <button type="submit">Send OTP</button>
-                  <a href="/auth" class="link">Already have an account? Login</a>
-                </div>
-              </form>
-    
-              <div class="google-signin-section">
+              <% } %>
+
+                <form id="signupForm" action="/auth/signup" method="POST">
+                  <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input id="firstName" name="firstName" type="text" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input id="lastName" name="lastName" type="text" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input id="mobile" name="mobile" type="tel" pattern="[0-9]{10}"
+                      title="Enter a 10-digit mobile number" required>
+                  </div>
+
+                  <div class="form-group password-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required minlength="6">
+                    <button type="button" id="togglePass" class="toggle-pass">👁️</button>
+                    <small>(min 6 characters)</small>
+                    <div id="capsAlert" hidden>⚠️ Caps Lock is ON</div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" required>
+                      <option value="">Select</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="submit">Send OTP</button>
+                    <a href="/auth" class="link">Already have an account? Login</a>
+                  </div>
+                </form>
+
+                <div class="google-signin-section">
                   <p>Or sign up with:</p>
                   <button class="google-btn" id="googleSignInBtn">
-                      <svg width="20" height="20" viewBox="0 0 24 24">
-                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                      </svg>
-                      Continue with Google
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                      <path fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                      <path fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                      <path fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    Continue with Google
                   </button>
-              </div>
-          </div>
+                </div>
       </div>
+    </div>
   </div>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     // Make sure errorMsg div is available for JS to use
     const errorMsgDiv = document.getElementById('errorMsg');
-    
+
     // Google Sign-In functionality
     let googleSignInInitialized = false;
-    
+
     function initializeGoogleSignIn() {
       if (googleSignInInitialized) return;
-      
+
       if (typeof google !== 'undefined' && google.accounts) {
         google.accounts.id.initialize({
-          client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual Google Client ID
+          client_id: '<%= typeof googleClientId !== "undefined" ? googleClientId : "" %>', // Use server-provided Client ID
           callback: handleGoogleSignIn,
           auto_select: false,
           cancel_on_tap_outside: false
@@ -1076,48 +1124,48 @@
     }
 
     async function handleGoogleSignIn(response) {
-        console.log("Google ID Token received:", response.credential);
+      console.log("Google ID Token received:", response.credential);
 
-        try {
-            const res = await fetch('/auth/google', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id_token: response.credential })
-            });
+      try {
+        const res = await fetch('/auth/google', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id_token: response.credential })
+        });
 
-            const data = await res.json();
+        const data = await res.json();
 
-            if (res.ok) {
-                console.log("Backend response for Google sign-in:", data);
-                if (data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
-                } else {
-                    window.location.href = '/user_dashboard';
-                }
-            } else {
-                console.error("Error from backend during Google sign-in:", data.error || data.message);
-                if (errorMsgDiv) {
-                    errorMsgDiv.textContent = data.error || data.message || 'Google sign-up failed. Please try again.';
-                    errorMsgDiv.style.display = 'block';
-                } else {
-                    alert(data.error || data.message || 'Google sign-up failed. Please try again.');
-                }
-            }
-        } catch (error) {
-            console.error("Network error during Google sign-in:", error);
-            if (errorMsgDiv) {
-                errorMsgDiv.textContent = 'Network error during Google sign-up. Please check your connection.';
-                errorMsgDiv.style.display = 'block';
-            } else {
-                alert('Network error during Google sign-up. Please check your connection.');
-            }
+        if (res.ok) {
+          console.log("Backend response for Google sign-in:", data);
+          if (data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+          } else {
+            window.location.href = '/user_dashboard';
+          }
+        } else {
+          console.error("Error from backend during Google sign-in:", data.error || data.message);
+          if (errorMsgDiv) {
+            errorMsgDiv.textContent = data.error || data.message || 'Google sign-up failed. Please try again.';
+            errorMsgDiv.style.display = 'block';
+          } else {
+            alert(data.error || data.message || 'Google sign-up failed. Please try again.');
+          }
         }
+      } catch (error) {
+        console.error("Network error during Google sign-in:", error);
+        if (errorMsgDiv) {
+          errorMsgDiv.textContent = 'Network error during Google sign-up. Please check your connection.';
+          errorMsgDiv.style.display = 'block';
+        } else {
+          alert('Network error during Google sign-up. Please check your connection.');
+        }
+      }
     }
 
     // Custom Google Sign-In button click handler
-    document.getElementById('googleSignInBtn').addEventListener('click', function() {
+    document.getElementById('googleSignInBtn').addEventListener('click', function () {
       if (typeof google !== 'undefined' && google.accounts) {
         google.accounts.id.prompt();
       } else {
@@ -1141,14 +1189,14 @@
         pwInput.type = isPassword ? 'text' : 'password';
         toggle.innerHTML = isPassword ? '🙈' : '👁️';
         toggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
-        
+
         // Add visual feedback
         toggle.style.transform = 'scale(0.9)';
         setTimeout(() => {
           toggle.style.transform = 'scale(1)';
         }, 100);
       });
-      
+
       // Set initial aria-label
       toggle.setAttribute('aria-label', 'Show password');
     }
@@ -1185,7 +1233,7 @@
 
     // Enhanced mobile-specific zoom prevention
     function preventZoom() {
-      document.addEventListener('touchstart', function(e) {
+      document.addEventListener('touchstart', function (e) {
         if (e.touches.length > 1) {
           e.preventDefault();
           e.stopPropagation();
@@ -1194,7 +1242,7 @@
       }, { passive: false });
 
       let lastTouchEnd = 0;
-      document.addEventListener('touchend', function(e) {
+      document.addEventListener('touchend', function (e) {
         const now = (new Date()).getTime();
         if (now - lastTouchEnd <= 300) {
           e.preventDefault();
@@ -1206,11 +1254,11 @@
 
       const inputs = document.querySelectorAll('input, select, textarea');
       inputs.forEach(input => {
-        input.addEventListener('touchstart', function(e) {
+        input.addEventListener('touchstart', function (e) {
           e.stopPropagation();
         }, { passive: true });
 
-        input.addEventListener('focus', function() {
+        input.addEventListener('focus', function () {
           if (window.innerWidth <= 768) {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (viewport) {
@@ -1219,7 +1267,7 @@
           }
         });
 
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
           if (window.innerWidth <= 768) {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (viewport) {
@@ -1229,7 +1277,7 @@
         });
       });
 
-      document.addEventListener('contextmenu', function(e) {
+      document.addEventListener('contextmenu', function (e) {
         if (window.innerWidth <= 768) {
           e.preventDefault();
           e.stopPropagation();
@@ -1237,7 +1285,7 @@
         }
       }, { passive: false });
 
-      document.addEventListener('wheel', function(e) {
+      document.addEventListener('wheel', function (e) {
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
           e.stopPropagation();
@@ -1245,7 +1293,7 @@
         }
       }, { passive: false });
 
-      document.addEventListener('keydown', function(e) {
+      document.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
           e.preventDefault();
           e.stopPropagation();
@@ -1253,7 +1301,7 @@
         }
       }, { passive: false });
 
-      window.addEventListener('orientationchange', function() {
+      window.addEventListener('orientationchange', function () {
         setTimeout(() => {
           const viewport = document.querySelector('meta[name="viewport"]');
           if (viewport) {
@@ -1263,7 +1311,7 @@
         }, 100);
       });
 
-      window.addEventListener('resize', function() {
+      window.addEventListener('resize', function () {
         if (window.innerWidth <= 768) {
           const viewport = document.querySelector('meta[name="viewport"]');
           if (viewport) {
@@ -1277,7 +1325,7 @@
     function createParticles() {
       const particleContainer = document.getElementById('particles');
       if (!particleContainer) return;
-      
+
       const isMobile = window.innerWidth <= 768;
       if (isMobile) return;
 
@@ -1286,18 +1334,18 @@
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
-        
+
         particle.style.left = Math.random() * 100 + '%';
-        
+
         const drift = (Math.random() - 0.5) * 150;
         particle.style.setProperty('--drift', drift + 'px');
-        
+
         particle.style.animationDelay = Math.random() * 8 + 's';
-        
+
         const size = Math.random() * 2 + 1;
         particle.style.width = size + 'px';
         particle.style.height = size + 'px';
-        
+
         particleContainer.appendChild(particle);
       }
     }
@@ -1307,25 +1355,25 @@
       if (window.innerWidth <= 768) return;
       const mouseWave = document.getElementById('mouseWave');
       if (!mouseWave) return;
-      
+
       let mouseX = window.innerWidth / 2;
       let mouseY = window.innerHeight / 2;
-      
+
       document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
-        
+
         mouseWave.style.left = mouseX + 'px';
         mouseWave.style.top = mouseY + 'px';
         mouseWave.style.opacity = '1';
         mouseWave.style.transform = 'translate(-50%, -50%) scale(1.2)';
       });
-      
+
       document.addEventListener('mouseleave', () => {
         mouseWave.style.opacity = '0';
         mouseWave.style.transform = 'translate(-50%, -50%) scale(1)';
       });
-      
+
       mouseWave.style.left = mouseX + 'px';
       mouseWave.style.top = mouseY + 'px';
     }
@@ -1338,7 +1386,7 @@
           input.addEventListener('focus', () => {
             input.style.transform = 'translateY(-2px)';
           });
-          
+
           input.addEventListener('blur', () => {
             input.style.transform = 'translateY(0)';
           });
@@ -1351,17 +1399,17 @@
       if (window.innerWidth <= 768) {
         let initialViewportHeight = window.innerHeight;
         let isKeyboardOpen = false;
-        
+
         window.addEventListener('resize', () => {
           const currentHeight = window.innerHeight;
           const heightDifference = initialViewportHeight - currentHeight;
-          
+
           if (heightDifference > 150) {
             if (!isKeyboardOpen) {
               isKeyboardOpen = true;
               document.body.style.height = currentHeight + 'px';
               document.body.style.overflow = 'hidden';
-              
+
               const viewport = document.querySelector('meta[name="viewport"]');
               if (viewport) {
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no');
@@ -1382,15 +1430,15 @@
 
         const inputs = document.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
-          input.addEventListener('touchstart', function(e) {
+          input.addEventListener('touchstart', function (e) {
             e.stopPropagation();
           }, { passive: true });
 
-          input.addEventListener('focus', function() {
+          input.addEventListener('focus', function () {
             setTimeout(() => {
-              this.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
+              this.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
               });
             }, 300);
           });
@@ -1398,15 +1446,15 @@
 
         const container = document.querySelector('.auth-container-wrapper');
         if (container) {
-          container.addEventListener('touchstart', function(e) {
+          container.addEventListener('touchstart', function (e) {
             if (e.touches.length > 1) {
               e.preventDefault();
               e.stopPropagation();
               return false;
             }
           }, { passive: false });
-          
-          container.addEventListener('touchmove', function(e) {
+
+          container.addEventListener('touchmove', function (e) {
             if (e.touches.length > 1) {
               e.preventDefault();
               e.stopPropagation();

@@ -3,29 +3,37 @@
     /* CSS Variables for Theming - Light Mode (Default) */
     /* -------------------------------------- */
     :root {
-        --page-bg: #f4f7f6; /* Global background */
-        --text-color: #333; /* Default text color */
-        --text-secondary-color: #6b7280; /* Secondary text color */
-        --heading-color: #2c3e50; /* Headings */
-        --card-bg: white; /* Background for cards, forms, sections */
-        --card-border: #e5e7eb; /* Borders for cards, inputs */
-        --shadow-color: rgba(0, 0, 0, 0.1); /* Subtle shadows */
-        --hover-bg-light: #f1f1f1; /* Light hover for general elements */
-        
+        --page-bg: #f4f7f6;
+        /* Global background */
+        --text-color: #333;
+        /* Default text color */
+        --text-secondary-color: #6b7280;
+        /* Secondary text color */
+        --heading-color: #2c3e50;
+        /* Headings */
+        --card-bg: white;
+        /* Background for cards, forms, sections */
+        --card-border: #e5e7eb;
+        /* Borders for cards, inputs */
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        /* Subtle shadows */
+        --hover-bg-light: #f1f1f1;
+        /* Light hover for general elements */
+
         --primary-green: #4CAF50;
         --hover-green: #5cb85c;
         --navbar-bg: var(--primary-green);
         --navbar-text: white;
-        
+
         --logout-red: #d9534f;
         --logout-red-hover: #c9302c;
         --points-orange: #f39c12;
-        
+
         --admin-blue: #4A90E2;
         --admin-blue-hover: #357ab8;
         --login-blue: #007bff;
         --login-blue-hover: #0056b3;
-        
+
         --input-bg: rgba(255, 255, 255, 0.8);
         --input-border: #ccc;
         --input-focus-border: #3b82f6;
@@ -43,6 +51,14 @@
         --status-error-color: #721c24;
         --status-info-bg: #e0f2fe;
         --status-info-color: #1e40af;
+
+        /* Side Menu Variables - Light Mode */
+        --side-menu-bg: #ffffff;
+        --side-menu-text: #000000;
+        --side-menu-border: #e0e0e0;
+        --side-menu-hover-bg: #f5f5f5;
+        --side-menu-header-bg: #f9f9f9;
+        --side-menu-header-border: #ddd;
     }
 
     /* -------------------------------------- */
@@ -60,10 +76,10 @@
 
         --navbar-bg: #2d3748;
         --navbar-text: white;
-        
+
         --primary-green: #38a169;
         --hover-green: #48bb78;
-        
+
         --logout-red: #c53030;
         --logout-red-hover: #9b2c2c;
         --points-orange: #ed8936;
@@ -90,6 +106,14 @@
         --status-error-color: #fff;
         --status-info-bg: #2b6cb0;
         --status-info-color: #fff;
+
+        /* Side Menu Variables - Dark Mode */
+        --side-menu-bg: #1a202c;
+        --side-menu-text: #f1f1f1;
+        --side-menu-border: #4a5568;
+        --side-menu-hover-bg: #2d3748;
+        --side-menu-header-bg: #2d3748;
+        --side-menu-header-border: #4a5568;
     }
 
     /* -------------------------------------- */
@@ -272,7 +296,8 @@
         z-index: 1001;
         top: 0;
         left: 0;
-        background-color: var(--dark-bg);
+        background-color: var(--side-menu-bg);
+        box-shadow: 2px 0 5px var(--shadow-color);
         overflow-x: hidden;
         overflow-y: auto;
         transition: 0.5s;
@@ -284,16 +309,17 @@
     .side-menu a {
         padding: 12px 20px;
         font-size: 1.2em;
-        color: #f1f1f1;
-        border-bottom: 1px solid var(--border-dark);
+        color: var(--side-menu-text) !important;
+        font-weight: 600;
+        border-bottom: 1px solid var(--side-menu-border);
         text-decoration: none;
         transition: background-color 0.2s ease, color 0.2s ease;
         display: block;
     }
 
     .side-menu a:hover {
-        color: var(--primary-green);
-        background-color: #555;
+        color: var(--primary-green) !important;
+        background-color: var(--side-menu-hover-bg);
     }
 
     .side-menu .close-btn {
@@ -301,7 +327,7 @@
         top: 0;
         right: 20px;
         font-size: 2.5em;
-        color: #f1f1f1;
+        color: var(--side-menu-text);
         cursor: pointer;
         background: none;
         border: none;
@@ -315,8 +341,8 @@
         flex-direction: column;
         align-items: center;
         padding: 20px;
-        background-color: var(--darker-bg);
-        border-bottom: 1px solid var(--border-dark);
+        background-color: var(--side-menu-header-bg);
+        border-bottom: 1px solid var(--side-menu-header-border);
         text-align: center;
     }
 
@@ -325,25 +351,25 @@
         flex-direction: column;
         align-items: center;
         text-decoration: none;
-        color: var(--navbar-text);
+        color: var(--side-menu-text);
         transition: background-color 0.2s ease;
         padding-bottom: 10px;
     }
 
     .mobile-profile-link:hover {
-        background-color: #555;
+        background-color: var(--side-menu-hover-bg);
     }
 
     .navbar-user-info.mobile-view img {
         width: 70px;
         height: 70px;
         margin-bottom: 10px;
-        border: 3px solid var(--navbar-text);
+        border: 3px solid var(--side-menu-text);
     }
 
     .navbar-user-info.mobile-view span {
         font-size: 1.2em;
-        color: var(--navbar-text);
+        color: var(--side-menu-text);
         margin-bottom: 8px;
     }
 
@@ -362,7 +388,8 @@
         font-size: 1.1em;
         text-align: center;
         text-decoration: none;
-        color: var(--navbar-text);
+        color: white;
+        /* Buttons usually have white text */
         border: none;
         cursor: pointer;
         transition: background-color 0.2s ease;
@@ -399,17 +426,17 @@
         gap: 10px;
         padding: 12px 20px;
         font-size: 1.2em;
-        color: #f1f1f1;
-        border-bottom: 1px solid var(--border-dark);
+        color: var(--side-menu-text);
+        border-bottom: 1px solid var(--side-menu-border);
         text-decoration: none;
         transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .side-menu .mobile-admin-link:hover {
-        background-color: #555;
+        background-color: var(--side-menu-hover-bg);
         color: var(--primary-green);
     }
-    
+
     /* Responsive adjustments */
     @media screen and (max-width: 768px) {
         .navbar {
@@ -451,93 +478,101 @@
         <a href="/" class="logo">Agent Seller</a>
     </div>
     <div class="navbar-links" id="mainNavbarLinks">
-        <% if (typeof user !== 'undefined' && user) { %>
-            <% if (user.role === 'admin') { %>
+        <% if (typeof user !=='undefined' && user) { %>
+            <% if (user.role==='admin' ) { %>
                 <a href="/dashboard">Admin Dashboard</a>
                 <a href="/admin/users">Manage Users</a>
                 <a href="/admin/products/add">Add Admin Product</a>
                 <a href="/user/all-products">View All Products</a>
+                <% } else { %>
+                    <a href="/user_dashboard">Dashboard</a>
+                    <a href="/user/product-generator">Product Generator</a>
+                    <a href="/user/my-catalog">My Catalog</a>
+                    <a href="/user/all-products">All Products</a>
+                    <% } %>
+                        <a href="/dashboard/profile">Profile</a>
+                        <a href="/ai-chat">AI Chat</a>
+                        <a href="/team">Our Team</a>
+                        <% } else { %>
+                            <!-- Added Home link for non-logged-in users -->
+                            <a href="/">Home</a>
+                            <a href="/auth/login">Login</a>
+                            <a href="/auth/signup">Sign Up</a>
+                            <a href="/admin/login">Admin Login</a>
+                            <a href="/team">Our Team</a>
+                            <% } %>
+                                <!-- THEME TOGGLE FOR DESKTOP -->
+                                <button id="themeToggle" title="Toggle Theme (Light/Dark)">
+                                    <i class="fas fa-moon"></i>
+                                </button>
+    </div>
+    <div class="navbar-user-info" id="mainNavbarUserInfo">
+        <% if (typeof user !=='undefined' && user && user.role==='admin' ) { %>
+            <a href="/admin" class="admin-link-btn" title="Admin Panel">
+                <i class="fas fa-screwdriver-wrench"></i>
+            </a>
+            <% } %>
+                <% if (typeof user !=='undefined' && user) { %>
+                    <div class="navbar-points">
+                        <i class="fas fa-star"></i>
+                        <%= user.points || 0 %>
+                    </div>
+                    <a href="/dashboard/profile" class="profile-link-container">
+                        <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
+                        <span>
+                            <%= user.firstName || user.username %>
+                        </span>
+                    </a>
+                    <a href="/auth/logout" class="navbar-logout">Logout</a>
+                    <% } else { %>
+                        <a href="/auth/login" class="navbar-logout login-btn">Login</a>
+                        <a href="/admin/login" class="navbar-logout admin-login-btn">Admin</a>
+                        <% } %>
+    </div>
+</nav>
+<div id="mySideMenu" class="side-menu">
+    <a href="javascript:void(0)" class="close-btn" id="closeMenu">&times;</a>
+    <% if (typeof user !=='undefined' && user) { %>
+        <div class="navbar-user-info mobile-view">
+            <a href="/dashboard/profile" class="mobile-profile-link">
+                <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
+                <span>
+                    <%= user.firstName || user.username %>
+                </span>
+            </a>
+            <div class="navbar-points">
+                <i class="fas fa-star"></i>
+                <%= user.points || 0 %>
+            </div>
+        </div>
+        <a href="/">Home</a>
+        <% if (user.role==='admin' ) { %>
+            <a href="/dashboard">Admin Dashboard</a>
+            <a href="/admin/users">Manage Users</a>
+            <a href="/admin/products/add">Add Admin Product</a>
+            <a href="/user/all-products">View All Products</a>
             <% } else { %>
                 <a href="/user_dashboard">Dashboard</a>
                 <a href="/user/product-generator">Product Generator</a>
                 <a href="/user/my-catalog">My Catalog</a>
                 <a href="/user/all-products">All Products</a>
-            <% } %>
-            <a href="/dashboard/profile">Profile</a>
-            <a href="/ai-chat">AI Chat</a>
-            <a href="/team">Our Team</a>
-        <% } else { %>
-            <!-- Added Home link for non-logged-in users -->
-            <a href="/">Home</a>
-            <a href="/auth/login">Login</a>
-            <a href="/auth/signup">Sign Up</a>
-            <a href="/admin/login">Admin Login</a>
-            <a href="/team">Our Team</a>
-        <% } %>
-        <!-- THEME TOGGLE FOR DESKTOP -->
-        <button id="themeToggle" title="Toggle Theme (Light/Dark)">
-            <i class="fas fa-moon"></i>
-        </button>
-    </div>
-    <div class="navbar-user-info" id="mainNavbarUserInfo">
-        <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
-            <a href="/admin" class="admin-link-btn" title="Admin Panel">
-                <i class="fas fa-screwdriver-wrench"></i>
-            </a>
-        <% } %>
-        <% if (typeof user !== 'undefined' && user) { %>
-            <div class="navbar-points">
-                <i class="fas fa-star"></i> <%= user.points || 0 %>
-            </div>
-            <a href="/dashboard/profile" class="profile-link-container">
-                <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
-                <span><%= user.firstName || user.username %></span>
-            </a>
-            <a href="/auth/logout" class="navbar-logout">Logout</a>
-        <% } else { %>
-            <a href="/auth/login" class="navbar-logout login-btn">Login</a>
-            <a href="/admin/login" class="navbar-logout admin-login-btn">Admin</a>
-        <% } %>
-    </div>
-</nav>
-<div id="mySideMenu" class="side-menu">
-    <a href="javascript:void(0)" class="close-btn" id="closeMenu">&times;</a>
-    <% if (typeof user !== 'undefined' && user) { %>
-        <div class="navbar-user-info mobile-view">
-            <a href="/dashboard/profile" class="mobile-profile-link">
-                <img src="<%= user.profilePicture || '/images/default_image.png' %>" alt="Profile">
-                <span><%= user.firstName || user.username %></span>
-            </a>
-            <div class="navbar-points">
-                <i class="fas fa-star"></i> <%= user.points || 0 %>
-            </div>
-        </div>
-        <a href="/">Home</a>
-        <% if (user.role === 'admin') { %>
-            <a href="/dashboard">Admin Dashboard</a>
-            <a href="/admin/users">Manage Users</a>
-            <a href="/admin/products/add">Add Admin Product</a>
-            <a href="/user/all-products">View All Products</a>
-        <% } else { %>
-            <a href="/user_dashboard">Dashboard</a>
-            <a href="/user/product-generator">Product Generator</a>
-            <a href="/user/my-catalog">My Catalog</a>
-            <a href="/user/all-products">All Products</a>
-        <% } %>
-        <a href="/dashboard/profile">Profile</a>
-        <a href="/ai-chat">AI Chat</a>
-        <a href="/team">Our Team</a>
-        <a href="/auth/logout" class="mobile-action-btn mobile-logout-btn"><i class="fas fa-right-from-bracket"></i> Logout</a>
-    <% } else { %>
-        <a href="/">Home</a>
-        <a href="/auth/login" class="mobile-action-btn mobile-login-btn">Login</a>
-        <a href="/auth/signup" class="mobile-action-btn">Sign Up</a>
-        <a href="/admin/login" class="mobile-action-btn mobile-admin-login-btn">Admin Login</a>
-        <a href="/team">Our Team</a>
-    <% } %>
-    <button id="themeToggleMobile" class="mobile-action-btn" title="Toggle Theme (Light/Dark)" style="background-color: var(--admin-blue);">
-        <i class="fas fa-moon"></i> Toggle Theme
-    </button>
+                <% } %>
+                    <a href="/dashboard/profile">Profile</a>
+                    <a href="/ai-chat">AI Chat</a>
+                    <a href="/team">Our Team</a>
+                    <a href="/auth/logout" class="mobile-action-btn mobile-logout-btn"><i
+                            class="fas fa-right-from-bracket"></i> Logout</a>
+                    <% } else { %>
+                        <a href="/">Home</a>
+                        <a href="/auth/login" class="mobile-action-btn mobile-login-btn">Login</a>
+                        <a href="/auth/signup" class="mobile-action-btn">Sign Up</a>
+                        <a href="/admin/login" class="mobile-action-btn mobile-admin-login-btn">Admin Login</a>
+                        <a href="/team">Our Team</a>
+                        <% } %>
+                            <button id="themeToggleMobile" class="mobile-action-btn" title="Toggle Theme (Light/Dark)"
+                                style="background-color: var(--admin-blue);">
+                                <i class="fas fa-moon"></i> Toggle Theme
+                            </button>
 </div>
 <script>
     document.getElementById("menuToggle").addEventListener("click", function () {
@@ -549,7 +584,7 @@
         document.body.classList.remove('no-scroll');
     });
     document.querySelectorAll("#mySideMenu a").forEach(link => {
-        link.addEventListener("click", function() {
+        link.addEventListener("click", function () {
             if (!link.classList.contains('close-btn') && !link.hasAttribute('target')) {
                 document.getElementById("mySideMenu").style.width = "0";
                 document.body.classList.remove('no-scroll');

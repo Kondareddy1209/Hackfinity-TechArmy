@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Verify OTP • Agent Seller</title>
     <style>
         /* --- Base Styles for the OTP verification page --- */
@@ -39,7 +40,8 @@
             align-items: center;
             overflow: hidden;
             /* New background gradient for OTP page */
-            background: linear-gradient(to right, #6A5ACD 0%, #8A2BE2 100%); /* SlateBlue to BlueViolet */
+            background: linear-gradient(to right, #6A5ACD 0%, #8A2BE2 100%);
+            /* SlateBlue to BlueViolet */
             position: relative;
             /* Prevent zoom on mobile */
             touch-action: pan-y pinch-zoom;
@@ -126,16 +128,20 @@
         }
 
         @keyframes wave3d {
+
             0%,
             100% {
                 transform: rotateX(70deg) rotateY(0deg) translateZ(0px) scale(1);
             }
+
             25% {
                 transform: rotateX(60deg) rotateY(90deg) translateZ(50px) scale(1.1);
             }
+
             50% {
                 transform: rotateX(80deg) rotateY(180deg) translateZ(0px) scale(0.9);
             }
+
             75% {
                 transform: rotateX(65deg) rotateY(270deg) translateZ(-30px) scale(1.05);
             }
@@ -146,10 +152,12 @@
                 transform: scale(0.8);
                 opacity: 1;
             }
+
             50% {
                 transform: scale(1.2);
                 opacity: 0.3;
             }
+
             100% {
                 transform: scale(1.5);
                 opacity: 0;
@@ -180,19 +188,23 @@
         }
 
         @keyframes float {
+
             0%,
             100% {
                 transform: translateY(100vh) translateX(0) scale(0);
                 opacity: 0;
             }
+
             10% {
                 opacity: 1;
                 transform: scale(1);
             }
+
             90% {
                 opacity: 1;
                 transform: scale(1);
             }
+
             100% {
                 transform: translateY(-100px) translateX(var(--drift)) scale(0);
                 opacity: 0;
@@ -214,7 +226,8 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             /* Prevent zoom interaction */
             touch-action: pan-y;
-            animation: fadeIn 0.8s ease-out; /* Fade-in animation for the container */
+            animation: fadeIn 0.8s ease-out;
+            /* Fade-in animation for the container */
         }
 
         @keyframes fadeIn {
@@ -222,6 +235,7 @@
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -254,13 +268,16 @@
         h2 {
             margin: 5px 0 10px;
             text-align: center;
-            color: #483D8B; /* DarkSlateBlue for heading */
-            font-size: 24px; /* Slightly larger for OTP page */
+            color: #483D8B;
+            /* DarkSlateBlue for heading */
+            font-size: 24px;
+            /* Slightly larger for OTP page */
             font-weight: 700;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             -webkit-user-select: none;
             user-select: none;
-            animation: slideInFromTop 0.6s ease-out; /* Animation for heading */
+            animation: slideInFromTop 0.6s ease-out;
+            /* Animation for heading */
         }
 
         @keyframes slideInFromTop {
@@ -268,6 +285,7 @@
                 opacity: 0;
                 transform: translateY(-30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -283,13 +301,16 @@
         }
 
         .form-group {
-            margin-bottom: 16px; /* Increased margin for better spacing */
+            margin-bottom: 16px;
+            /* Increased margin for better spacing */
         }
 
         label {
-            font-size: 14px; /* Slightly larger label */
+            font-size: 14px;
+            /* Slightly larger label */
             font-weight: bold;
-            margin-bottom: 6px; /* Increased margin below label */
+            margin-bottom: 6px;
+            /* Increased margin below label */
             display: block;
             color: #333;
             -webkit-user-select: none;
@@ -299,28 +320,36 @@
         input[type="text"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd; /* Lighter border */
-            border-radius: 8px; /* Slightly more rounded */
-            font-size: 18px; /* Larger font size for OTP input */
+            border: 2px solid #ddd;
+            /* Lighter border */
+            border-radius: 8px;
+            /* Slightly more rounded */
+            font-size: 18px;
+            /* Larger font size for OTP input */
             text-align: center;
-            letter-spacing: 5px; /* Increased letter spacing for OTP readability */
+            letter-spacing: 5px;
+            /* Increased letter spacing for OTP readability */
             background: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
-            -webkit-appearance: none; /* Remove default styling on iOS */
+            -webkit-appearance: none;
+            /* Remove default styling on iOS */
             appearance: none;
             touch-action: manipulation;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #7B68EE; /* MediumSlateBlue for focus */
+            border-color: #7B68EE;
+            /* MediumSlateBlue for focus */
             box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
             transform: translateY(-1px);
-            font-size: 16px !important; /* Force font size to prevent zoom */
+            font-size: 16px !important;
+            /* Force font size to prevent zoom */
         }
 
         input[type="text"].shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; /* Smoother shake animation */
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+            /* Smoother shake animation */
             transform: translate3d(0, 0, 0);
             backface-visibility: hidden;
             perspective: 1000px;
@@ -328,10 +357,27 @@
         }
 
         @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
         }
 
         button {
@@ -341,7 +387,8 @@
             font-size: 14px;
             color: white;
             /* New button gradient for OTP page */
-            background: linear-gradient(135deg, #7B68EE 0%, #8A2BE2 100%); /* MediumSlateBlue to BlueViolet */
+            background: linear-gradient(135deg, #7B68EE 0%, #8A2BE2 100%);
+            /* MediumSlateBlue to BlueViolet */
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -350,7 +397,8 @@
             touch-action: manipulation;
             -webkit-user-select: none;
             user-select: none;
-            font-weight: 600; /* Bolder button text */
+            font-weight: 600;
+            /* Bolder button text */
         }
 
         button::before {
@@ -398,6 +446,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -420,7 +469,8 @@
         }
 
         .resend-link {
-            color: #7B68EE; /* MediumSlateBlue for link */
+            color: #7B68EE;
+            /* MediumSlateBlue for link */
             text-decoration: none;
             font-size: 14px;
             transition: color 0.3s ease;
@@ -431,7 +481,8 @@
 
         .resend-link:hover {
             text-decoration: underline;
-            color: #6A5ACD; /* Darker on hover */
+            color: #6A5ACD;
+            /* Darker on hover */
         }
 
         /* Interactive mouse effect */
@@ -450,7 +501,8 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.3); /* Slightly more visible border */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            /* Slightly more visible border */
             border-radius: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
@@ -465,7 +517,8 @@
             left: 50%;
             width: 30%;
             height: 30%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent); /* Slightly brighter core */
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
+            /* Slightly brighter core */
             border-radius: 50%;
             transform: translate(-50%, -50%);
             animation: pulse 2s ease-in-out infinite;
@@ -473,11 +526,13 @@
         }
 
         @keyframes pulse {
+
             0%,
             100% {
                 transform: translate(-50%, -50%) scale(1);
                 opacity: 1;
             }
+
             50% {
                 transform: translate(-50%, -50%) scale(1.5);
                 opacity: 0.3;
@@ -519,11 +574,15 @@
                 width: 100%;
                 max-width: 350px;
                 margin: 20px 0;
-                padding: 25px 20px; /* Slightly more padding for mobile */
+                padding: 25px 20px;
+                /* Slightly more padding for mobile */
                 border-radius: 12px;
-                background: rgba(255, 255, 255, 0.98); /* Slightly less transparent */
-                backdrop-filter: blur(8px); /* Slightly less blur for performance */
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+                background: rgba(255, 255, 255, 0.98);
+                /* Slightly less transparent */
+                backdrop-filter: blur(8px);
+                /* Slightly less blur for performance */
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                /* Lighter shadow */
                 transform: none;
                 border: 1px solid rgba(255, 255, 255, 0.2);
                 /* Force no zoom on container */
@@ -713,36 +772,37 @@
             <p id="serverError" class="error-msg">
                 <%= error %>
             </p>
-        <% } else { %>
-            <p id="serverError" class="error-msg"></p>
-        <% } %>
+            <% } else { %>
+                <p id="serverError" class="error-msg"></p>
+                <% } %>
 
-        <% if (message) { %>
-            <p id="successMessage" class="message-success">
-                <%= message %>
-            </p>
-        <% } else { %>
-            <p id="successMessage" class="message-success"></p>
-        <% } %>
+                    <% if (message) { %>
+                        <p id="successMessage" class="message-success">
+                            <%= message %>
+                        </p>
+                        <% } else { %>
+                            <p id="successMessage" class="message-success"></p>
+                            <% } %>
 
-        <form id="otpForm" action="/auth/verify-otp" method="POST" novalidate>
-            <input type="hidden" name="username" id="hiddenUsername" value="<%= username %>">
-            <input type="hidden" name="isPasswordReset" id="isPasswordResetInput"
-                value="<%= typeof isPasswordReset !== 'undefined' && isPasswordReset ? 'true' : 'false' %>">
+                                <form id="otpForm" action="/auth/verify-otp" method="POST" novalidate>
+                                    <input type="hidden" name="username" id="hiddenUsername" value="<%= username %>">
+                                    <input type="hidden" name="isPasswordReset" id="isPasswordResetInput"
+                                        value="<%= typeof isPasswordReset !== 'undefined' && isPasswordReset ? 'true' : 'false' %>">
 
-            <div class="form-group">
-                <label for="otp">OTP Code</label>
-                <input id="otp" name="otp" type="text" minlength="6" maxlength="6" placeholder="123456" required
-                    autocomplete="one-time-code">
-            </div>
-            <p id="otpError" class="error-msg"></p>
+                                    <div class="form-group">
+                                        <label for="otp">OTP Code</label>
+                                        <input id="otp" name="otp" type="text" minlength="6" maxlength="6"
+                                            placeholder="123456" required autocomplete="one-time-code">
+                                    </div>
+                                    <p id="otpError" class="error-msg"></p>
 
-            <button type="submit" id="verifyBtn" disabled>Verify & Continue</button>
-        </form>
+                                    <button type="submit" id="verifyBtn" disabled>Verify & Continue</button>
+                                </form>
 
-        <div class="resend-container">
-            <a href="#" class="resend-link" id="resendLink">Didn't receive the code? Resend OTP</a>
-        </div>
+                                <div class="resend-container">
+                                    <a href="#" class="resend-link" id="resendLink">Didn't receive the code? Resend
+                                        OTP</a>
+                                </div>
     </div>
 
     <script>
@@ -860,7 +920,7 @@
 
         // Set the email from the server-side passed 'username'
         if (displayEmail && hiddenUsername) {
-             displayEmail.textContent = hiddenUsername.value;
+            displayEmail.textContent = hiddenUsername.value;
         }
 
         // Enable button when 6 digits entered
@@ -902,15 +962,43 @@
                 resendLink.style.pointerEvents = 'none';
 
                 // --- SIMULATED RESEND (REPLACE WITH ACTUAL AJAX CALL IN PRODUCTION) ---
-                setTimeout(() => {
-                    successMessage.textContent = 'New OTP sent successfully! (Check your email)';
-                    serverError.textContent = ''; // Clear any previous errors
-                    otpInput.value = ''; // Clear OTP input
-                    verifyBtn.disabled = true;
+                // --- ACTUAL RESEND REQUEST ---
+                const email = hiddenUsername ? hiddenUsername.value : '';
+
+                if (!email) {
+                    serverError.textContent = 'Error: Email address missing.';
                     resendLink.textContent = "Didn't receive the code? Resend OTP";
-                    resendLink.style.pointerEvents = 'auto'; // Re-enable link
-                }, 1500); // Simulate network delay
-                // --- END OF SIMULATED RESEND ---
+                    resendLink.style.pointerEvents = 'auto';
+                    return;
+                }
+
+                fetch('/auth/resend-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            successMessage.textContent = 'New OTP sent successfully! (Check your email)';
+                            serverError.textContent = '';
+                            otpInput.value = '';
+                            verifyBtn.disabled = true;
+                        } else {
+                            serverError.textContent = data.message || 'Failed to send OTP.';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error resending OTP:', err);
+                        serverError.textContent = 'Network error. Please try again.';
+                    })
+                    .finally(() => {
+                        resendLink.textContent = "Didn't receive the code? Resend OTP";
+                        resendLink.style.pointerEvents = 'auto';
+                    });
+                // --- END OF ACTUAL RESEND REQUEST ---
             });
         }
 
