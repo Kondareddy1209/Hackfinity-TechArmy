@@ -351,27 +351,41 @@
     .password-group .toggle-pass {
       position: absolute;
       right: 12px;
-      background: none;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none !important;
+      /* Override global button background */
+      box-shadow: none !important;
+      /* Override global button shadow */
       border: none;
       cursor: pointer;
       color: #6b7280;
-      /* Neutral gray for better visibility */
-      font-size: 18px;
-      /* Slightly larger icon */
-      transition: color 0.2s ease;
-      padding: 8px;
-      /* Larger touch target */
+      font-size: 16px;
+      padding: 0;
+      margin: 0;
+      width: 40px;
+      /* Fixed width for touch target */
+      height: 40px;
+      /* Fixed height for touch target */
       border-radius: 50%;
-      /* Circular touch effect */
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2;
+      z-index: 10;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .password-group .toggle-pass:hover {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgba(0, 0, 0, 0.05) !important;
       color: #333;
+      transform: translateY(-50%);
+      /* Maintain centering on hover */
+      box-shadow: none !important;
+    }
+
+    .password-group .toggle-pass::before {
+      display: none;
+      /* Remove global button shimmer effect */
     }
 
     /* Ensure text doesn't overlap with the button */
@@ -743,8 +757,14 @@
       /* No specific overrides needed for toggle-pass as standard relative positioning works now */
       .password-group .toggle-pass {
         /* Ensure touch target is large enough on mobile */
-        padding: 12px;
+        padding: 0 !important;
+        width: 40px !important;
+        height: 40px !important;
+        min-height: unset !important;
+        /* Override min-height: 52px from generic button */
         font-size: 20px;
+        right: 8px !important;
+        /* Adjust right position for mobile padding */
       }
 
       .password-group small {
