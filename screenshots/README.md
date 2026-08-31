@@ -1,11 +1,9 @@
 # Project Screenshots
 
-Place actual UI screenshots of the application in this directory to showcase on GitHub:
+Captured real UI screenshots of the application:
 
-- `dashboard.png` — Main Seller / User Dashboard view (`/user_dashboard`)
-- `products.png` — Product Catalog & Inventory Management view (`/user/all-products` & `/user/my-catalog`)
-- `ai-generation.png` — AI Product Description Generator view (`/user/product-generator`)
-- `ai-assistant.png` — Interactive AI Chat Assistant view (`/ai-chat`)
-- `admin.png` — Admin Dashboard & User Management view (`/admin/users`)
-
-Recommended resolution: 1920x1080 (16:9) or retina PNG format.
+- `dashboard.png` — Main Platform Landing & Hero View (`/`)
+- `login.png` — User Login Portal (`/auth/login`)
+- `signup.png` — Account Registration & Form (`/auth/signup`)
+- `team.png` — Meet Our Team & Contributions View (`/team`)
+- `admin.png` — Administrator Login Portal (`/auth/admin-login`)

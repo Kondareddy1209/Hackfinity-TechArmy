@@ -23,15 +23,13 @@
 
 ## 🖥️ Screenshots
 
-| View | Preview |
+| Platform View | Preview |
 |---|---|
-| **Seller Dashboard** | ![Dashboard](screenshots/dashboard.png)<br><sub>*Asset: `screenshots/dashboard.png`*</sub> |
-| **Product Catalog** | ![Product Catalog](screenshots/products.png)<br><sub>*Asset: `screenshots/products.png`*</sub> |
-| **AI Content Generator** | ![AI Generation](screenshots/ai-generation.png)<br><sub>*Asset: `screenshots/ai-generation.png`*</sub> |
-| **AI Chat Assistant** | ![AI Assistant](screenshots/ai-assistant.png)<br><sub>*Asset: `screenshots/ai-assistant.png`*</sub> |
-| **Admin User Management** | ![Admin Panel](screenshots/admin.png)<br><sub>*Asset: `screenshots/admin.png`*</sub> |
-
-> ℹ️ *Note: Add production screenshot assets directly into the [`screenshots/`](screenshots/) directory.*
+| **Platform Landing & Hero** | ![Platform Landing](screenshots/dashboard.png) |
+| **User & Seller Login** | ![User Login](screenshots/login.png) |
+| **Account Registration & OTP Flow** | ![User Signup](screenshots/signup.png) |
+| **Meet Our Team & Roles** | ![Meet Our Team](screenshots/team.png) |
+| **Admin Authentication Portal** | ![Admin Portal](screenshots/admin.png) |
 
 ---
 
