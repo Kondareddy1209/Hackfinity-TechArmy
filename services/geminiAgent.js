@@ -1,23 +1,10 @@
-// C:\Users\Konda Reddy\OneDrive\Desktop\Hackfinity\services\geminiAgent.js
-
-require('dotenv').config(); // Load environment variables from .env file
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-
-const API_KEY = process.env.GOOGLE_API_KEY;
-
-if (!API_KEY) {
-  console.error("Warning: GOOGLE_API_KEY is not set in your .env file. AI features will be disabled.");
-  // We'll return an error from the function instead of exiting the process here.
-}
 
 // IMPORTANT: Use the actual model name that works for you.
 // From your `listModels` output, "models/gemini-pro" or "models/gemini-1.5-pro-latest"
 // are good candidates.
 // Update model name to not include 'models/' prefix, SDK handles it.
 const GEMINI_MODEL_NAME = "gemini-1.5-flash";
-
-// Initialize the Google Generative AI client only if API key exists
-const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
 /**
  * Generates a concise product description using the Google Gemini AI.
@@ -28,9 +15,12 @@ const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
  * @returns {Promise<string>} The generated product description or an error message.
  */
 async function generateProductDescription(productName, keywords, tone = 'Professional', language = 'English') {
-  if (!genAI) {
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) {
     return "AI agent not configured: Google API Key is missing or invalid.";
   }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
 
   const tryGenerate = async (modelName) => {
     const model = genAI.getGenerativeModel({ model: modelName });

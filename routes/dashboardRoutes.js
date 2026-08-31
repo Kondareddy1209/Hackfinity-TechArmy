@@ -9,14 +9,16 @@ const User = require('../models/User'); // Mongoose User model
 const { requireAuth } = require('../middleware/authMiddleware');
 const admin = require('firebase-admin');
 
-// NEW: Firebase Storage setup
+// Firebase Storage setup
 const { getStorage } = require('firebase-admin/storage');
-let bucket;
+let bucket = null;
 try {
-    // Ensure admin.apps.length is checked before calling getStorage() as admin.initializeApp is in app.js
-    // Assuming Firebase Admin SDK is already initialized by app.js before this module runs.
-    bucket = getStorage().bucket(process.env.FIREBASE_STORAGE_BUCKET);
-    console.log("[dashboardRoutes] Firebase Storage bucket initialized.");
+    if (admin.apps.length && process.env.FIREBASE_STORAGE_BUCKET) {
+        bucket = getStorage().bucket(process.env.FIREBASE_STORAGE_BUCKET);
+        console.log("[dashboardRoutes] Firebase Storage bucket initialized.");
+    } else {
+        console.warn("[dashboardRoutes] Notice: Firebase Admin not initialized or FIREBASE_STORAGE_BUCKET not set. Cloud storage features disabled.");
+    }
 } catch (error) {
     console.error("[dashboardRoutes] ERROR: Failed to initialize Firebase Storage bucket:", error.message);
 }

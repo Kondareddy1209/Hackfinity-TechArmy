@@ -1,16 +1,4 @@
-// services/groqAgent.js
-require('dotenv').config();
 const Groq = require('groq-sdk');
-
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-
-let groq = null;
-if (GROQ_API_KEY) {
-    groq = new Groq({ apiKey: GROQ_API_KEY });
-    console.log("[Groq Agent] Groq SDK initialized.");
-} else {
-    console.error("Warning: GROQ_API_KEY is not set in your .env file. Groq AI features will be disabled.");
-}
 
 /**
  * Sends a text message to Groq AI and gets a response.
@@ -20,9 +8,12 @@ if (GROQ_API_KEY) {
  * @returns {Promise<string|object>} The AI's response (string or parsed JSON object if returnJson is true and successful).
  */
 async function getGroqChatCompletion(message, returnJson = false, systemPrompt = "You are a helpful AI assistant.") {
-    if (!groq) {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
         return "Groq AI agent not configured: GROQ_API_KEY is missing or invalid.";
     }
+
+    const groq = new Groq({ apiKey });
 
     try {
         console.log(`[Groq Agent] Sending message to Groq (JSON request: ${returnJson}): "${message.substring(0, Math.min(message.length, 100))}..."`);

@@ -1,23 +1,32 @@
-# Ignore node_modules directory, as dependencies will be installed inside the container
+# Dependencies
 node_modules/
 
-# Ignore npm debug logs
-npm-debug.log
-
-# Ignore environment variables file - CRUCIAL FOR SECURITY
+# Environment files
 .env
+.env.*
+!.env.example
 
-# Ignore Git-related files and directories
+# Git
 .git/
 .gitignore
 
-# Ignore the Dockerfile itself and this README, as they are not part of the app runtime
+# Credentials & Service Accounts
+config/*.json
+*firebase-adminsdk*.json
+serviceAccountKey.json
+
+# Documentation and Assets
 Dockerfile
 README.md
+architecture.png
+usecase.png
+screenshots/
 
-# Ignore any log files
+# Logs
 *.log
+npm-debug.log*
 
-# Ignore temporary directories that might be created by your application
+# Temp directories
 tmp/
 temp_uploads/
+public/uploads/temp/*

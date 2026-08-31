@@ -4,14 +4,24 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Kondareddy1209/Hackfinity-TechArmy.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "ecommerce",
+    "ai",
+    "gemini",
+    "groq",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Kondareddy & Team",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
@@ -21,7 +31,6 @@
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
     "@google/generative-ai": "^0.24.1",
-    "admin": "^1.4.1",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.0",
@@ -31,7 +40,7 @@
     "firebase-admin": "^13.4.0",
     "formidable": "^3.5.4",
     "groq-sdk": "^0.29.0",
-    "middleware": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",

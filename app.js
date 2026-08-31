@@ -10,17 +10,42 @@ const fs = require('fs').promises;
 const User = require('./models/User');
 
 const admin = require('firebase-admin');
+const fsSync = require('fs');
 
+// Initialize Firebase Admin SDK with priority:
+// 1. FIREBASE_SERVICE_ACCOUNT_JSON (JSON string)
+// 2. FIREBASE_SERVICE_ACCOUNT_KEY_PATH (file path)
+// 3. Local credential file if it safely exists
+// 4. Graceful fallback warning without crashing
 try {
-    const serviceAccount = require('./config/kondareddy-452915-firebase-adminsdk-fbsvc-35bea9d588.json');
-    if (!admin.apps.length) {
+    let serviceAccount = null;
+
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+        try {
+            serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+        } catch (parseErr) {
+            console.error('Invalid FIREBASE_SERVICE_ACCOUNT_JSON:', parseErr.message);
+        }
+    } else if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH && fsSync.existsSync(process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH)) {
+        serviceAccount = require(path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH));
+    } else {
+        const localKeyPath = path.join(__dirname, 'config', 'kondareddy-452915-firebase-adminsdk-fbsvc-35bea9d588.json');
+        if (fsSync.existsSync(localKeyPath)) {
+            serviceAccount = require(localKeyPath);
+        }
+    }
+
+    if (serviceAccount && !admin.apps.length) {
         admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
+            credential: admin.credential.cert(serviceAccount),
+            storageBucket: process.env.FIREBASE_STORAGE_BUCKET
         });
         console.log('Firebase Admin SDK initialized successfully.');
+    } else if (!admin.apps.length) {
+        console.warn('[Firebase] Notice: Firebase service account credentials not configured. Firebase storage operations will be unavailable.');
     }
 } catch (error) {
-    console.error('ERROR: Failed to initialize Firebase Admin SDK. Check serviceAccountKey.json path and content:', error.message);
+    console.error('ERROR: Failed to initialize Firebase Admin SDK:', error.message);
 }
 
 const app = express();
@@ -131,11 +156,13 @@ app.get('/health', async (req, res) => {
     }
 });
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log('MongoDB connected successfully');
-    })
-    .catch(err => console.error('MongoDB connection error:', err));
+if (process.env.NODE_ENV !== 'test' && process.env.MONGO_URI) {
+    mongoose.connect(process.env.MONGO_URI)
+        .then(() => {
+            console.log('MongoDB connected successfully');
+        })
+        .catch(err => console.error('MongoDB connection error:', err.message));
+}
 
 
 app.use((req, res, next) => {
